@@ -1,0 +1,18 @@
+<h1>{{title}}</h1>
+
+<div class="result">
+    <p>Tag: {{tag}}</p>
+    <p>Probability: {{probability}} (Max: 1)</p>
+</div>
+
+{{#each results}}
+    <h2>Result:</h2>
+    <hr />
+    {{#each this}}
+        <h3>ID: {{id}}</h3>
+        <p>OSM_ID: {{osm_id}}</p>
+        <p>OSM_Name: {{osm_name}}</p>
+        <p>Clazz: {{clazz}}</p>
+        <p>ST_Distance{{st_distance}}</p>
+    {{/each}}
+{{/each}}

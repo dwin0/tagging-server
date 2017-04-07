@@ -1,3 +1,8 @@
+config.json
+
+#Webstorm
+*.idea
+
 # Logs
 logs
 *.log
