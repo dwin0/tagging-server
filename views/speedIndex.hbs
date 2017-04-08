@@ -1,12 +1,15 @@
 <h1>{{title}}</h1>
 <p>Welcome to {{title}}</p>
 
-<form method="get" action="/speedCalculation">
-    <button class="button" type="submit">öffne Geschwindigkeitsberechnung</button>
-</form>
-
 <div class="form-style-5">
-    <form action="/getNearest" method="get">
+    <form action="/getSpeedCalculation" method="get">
+        <label for="start">Startzeitpunkt: </label>
+        <input type="text" name="start" id="start"/>
+        <label for="end">Endzeitpunkt: </label>
+        <input type="text" name="end" id="end"/>
+        <hr />
+        <br />
+
         <label for="longitude1">Longitude 1: </label>
         <input type="text" name="longitude1" id="longitude1"/>
         <label for="latitude1">Latitude 1: </label>
@@ -21,11 +24,6 @@
         <hr />
         <br />
 
-        <label for="longitude3">Longitude 3: </label>
-        <input type="text" name="longitude3" id="longitude3"/>
-        <label for="latitude3">Latitude 3: </label>
-        <input type="text" name="latitude3" id="latitude3"/>
-
-        <input type="submit" value="Get nearest objects" />
+        <input type="submit" value="Get velocity" />
     </form>
 </div>
