@@ -10,8 +10,19 @@ var index = require('./routes/index');
 var app = express();
 
 // view engine setup
+var hbs = require('hbs');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
+
+hbs.registerHelper("printItems", function(items) {
+    var html = "<ul>";
+
+    items.forEach(function(entry) {
+        html += "<li>Coordinate (Lat / Lon): <div class='coordinate'>" + entry.lat + ", " + entry.lon + "</li>";
+    });
+    html += "</ul>";
+    return html;
+});
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

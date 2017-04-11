@@ -93,6 +93,8 @@ router.get('/getNearest', function (req, res) {
     var longitude2 = req.query.longitude2;
     var longitude3 = req.query.longitude3;
 
+    var coordinates = [{lat: latitude1, lon: longitude1}, {lat: latitude2, lon: longitude2}, {lat: latitude3, lon: longitude3}];
+
     pg.connect(connectionString, function (err, client, done) {
         if (err) {
             return console.error('error fetching client from pool', err)
@@ -128,7 +130,8 @@ router.get('/getNearest', function (req, res) {
                         title: "Nearest Ways:",
                         results: results,
                         tag: tag.tagName,
-                        probability: tag.probability
+                        probability: tag.probability,
+                        coordinates: coordinates
                     });
                 });
             });
