@@ -39,4 +39,4 @@ function tag(results) {
     return {tagName: tag, probability: probability};
 }
 
-module.exports.tag = tag;
+module.exports = { "tag": tag };
