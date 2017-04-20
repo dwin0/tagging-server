@@ -19,14 +19,16 @@ const osmQuery = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz
 
 function getTags(req, res) {
 
-    var body = req.body;
+    var position1 = req.body.positions[0];
+    var position2 = req.body.positions[1];
+    var position3 = req.body.positions[2];
 
-    var statement1 = osmQuery.replaceAll("{lon}", body.longitude1).replaceAll("{lat}", body.latitude1);
-    var statement2 = osmQuery.replaceAll("{lon}", body.longitude2).replaceAll("{lat}", body.latitude2);
-    var statement3 = osmQuery.replaceAll("{lon}", body.longitude3).replaceAll("{lat}", body.latitude3);
+    var statement1 = osmQuery.replaceAll("{lon}", position1.longitude).replaceAll("{lat}", position1.latitude);
+    var statement2 = osmQuery.replaceAll("{lon}", position2.longitude).replaceAll("{lat}", position2.latitude);
+    var statement3 = osmQuery.replaceAll("{lon}", position3.longitude).replaceAll("{lat}", position3.latitude);
 
-    var coordinates = [{lat: body.latitude1, lon: body.longitude1}, {lat: body.latitude2, lon: body.longitude2},
-        {lat: body.latitude3, lon: body.longitude3}];
+    var coordinates = [{lat: position1.latitude, lon: position1.longitude}, {lat: position2.latitude, lon: position2.longitude},
+        {lat: position3.latitude, lon: position3.longitude}];
 
 
     db_access.queryMultiple(statement1, statement2, statement3, res, coordinates, renderNearest);

@@ -2,6 +2,14 @@ var express = require('express');
 var router = express.Router();
 
 
+/*CORS-HEADER*/
+router.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
+
 //route to the newest version
 router.get('/', function(req, res) {
     res.redirect('/tags/v2');

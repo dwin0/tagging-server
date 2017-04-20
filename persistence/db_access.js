@@ -2,8 +2,6 @@ var pg = require('pg');
 var options = require('../config/configReader');
 var parallel = require("async/parallel");
 
-var connectionString = options.config.connectionString;
-
 
 var config = {
     user: options.config.database_user,
@@ -42,7 +40,7 @@ function queryMultiple(statement1, statement2, statement3, res, coordinates, ren
 
 
 
-function singleQuery(queryStatement, res, startDate, endDate, renderVelocity) {
+function singleQuery(queryStatement, res, startDate, endDate, callback) {
 
     pool.query(queryStatement, function (err, result) {
         if (err) {
@@ -50,7 +48,7 @@ function singleQuery(queryStatement, res, startDate, endDate, renderVelocity) {
         }
 
         var resultingDistance =  result.rows[0];
-        renderVelocity(res, endDate, startDate, resultingDistance);
+        callback(res, endDate, startDate, resultingDistance);
     });
 }
 

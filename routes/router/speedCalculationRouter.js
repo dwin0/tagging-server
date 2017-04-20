@@ -42,10 +42,16 @@ router.get('/v1', function (req, res) {
     res.render('speedIndex', { title: 'Geschwindigkeitsberechnung', version: 'v1' });
 });
 
-// This route validates req.body against the StreetSchema
+// This route validates req.body against the velocitySchema
 router.post('/v1', validate({body: velocitySchema}), function (req, res) {
     // At this point req.body has been validated
-    velocity_v1.getSpeedCalculation(req, res);
+    velocity_v1.getSpeedCalculationJSON(req, res);
+});
+
+// This route validates req.body against the velocitySchema
+router.post('/v1/view', validate({body: velocitySchema}), function (req, res) {
+    // At this point req.body has been validated
+    velocity_v1.getSpeedCalculationView(req, res);
 });
 
 router.get('/v2', function (req, res) {
