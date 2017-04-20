@@ -1,8 +1,32 @@
 var db_access = require('../../persistence/db_access');
 
 
+const osmQueryDistance = 'SELECT ST_Distance(ST_GeomFromText(\'POINT({lon1} {lat1})\',4326)::geography, ' +
+    'ST_GeomFromText(\'POINT({lon2} {lat2})\', 4326)::geography);';
+
+
+
 function getSpeedCalculation(req, res) {
-    db_access.queryDistance(req.body, res, renderVelocity);
+
+    var body = req.body;
+
+    var lat1 = body.latitude1;
+    var lat2 = body.latitude2;
+
+    var lon1 = body.longitude1;
+    var lon2 = body.longitude2;
+
+    var startDate = new Date(body.startTime);
+    var endDate = new Date(body.endTime);
+
+
+    var queryStatement = osmQueryDistance
+        .replaceAll("{lon1}", lon1)
+        .replaceAll("{lat1}", lat1)
+        .replaceAll("{lon2}", lon2)
+        .replaceAll("{lat2}", lat2);
+
+    db_access.singleQuery(queryStatement, res, startDate, endDate, renderVelocity);
 }
 
 function renderVelocity(res, endDate, startDate, resultingDistance) {
