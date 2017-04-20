@@ -1,8 +1,8 @@
-var db_access = require('../persistence/db_access');
+var db_access = require('../../persistence/db_access');
 
 
 function getSpeedCalculation(req, res) {
-    db_access.queryDistance(req, res, renderVelocity);
+    db_access.queryDistance(req.body, res, renderVelocity);
 }
 
 function renderVelocity(res, endDate, startDate, resultingDistance) {

@@ -1,27 +1,14 @@
 var express = require('express');
 var router = express.Router();
-var tagging = require('../business_logic/tagging');
-var velocity = require('../business_logic/velocity');
 
 
+//route to the newest version
 router.get('/', function(req, res) {
-    res.redirect('/v1');
+    res.redirect('/v2');
 });
 
-router.get('/v1', function(req, res) {
-  res.render('index', { title: 'Tagging-Prototype 1.0' });
-});
-
-router.get('/v1/speedCalculation', function (reg, res, next) {
-    res.render('speedIndex', { title: 'Geschwindigkeitsberechnung' });
-});
-
-router.post('/v1/speedCalculation', function(req, res) {
-    velocity.getSpeedCalculation(req, res)
-});
-
-router.post('/v1/tags', function (req, res) {
-    tagging.getTags(req, res);
-});
+// split up route handling
+router.use('/v1', require('./router/router_v1'));
+router.use('/v2', require('./router/router_v2'));
 
 module.exports = router;

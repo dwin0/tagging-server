@@ -23,19 +23,12 @@ const osmQuery = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz
 
 function queryNearest(res, body, callback) {
 
-    var latitude1 = body.latitude1;
-    var latitude2 = body.latitude2;
-    var latitude3 = body.latitude3;
+    var statement1 = osmQuery.replaceAll("{lon}", body.longitude1).replaceAll("{lat}", body.latitude1);
+    var statement2 = osmQuery.replaceAll("{lon}", body.longitude2).replaceAll("{lat}", body.latitude2);
+    var statement3 = osmQuery.replaceAll("{lon}", body.longitude3).replaceAll("{lat}", body.latitude3);
 
-    var longitude1 = body.longitude1;
-    var longitude2 = body.longitude2;
-    var longitude3 = body.longitude3;
-
-    var statement1 = osmQuery.replaceAll("{lon}", longitude1).replaceAll("{lat}", latitude1);
-    var statement2 = osmQuery.replaceAll("{lon}", longitude2).replaceAll("{lat}", latitude2);
-    var statement3 = osmQuery.replaceAll("{lon}", longitude3).replaceAll("{lat}", latitude3);
-
-    var coordinates = [{lat: latitude1, lon: longitude1}, {lat: latitude2, lon: longitude2}, {lat: latitude3, lon: longitude3}];
+    var coordinates = [{lat: body.latitude1, lon: body.longitude1}, {lat: body.latitude2, lon: body.longitude2},
+        {lat: body.latitude3, lon: body.longitude3}];
 
 
     pg.connect(connectionString, function (err, client, done) {
@@ -74,17 +67,17 @@ const osmQueryDistance = 'SELECT ST_Distance(ST_GeomFromText(\'POINT({lon1} {lat
     'ST_GeomFromText(\'POINT({lon2} {lat2})\', 4326)::geography);';
 
 
-function queryDistance(req, res, renderVelocity) {
+function queryDistance(body, res, renderVelocity) {
 
 
-    var lat1 = req.body.latitude1;
-    var lat2 = req.body.latitude2;
+    var lat1 = body.latitude1;
+    var lat2 = body.latitude2;
 
-    var lon1 = req.body.longitude1;
-    var lon2 = req.body.longitude2;
+    var lon1 = body.longitude1;
+    var lon2 = body.longitude2;
 
-    var startDate = new Date(req.body.start);
-    var endDate = new Date(req.body.end);
+    var startDate = new Date(body.start);
+    var endDate = new Date(body.end);
 
 
     var queryStatement = osmQueryDistance

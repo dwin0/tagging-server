@@ -1,5 +1,5 @@
-var converter = require('../business_logic/converter');
-var db_access = require('../persistence/db_access');
+var converter = require('./converter');
+var db_access = require('../../persistence/db_access');
 
 
 function getTags(req, res) {
