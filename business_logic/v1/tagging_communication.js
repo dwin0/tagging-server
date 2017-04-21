@@ -22,10 +22,16 @@ function getDbStatements(positions) {
     return [statement1, statement2, statement3];
 }
 
+//Get measurement-points 1 (FCTStart), 4 (DownloadEnd) and 8 (RTTEnd)
+function filterPositions(positions) {
+    return [positions[0], positions[3], positions[7]];
+}
+
 
 function getTagsJSON(req, res) {
 
-    var statements = getDbStatements(req.body.positions);
+    var positions = filterPositions(req.body.positions);
+    var statements = getDbStatements(positions);
     db_access.queryMultiple(statements[0], statements[1], statements[2], res, null, renderTagJSON);
 }
 
@@ -38,7 +44,7 @@ function renderTagJSON(res, results) {
     var json = JSON.stringify({
         title: "Calculated Tagging",
         measuring_location: {
-            ground: {
+            location: {
                 id: tag.id,
                 name: tag.name,
                 description: tag.description,
@@ -79,7 +85,7 @@ function renderTagJSON(res, results) {
 
 function getTagsView(req, res) {
 
-    var positions = JSON.parse(req.body.positions);
+    var positions = filterPositions(JSON.parse(req.body.positions));
     var statements = getDbStatements(positions);
 
     var coordinates = [

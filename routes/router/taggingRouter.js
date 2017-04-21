@@ -7,8 +7,8 @@ var taggingSchema_v1 = {
     properties: {
         positions: {
             type: 'array',
-            minItems: 3,
-            maxItems: 3,
+            minItems: 8,
+            maxItems: 8,
             required: true,
             items: {
                 type: 'object',
