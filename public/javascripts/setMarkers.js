@@ -1,10 +1,6 @@
-//TODO: Add JQuery
-
 window.onload = function () {
     setMarkers();
 };
-
-document.getElementById('submitButton').addEventListener('click', sendTaggingRequest);
 
 
 function setMarkers() {
@@ -21,29 +17,3 @@ function setMarkers() {
         L.marker([lat, lon]).addTo(map);
     }
 }
-
-
-function sendTaggingRequest() {
-
-    for(var i = 0; i < 3; i++) {
-
-
-    }
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

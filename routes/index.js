@@ -12,7 +12,7 @@ router.use(function(req, res, next) {
 
 //route to the newest version
 router.get('/', function(req, res) {
-    res.redirect('/tags/v2');
+    res.redirect('/tags/v1');
 });
 
 //split up route handling

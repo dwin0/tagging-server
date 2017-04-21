@@ -15,7 +15,7 @@ var config = {
 
 const pool = new pg.Pool(config);
 
-function queryMultiple(statement1, statement2, statement3, res, coordinates, renderNearest) {
+function queryMultiple(statement1, statement2, statement3, res, coordinates, callback) {
     parallel([
             function(callback) {
                 pool.query(statement1, function (err, result) {
@@ -34,7 +34,7 @@ function queryMultiple(statement1, statement2, statement3, res, coordinates, ren
             }
         ],
         function(err, results) {
-            renderNearest(res, results, coordinates)
+            callback(res, results, coordinates)
         });
 }
 
@@ -47,7 +47,7 @@ function singleQuery(queryStatement, res, startDate, endDate, callback) {
             return console.error('error happened during query', err)
         }
 
-        var resultingDistance =  result.rows[0];
+        var resultingDistance =  result.rows[0].st_distance;
         callback(res, endDate, startDate, resultingDistance);
     });
 }

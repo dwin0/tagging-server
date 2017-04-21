@@ -1,6 +1,6 @@
 var router = require('express').Router();
 var validate = require('express-jsonschema').validate;
-var tagging_v1 = require('../../business_logic/v1/tagging');
+var tagging_v1 = require('../../business_logic/v1/tagging_communication');
 
 var taggingSchema_v1 = {
     type: 'object',
@@ -45,7 +45,7 @@ var taggingSchema_v1 = {
 
 
 router.get('/', function (req, res) {
-    res.redirect('/tags/v2')
+    res.redirect('/tags/v1');
 });
 
 router.get('/v1', function (req, res) {
@@ -54,11 +54,14 @@ router.get('/v1', function (req, res) {
 
 // This route validates req.body against the taggingSchema
 router.post('/v1', validate({body: taggingSchema_v1}), function (req, res) {
-
-    console.log(req.body);
-
     // At this point req.body has been validated
-    tagging_v1.getTags(req, res);
+    tagging_v1.getTagsJSON(req, res);
+});
+
+// This route validates req.body against the taggingSchema
+router.post('/v1/view', validate({body: taggingSchema_v1}), function (req, res) {
+    // At this point req.body has been validated
+    tagging_v1.getTagsView(req, res);
 });
 
 router.get('/v2', function (req, res) {

@@ -35,7 +35,7 @@ const velocitySchema = {
 
 
 router.get('/', function (req, res) {
-    res.redirect('/speedCalculation/v2')
+    res.redirect('/speedCalculation/v1')
 });
 
 router.get('/v1', function (req, res) {

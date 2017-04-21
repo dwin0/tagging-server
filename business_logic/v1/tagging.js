@@ -1,51 +1,49 @@
-var converter = require('./converter');
-var db_access = require('../../persistence/db_access');
+const RAILWAY = { id: 1, name: "railway", description: null };
+const STREET = { id: 2, name: "street", description: null };
+const BUILDING_AREA = { id: 3, name: "building_area", description: null };
+const OTHER = { id: 100, name: "other", description: "OSM-tag is defined, but not supported." };
+const UNKNOWN = { id: -1, name: "unknown", description: "No tagging possible." };
 
 
+function clazzToWayType(clazz) {
 
-String.prototype.replaceAll = function(target, replacement) {
-    return this.split(target).join(replacement);
-};
-
-
-//TODO: Prepared Statements
-
-
-const osmQuery = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
-    'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
-    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) FROM closest_candidates ' +
-    'ORDER BY ST_Distance(geom_way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) LIMIT 3;';
-
-
-function getTags(req, res) {
-
-    var position1 = req.body.positions[0];
-    var position2 = req.body.positions[1];
-    var position3 = req.body.positions[2];
-
-    var statement1 = osmQuery.replaceAll("{lon}", position1.longitude).replaceAll("{lat}", position1.latitude);
-    var statement2 = osmQuery.replaceAll("{lon}", position2.longitude).replaceAll("{lat}", position2.latitude);
-    var statement3 = osmQuery.replaceAll("{lon}", position3.longitude).replaceAll("{lat}", position3.latitude);
-
-    var coordinates = [{lat: position1.latitude, lon: position1.longitude}, {lat: position2.latitude, lon: position2.longitude},
-        {lat: position3.latitude, lon: position3.longitude}];
-
-
-    db_access.queryMultiple(statement1, statement2, statement3, res, coordinates, renderNearest);
+    if(clazz > 0 && clazz < 17)
+    {
+        return STREET;
+    }
+    else
+    {
+        return RAILWAY;
+    }
 }
 
-function renderNearest(res, results, coordinates) {
+function tag(results) {
 
-    var tag = converter.tag(results);
+    var amountOfCars = 0;
+    var amountOfRails = 0;
 
-    res.render('nearestView', {
-        title: "Nearest Ways:",
-        results: results,
-        tag: tag.tagName,
-        probability: tag.probability,
-        coordinates: coordinates
-    });
+    for (var i = 0; i < results.length; i++){
+
+        for (var j = 0; j < results[i].length; j++){
+
+            var wayType = clazzToWayType([results[i][j].clazz]);
+            if(wayType === STREET)
+            {
+                amountOfCars++;
+            } else
+            {
+                amountOfRails++;
+            }
+        }
+    }
+
+    var bigger = amountOfCars > amountOfRails ? amountOfCars : amountOfRails;
+    var smaller = amountOfCars < amountOfRails ? amountOfCars : amountOfRails;
+
+    var tag = amountOfCars > amountOfRails ? STREET : RAILWAY;
+    var probability = bigger / (bigger + smaller);
+
+    return { id: tag.id, name: tag.name, description: tag.description, probability: probability };
 }
 
-
-module.exports = { "getTags": getTags };
+module.exports = { "tag": tag };
