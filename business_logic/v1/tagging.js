@@ -1,3 +1,4 @@
+//Version 1 only supports railways and streets
 const RAILWAY = { id: 1, name: "railway", description: null };
 const STREET = { id: 2, name: "street", description: null };
 const BUILDING_AREA = { id: 3, name: "building_area", description: null };

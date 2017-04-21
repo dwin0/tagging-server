@@ -1,7 +1,7 @@
 var tagging = require('./tagging');
 var db_access = require('../../persistence/db_access');
 
-const osmQuery = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
+const OSM_NEAREST_OBJECTS = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
     'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
     'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) FROM closest_candidates ' +
     'ORDER BY ST_Distance(geom_way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) LIMIT 3;';
@@ -15,9 +15,9 @@ String.prototype.replaceAll = function(target, replacement) {
 function getDbStatements(positions) {
 
     //TODO: Prepared Statements
-    var statement1 = osmQuery.replaceAll("{lon}", positions[0].longitude).replaceAll("{lat}", positions[0].latitude);
-    var statement2 = osmQuery.replaceAll("{lon}", positions[1].longitude).replaceAll("{lat}", positions[1].latitude);
-    var statement3 = osmQuery.replaceAll("{lon}", positions[2].longitude).replaceAll("{lat}", positions[2].latitude);
+    var statement1 = OSM_NEAREST_OBJECTS.replaceAll("{lon}", positions[0].longitude).replaceAll("{lat}", positions[0].latitude);
+    var statement2 = OSM_NEAREST_OBJECTS.replaceAll("{lon}", positions[1].longitude).replaceAll("{lat}", positions[1].latitude);
+    var statement3 = OSM_NEAREST_OBJECTS.replaceAll("{lon}", positions[2].longitude).replaceAll("{lat}", positions[2].latitude);
 
     return [statement1, statement2, statement3];
 }

@@ -1,5 +1,6 @@
 document.getElementById('submitButton').addEventListener('click', sendTaggingRequest);
 
+//Send POST-Request in specific format: taggingSchema_v1 in taggingRouter.js
 function sendTaggingRequest() {
 
     var positions = [];
