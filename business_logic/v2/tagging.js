@@ -1,4 +1,3 @@
-//Version 1 only supports railways and streets
 const TRAIN = { id: 1, name: "train", description: null };
 const CAR = { id: 2, name: "car", description: null };
 const FOOT_INSIDE = { id: 3, name: "foot_inside", description: null };
