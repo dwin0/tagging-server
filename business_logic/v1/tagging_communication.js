@@ -1,5 +1,5 @@
 var tagging = require('./tagging');
-var db_access = require('../../persistence/db_access');
+var db_access = require('../../persistence/db_access_v2');
 
 const OSM_NEAREST_OBJECTS = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
     'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +

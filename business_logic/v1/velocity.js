@@ -1,4 +1,4 @@
-var db_access = require('../../persistence/db_access');
+var db_access = require('../../persistence/db_access_v1');
 
 const OSM_QUERY_DISTANCE = 'SELECT ST_Distance(ST_GeomFromText(\'POINT({lon1} {lat1})\',4326)::geography, ' +
     'ST_GeomFromText(\'POINT({lon2} {lat2})\', 4326)::geography);';

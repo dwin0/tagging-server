@@ -1,5 +1,9 @@
 var tagging = require('./tagging');
-var db_access = require('../../persistence/db_access');
+var helper = require('./helper');
+var typeOfMotion = require('./typeOfMotion');
+var velocity = require('./velocity');
+var db_access = require('../../persistence/db_access_v2');
+var parallel = require("async/parallel");
 
 const OSM_NEAREST_OBJECTS = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
     'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
@@ -7,78 +11,83 @@ const OSM_NEAREST_OBJECTS = 'WITH closest_candidates AS (SELECT id, osm_id, osm_
     'ORDER BY ST_Distance(geom_way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) LIMIT 3;';
 
 
-String.prototype.replaceAll = function(target, replacement) {
-    return this.split(target).join(replacement);
-};
-
-
-function getDbStatements(positions) {
-
-    //TODO: Prepared Statements
-    var statement1 = OSM_NEAREST_OBJECTS.replaceAll("{lon}", positions[0].longitude).replaceAll("{lat}", positions[0].latitude);
-    var statement2 = OSM_NEAREST_OBJECTS.replaceAll("{lon}", positions[1].longitude).replaceAll("{lat}", positions[1].latitude);
-    var statement3 = OSM_NEAREST_OBJECTS.replaceAll("{lon}", positions[2].longitude).replaceAll("{lat}", positions[2].latitude);
-
-    return [statement1, statement2, statement3];
-}
-
-//Get measurement-points 1 (FCTStart), 4 (DownloadEnd) and 8 (RTTEnd)
-function filterPositions(positions) {
-    return [positions[0], positions[3], positions[7]];
-}
-
-
 function getTagsJSON(req, res) {
 
     var positions = filterPositions(req.body.positions);
-    var statements = getDbStatements(positions);
-    db_access.queryMultiple(statements[0], statements[1], statements[2], res, null, renderTagJSON);
+    var nearestObjectsStatements = helper.getDBStatements(OSM_NEAREST_OBJECTS, positions);
+
+    parallel([
+            function(callback) {
+                db_access.queryMultiple(db_access.getDatabase(db_access.STREETS_DB), nearestObjectsStatements, function (nearestWayResults) {
+                    callback(null, nearestWayResults);
+                });
+            },
+            function(callback) {
+                velocity.getVelocity_positionArray(positions, function (velocityJSON) {
+                    callback(null, velocityJSON);
+                });
+            }
+        ],
+        function(err, results) {
+            renderTagJSON(res, positions, results[0], results[1])
+        });
 }
 
-function renderTagJSON(res, results) {
+function renderTagJSON(res, positions, taggingResult, speedResult) {
 
-    var tag = tagging.tag(results);
+    var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
 
-    res.writeHead(200, {"Content-Type": "application/json"});
-
-    var json = JSON.stringify({
-        title: "Calculated Tagging",
-        measuring_location: {
-            location: {
-                id: tag.id,
-                name: tag.name,
-                description: tag.description,
-                probability_0to1: tag.probability
-            },
-            surrounding: {
-                id: null,
-                name: null,
-                description: null,
-                probability_0to1: null
+    parallel([
+            function(callback) {
+                tagging.getTag(taggingResult, typeOfMotionRes, positions, function (result) {
+                    callback(null, result);
+                });
             }
-        },
-        type_of_motion: {
-            id: null,
-            name: null,
-            description: null,
-            probability_0to1: null
-        },
-        velocity: {
-            distance_m: null,
-            time_s: null,
-            velocity_ms: null,
-            velocity_kmh: null,
-            probability_0to1: null
-        },
-        population_density: {
-            id: null,
-            name: null,
-            description: null,
-            probability_0to1: null
-        }
-    });
+        ],
+        function(err, results) {
 
-    res.end(json);
+            var taggingRes = results[0];
+            res.writeHead(200, {"Content-Type": "application/json"});
+
+            var json = JSON.stringify({
+                title: "Calculated Tagging",
+                measuring_location: {
+                    location: {
+                        id: taggingRes.tag.id,
+                        name: taggingRes.tag.name,
+                        description: taggingRes.tag.description,
+                        probability_0to1: taggingRes.probability
+                    },
+                    surrounding: {
+                        id: null,
+                        name: null,
+                        description: null,
+                        probability_0to1: null
+                    }
+                },
+                type_of_motion: {
+                    id: typeOfMotionRes.id,
+                    name: typeOfMotionRes.name,
+                    description: typeOfMotionRes.description,
+                    probability_0to1: null
+                },
+                velocity: {
+                    distance_m: speedResult.distance,
+                    time_s: speedResult.time_s,
+                    velocity_ms: speedResult.velocity_ms,
+                    velocity_kmh: speedResult.velocity_kmh,
+                    probability_0to1: speedResult.probability_0to1
+                },
+                population_density: {
+                    id: null,
+                    name: null,
+                    description: null,
+                    probability_0to1: null
+                }
+            });
+
+            res.end(json);
+        });
 }
 
 
@@ -86,28 +95,60 @@ function renderTagJSON(res, results) {
 function getTagsView(req, res) {
 
     var positions = filterPositions(JSON.parse(req.body.positions));
-    var statements = getDbStatements(positions);
+    var statements = helper.getDBStatements(OSM_NEAREST_OBJECTS, positions);
 
     var coordinates = [
         {lat: positions[0].latitude, lon: positions[0].longitude},
         {lat: positions[1].latitude, lon: positions[1].longitude},
         {lat: positions[2].latitude, lon: positions[2].longitude}];
 
-    db_access.queryMultiple(statements[0], statements[1], statements[2], res, coordinates, renderTagView);
+
+    parallel([
+            function(callback) {
+                db_access.queryMultiple(db_access.getDatabase(db_access.STREETS_DB), statements, function (result) {
+                    callback(null, result);
+                });
+            },
+            function(callback) {
+                velocity.getVelocity_positionArray(positions, function (velocityJSON) {
+                    callback(null, velocityJSON);
+                });
+            }],
+        function(err, results) {
+            renderTagView(res, results[0], results[1], coordinates);
+        });
 }
 
-function renderTagView(res, results, coordinates) {
+function renderTagView(res, taggingResult, speedResult, coordinates) {
 
-    var tag = tagging.tag(results);
+    var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
+    var taggingRes = tagging.getTag(taggingResult, typeOfMotionRes);
+
 
     res.render('nearestView', {
         title: "Calculated Tag",
-        results: results,
-        tag: tag.name,
-        probability_0to1: tag.probability,
+        results: taggingResult,
+        tag: taggingRes.tag.name,
+        probability_0to1: taggingRes.tag.probability,
         coordinates: coordinates
     });
 }
+
+
+//Get measurement-points 1 (FCTStart), 4 (DownloadEnd) and 8 (RTTEnd)
+function filterPositions(positions) {
+
+    positions.sort(function (p1, p2) {
+        return new Date(p1.time).getTime() - new Date(p2.time).getTime();
+    });
+
+    return [positions[0], positions[3], positions[7]];
+}
+
+
+String.prototype.replaceAll = function(target, replacement) {
+    return this.split(target).join(replacement);
+};
 
 
 module.exports = { "getTagsView": getTagsView, "getTagsJSON": getTagsJSON };

@@ -1,9 +1,10 @@
 var router = require('express').Router();
 var validate = require('express-jsonschema').validate;
 var velocity_v1 = require('../../business_logic/v1/velocity');
+var velocity_v2 = require('../../business_logic/v2/velocity_communication');
 
 
-const velocitySchema = {
+const velocitySchema_v1 = {
     type: 'object',
     properties: {
         startTime: {
@@ -35,32 +36,40 @@ const velocitySchema = {
 
 
 router.get('/', function (req, res) {
-    res.redirect('/speedCalculation/v1')
+    res.redirect('/speedCalculation/v2')
 });
 
+//Version 1
 router.get('/v1', function (req, res) {
     res.render('speedIndex', { title: 'Geschwindigkeitsberechnung', version: 'v1' });
 });
 
 // This route validates req.body against the velocitySchema
-router.post('/v1', validate({body: velocitySchema}), function (req, res) {
+router.post('/v1', validate({body: velocitySchema_v1}), function (req, res) {
     // At this point req.body has been validated
     velocity_v1.getSpeedCalculationJSON(req, res);
 });
 
 // This route validates req.body against the velocitySchema
-router.post('/v1/view', validate({body: velocitySchema}), function (req, res) {
+router.post('/v1/view', validate({body: velocitySchema_v1}), function (req, res) {
     // At this point req.body has been validated
     velocity_v1.getSpeedCalculationView(req, res);
 });
 
+
+
+
+//Version 2
 router.get('/v2', function (req, res) {
     res.render('speedIndex', { title: 'Geschwindigkeitsberechnung', version: 'v2' });
 });
 
-/*TODO: Implement*/
-router.post('/v2', function (req, res) {
-    velocity_v1.getSpeedCalculation(req, res);
+router.post('/v2', validate({body: velocitySchema_v1}), function (req, res) {
+    velocity_v2.getSpeedCalculationJSON(req, res);
+});
+
+router.post('/v2/view', validate({body: velocitySchema_v1}), function (req, res) {
+    velocity_v2.getSpeedCalculationView(req, res);
 });
 
 
