@@ -1,27 +1,14 @@
 var tagging = require('./tagging');
-var helper = require('./helper');
 var typeOfMotion = require('./typeOfMotion');
 var velocity = require('./velocity');
-var db_access = require('../../persistence/db_access_v2');
 var parallel = require("async/parallel");
-
-const OSM_NEAREST_OBJECTS = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
-    'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
-    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) FROM closest_candidates ' +
-    'ORDER BY ST_Distance(geom_way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) LIMIT 3;';
 
 
 function getTagsJSON(req, res) {
 
     var positions = filterPositions(req.body.positions);
-    var nearestObjectsStatements = helper.getDBStatements(OSM_NEAREST_OBJECTS, positions);
 
     parallel([
-            function(callback) {
-                db_access.queryMultiple(db_access.getDatabase(db_access.STREETS_DB), nearestObjectsStatements, function (nearestWayResults) {
-                    callback(null, nearestWayResults);
-                });
-            },
             function(callback) {
                 velocity.getVelocity_positionArray(positions, function (velocityJSON) {
                     callback(null, velocityJSON);
@@ -29,17 +16,17 @@ function getTagsJSON(req, res) {
             }
         ],
         function(err, results) {
-            renderTagJSON(res, positions, results[0], results[1])
+            renderTagJSON(res, positions, results[0])
         });
 }
 
-function renderTagJSON(res, positions, taggingResult, speedResult) {
+function renderTagJSON(res, positions, speedResult) {
 
     var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
 
     parallel([
             function(callback) {
-                tagging.getTag(taggingResult, typeOfMotionRes, positions, function (result) {
+                tagging.getTag(typeOfMotionRes, positions, function (result) {
                     callback(null, result);
                 });
             }
@@ -95,7 +82,6 @@ function renderTagJSON(res, positions, taggingResult, speedResult) {
 function getTagsView(req, res) {
 
     var positions = filterPositions(JSON.parse(req.body.positions));
-    var statements = helper.getDBStatements(OSM_NEAREST_OBJECTS, positions);
 
     var coordinates = [
         {lat: positions[0].latitude, lon: positions[0].longitude},
@@ -105,33 +91,40 @@ function getTagsView(req, res) {
 
     parallel([
             function(callback) {
-                db_access.queryMultiple(db_access.getDatabase(db_access.STREETS_DB), statements, function (result) {
-                    callback(null, result);
-                });
-            },
-            function(callback) {
                 velocity.getVelocity_positionArray(positions, function (velocityJSON) {
                     callback(null, velocityJSON);
                 });
             }],
         function(err, results) {
-            renderTagView(res, results[0], results[1], coordinates);
+            renderTagView(res, results[0], coordinates, positions);
         });
 }
 
-function renderTagView(res, taggingResult, speedResult, coordinates) {
+function renderTagView(res, speedResult, coordinates, positions) {
 
     var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
-    var taggingRes = tagging.getTag(taggingResult, typeOfMotionRes);
 
+    parallel([
+            function (callback) {
+                tagging.getTag(typeOfMotionRes, positions, function (result) {
+                    callback(null, result);
+                });
+            }
+        ],
+        function (err, results) {
 
-    res.render('nearestView', {
-        title: "Calculated Tag",
-        results: taggingResult,
-        tag: taggingRes.tag.name,
-        probability_0to1: taggingRes.tag.probability,
-        coordinates: coordinates
-    });
+            var taggingRes = results[0];
+
+            var json = {
+                title: "Calculated Tag",
+                results: [],
+                tag: taggingRes.tag.name,
+                probability_0to1: taggingRes.probability,
+                coordinates: coordinates
+            };
+
+            res.render('nearestView', json);
+        });
 }
 
 

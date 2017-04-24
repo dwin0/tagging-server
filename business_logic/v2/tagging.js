@@ -20,11 +20,17 @@ const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
     'LIMIT 1;';
 
 
-//TODO: Duplicate (tagging_communication.js) Put in db-requests-file
-const OSM_NEAREST_OBJECTS = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
+const OSM_NEAREST_OBJECTS_10M = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
     'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
     'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) FROM closest_candidates ' +
     'WHERE ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) < 10 ORDER BY ST_Distance(geom_way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) LIMIT 3;';
+
+
+const OSM_NEAREST_OBJECTS = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
+    'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
+    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) FROM closest_candidates ' +
+    'ORDER BY ST_Distance(geom_way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) LIMIT 3;';
+
 
 
 function clazzToWayType(clazz) {
@@ -32,7 +38,7 @@ function clazzToWayType(clazz) {
     return (clazz > 0 && clazz < 17) ?  CAR : TRAIN;
 }
 
-function getTag(nearestWays, typeOfMotion, positions, callback) {
+function getTag(typeOfMotion, positions, callback) {
 
     var tag, probability;
 
@@ -41,25 +47,40 @@ function getTag(nearestWays, typeOfMotion, positions, callback) {
     if(typeOfMotion.id > 2) {
         //TODO: Check if speed > max. speed allowed on street
 
-        var amountOfCars = 0;
-        var amountOfTrains = 0;
+        var nearestObjectsStatements = helper.getDBStatements(OSM_NEAREST_OBJECTS, positions);
 
-        for (var i = 0; i < nearestWays.length; i++){
+        parallel([
+                function(callback) {
+                    db.queryMultiple(db.getDatabase(db.STREETS_DB), nearestObjectsStatements, function (nearestWayResults) {
+                        callback(null, nearestWayResults);
+                    });
+                }
+            ],
+            function(err, results) {
 
-            for (var j = 0; j < nearestWays[i].length; j++){
+                var nearestWays = results[0];
 
-                var wayType = clazzToWayType([nearestWays[i][j].clazz]);
-                if(wayType === CAR) { amountOfCars++; }
-                else { amountOfTrains++; }
-            }
-        }
+                var amountOfCars = 0;
+                var amountOfTrains = 0;
 
-        var bigger = amountOfCars > amountOfTrains ? amountOfCars : amountOfTrains;
-        var smaller = amountOfCars < amountOfTrains ? amountOfCars : amountOfTrains;
+                for (var i = 0; i < nearestWays.length; i++){
 
-        tag = amountOfCars > amountOfTrains ? CAR : TRAIN;
-        probability = bigger / (bigger + smaller);
-        callback({ tag: tag, probability: probability });
+                    for (var j = 0; j < nearestWays[i].length; j++){
+
+                        var wayType = clazzToWayType([nearestWays[i][j].clazz]);
+                        if(wayType === CAR) { amountOfCars++; }
+                        else { amountOfTrains++; }
+                    }
+                }
+
+                var bigger = amountOfCars > amountOfTrains ? amountOfCars : amountOfTrains;
+                var smaller = amountOfCars < amountOfTrains ? amountOfCars : amountOfTrains;
+
+                tag = amountOfCars > amountOfTrains ? CAR : TRAIN;
+                probability = bigger / (bigger + smaller);
+                callback({ tag: tag, probability: probability });
+
+            });
     }
 
     //STATIONARY or PEDESTRIAN
@@ -67,7 +88,7 @@ function getTag(nearestWays, typeOfMotion, positions, callback) {
     else if (typeOfMotion.id !== -1) {
 
         var nearestBuildingStatements = helper.getDBStatements(SWITZERLAND_NEAREST_BUILDING, positions);
-        var nearestWaysStatements = helper.getDBStatements(OSM_NEAREST_OBJECTS, positions);
+        var nearestWaysStatements = helper.getDBStatements(OSM_NEAREST_OBJECTS_10M, positions);
 
         //Get the nearest building of each position (3 positions)
         parallel([
