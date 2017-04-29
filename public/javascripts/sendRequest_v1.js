@@ -1,6 +1,6 @@
 document.getElementById('submitButton').addEventListener('click', sendTaggingRequest);
 
-//Send POST-Request in specific format: taggingSchema_v1 in taggingRouter.js
+//Send POST-Request in specific format: taggingSchema_v1 in jsonSchemas.js
 function sendTaggingRequest() {
 
     var positions = [];
@@ -14,7 +14,7 @@ function sendTaggingRequest() {
 
     var form = document.createElement("form");
     form.setAttribute('method',"post");
-    form.setAttribute('action',"/tags/v1/view");
+    form.setAttribute('action',"/api/v1/tag/view");
 
     var input = document.createElement("input");
     input.setAttribute('name',"positions");

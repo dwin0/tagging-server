@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var jsonSchema = require('./jsonSchemas');
 
 
 /*CORS-HEADER*/
@@ -10,48 +11,46 @@ router.use(function(req, res, next) {
 });
 
 
-//route to the newest version
 router.get('/', function(req, res) {
-    res.redirect('/tags/v2');
+    res.redirect('/api');
 });
+
+//Return api capabilities
+//TODO: Implement
+router.get('/api', function(req, res) {
+    const apiData = {
+        currentVersion: 2.0,
+        taggingRoute: 'api/v2.0/tag',
+        speedCalculationRoute: 'api/v2.0/calculateSpeed'
+    };
+
+    if(req.xhr || req.get('Content-Type') === 'application/json') {
+        res.json(apiData);
+    }
+
+    res.render('api', apiData);
+});
+
 
 //split up route handling
-router.use('/tags', require('./router/taggingRouter'));
-router.use('/speedCalculation', require('./router/speedCalculationRouter'));
+//Version 1.0
+router.use('/api/v1', require('./router/v1.0'));
+router.use('/api/v1.0', require('./router/v1.0'));
 
-//handle jsonSchemaValidation-Error
-router.use(function(err, req, res, next) {
 
-    var responseData;
+//Version 2.0
+router.use('/api', require('./router/v2.0'));
+router.use('/api/v2', require('./router/v2.0'));
+router.use('/api/v2.0', require('./router/v2.0'));
 
-    if (err.name === 'JsonSchemaValidation') {
-        // Log the error however you please
-        console.log(err.message);
-        // logs "express-jsonschema: Invalid data found"
 
-        // Set a bad request http response status or whatever you want
-        res.status(400);
+//Version 2.1
+//TODO: Delete lines '/api' and 'api/v2' from Version 2 --> redirect to newest version (2.1)
+//router.use('/api/v2', require('./router/v2.1'));
+//router.use('/api/v2.1', require('./router/v2.1'));
 
-        // Format the response body however you want
-        responseData = {
-            statusText: 'Bad Request',
-            jsonSchemaValidation: true,
-            validations: err.validations  // All of your validation information
-        };
 
-        // Take into account the content type if your app serves various content types
-        if (req.xhr || req.get('Content-Type') === 'application/json') {
-            res.json(responseData);
-        } else {
-            // If this is an html request then you should probably have
-            // some type of Bad Request html template to respond with
-            res.render('badrequestTemplate', responseData);
-        }
-    } else {
-        // pass error to next error middleware handler
-        next(err);
-    }
-});
+router.use(jsonSchema.handleJsonSchemaValidationError);
 
 
 module.exports = router;

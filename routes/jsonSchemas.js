@@ -1,9 +1,4 @@
-var router = require('express').Router();
-var validate = require('express-jsonschema').validate;
-var tagging_v1 = require('../../business_logic/v1/tagging_communication');
-var tagging_v2 = require('../../business_logic/v2/tagging_communication');
-
-var taggingSchema_v1 = {
+const taggingSchema_v1 = {
     type: 'object',
     properties: {
         positions: {
@@ -44,7 +39,7 @@ var taggingSchema_v1 = {
     }
 };
 
-var taggingSchema_v2 = {
+const taggingSchema_v2 = {
     type: 'object',
     properties: {
         positions: {
@@ -86,44 +81,70 @@ var taggingSchema_v2 = {
     }
 };
 
-
-router.get('/', function (req, res) {
-    res.redirect('/tags/v2');
-});
-
-
-//Version 1
-router.get('/v1', function (req, res) {
-    res.render('index_v1', { title: 'Tagging-Prototype 1.0', version: 'v1' });
-});
-
-// This route validates req.body against the taggingSchema
-router.post('/v1', validate({body: taggingSchema_v1}), function (req, res) {
-    // At this point req.body has been validated
-    tagging_v1.getTagsJSON(req, res);
-});
-
-// This route validates req.body against the taggingSchema
-router.post('/v1/view', validate({body: taggingSchema_v1}), function (req, res) {
-    // At this point req.body has been validated
-    tagging_v1.getTagsView(req, res);
-});
-
-
-
-
-//Version 2
-router.get('/v2', function (req, res) {
-    res.render('index_v2', { title: 'Tagging-Prototype 2.0', version: 'v2' });
-});
-
-router.post('/v2', validate({body: taggingSchema_v2}), function (req, res) {
-    tagging_v2.getTagsJSON(req, res);
-});
-
-router.post('/v2/view', validate({body: taggingSchema_v2}), function (req, res) {
-    tagging_v2.getTagsView(req, res);
-});
+const velocitySchema_v1 = {
+    type: 'object',
+    properties: {
+        startTime: {
+            type: 'string',
+            required: true
+        },
+        endTime: {
+            type: 'string',
+            required: true
+        },
+        longitude1: {
+            type: 'number',
+            required: true
+        },
+        latitude1: {
+            type: 'number',
+            required: true
+        },
+        longitude2: {
+            type: 'number',
+            required: true
+        },
+        latitude2: {
+            type: 'number',
+            required: true
+        }
+    }
+};
 
 
-module.exports = router;
+
+function handleJsonSchemaValidationError(err, req, res, next) {
+
+    if (err.name === 'JsonSchemaValidation') {
+
+        console.log(err.message);
+
+        res.status(400); //bad request
+
+        // Format the response body however you want
+        var responseData = {
+            statusText: 'Bad Request',
+            jsonSchemaValidation: true,
+            validations: err.validations  // All of your validation information
+        };
+
+        // Take into account the content type if your app serves various content types
+        if (req.xhr || req.get('Content-Type') === 'application/json') {
+            res.json(responseData);
+        } else {
+            // If this is an html request then you should probably have
+            // some type of Bad Request html template to respond with
+            res.render('badrequest', responseData);
+        }
+    } else {
+        // pass error to next error middleware handler
+        next(err);
+    }
+}
+
+module.exports = {
+    "taggingSchema_v1": taggingSchema_v1,
+    "taggingSchema_v2": taggingSchema_v2,
+    "velocitySchema_v1": velocitySchema_v1,
+    "handleJsonSchemaValidationError": handleJsonSchemaValidationError
+};
