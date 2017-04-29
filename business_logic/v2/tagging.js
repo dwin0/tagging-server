@@ -3,12 +3,39 @@ var helper = require('./helper');
 var parallel = require("async/parallel");
 
 
-const TRAIN = { id: 1, name: "train", description: null };
-const CAR = { id: 2, name: "car", description: null };
-const FOOT_INSIDE = { id: 3, name: "foot_inside", description: null };
-const FOOT_OUTSIDE = { id: 4, name: "foot_outside", description: null };
-const OTHER = { id: 100, name: "other", description: "OSM-tag is defined, but not supported." };
-const UNKNOWN = { id: -1, name: "unknown", description: "No tagging possible." };
+const RAILWAY = {
+    id: 1,
+    name: "railway",
+    description: "Includes OpenStreetMap-Key:railway, Values: rail, light_rail, narrow_gauge, tram and subway."
+};
+
+const STREET = {
+    id: 2,
+    name: "street",
+    description: "Includes OpenStreetMap-Key:highway, Values: motorway, motorway_link, trunk, trunk_link, primary, " +
+    "primary_link, secondary, secondary_link, tertiary, tertiary_link, residential, road, unclassified, service, " +
+    "living_street and track."
+};
+
+const BUILDING = {
+    id: 3,
+    name: "building",
+    description: "Includes positions in or on top of a building."
+};
+
+const OTHER = {
+    id: 100,
+    name:"other",
+    description: "OSM-tag is defined, but not supported."
+};
+
+const UNKNOWN = {
+    id: -1,
+    name: "unknown",
+    description: "No tagging possible."
+};
+
+
 
 
 //TODO: Put restriction ( x < 10 meters ) within sql-statement and not in js-code
@@ -36,7 +63,7 @@ const OSM_NEAREST_OBJECTS = 'WITH closest_candidates AS (SELECT id, osm_id, osm_
 
 function clazzToWayType(clazz) {
 
-    return (clazz > 0 && clazz < 17) ?  CAR : TRAIN;
+    return (clazz > 0 && clazz < 17) ?  STREET : RAILWAY;
 }
 
 function getTag(typeOfMotion, positions, callback) {
@@ -69,7 +96,7 @@ function getTag(typeOfMotion, positions, callback) {
                     for (var j = 0; j < nearestWays[i].length; j++){
 
                         var wayType = clazzToWayType([nearestWays[i][j].clazz]);
-                        if(wayType === CAR) { amountOfCars++; }
+                        if(wayType === STREET) { amountOfCars++; }
                         else { amountOfTrains++; }
                     }
                 }
@@ -77,7 +104,7 @@ function getTag(typeOfMotion, positions, callback) {
                 var bigger = amountOfCars > amountOfTrains ? amountOfCars : amountOfTrains;
                 var smaller = amountOfCars < amountOfTrains ? amountOfCars : amountOfTrains;
 
-                tag = amountOfCars > amountOfTrains ? CAR : TRAIN;
+                tag = amountOfCars > amountOfTrains ? STREET : RAILWAY;
                 probability = bigger / (bigger + smaller);
                 callback({ tag: tag, probability: probability });
 
@@ -124,7 +151,7 @@ function getTag(typeOfMotion, positions, callback) {
                 var probability = close_building_count / numberOfBuildings;
 
                 if(probability >= 2 / 3) {
-                    callback({ tag: FOOT_INSIDE, probability: probability });
+                    callback({ tag: BUILDING, probability: probability });
 
                 } else
                     {
@@ -141,12 +168,12 @@ function getTag(typeOfMotion, positions, callback) {
                             for (var j = 0; j < nearestWays[i].length; j++){
 
                                 var wayType = clazzToWayType([nearestWays[i][j].clazz]);
-                                if(wayType === CAR) {
+                                if(wayType === STREET) {
                                     if(amountOfCars === 0) {
                                         amountOfCars++;
                                     }
                                 }
-                                else if (wayType === TRAIN) {
+                                else if (wayType === RAILWAY) {
                                     if(amountOfTrains === 0) {
                                         amountOfTrains++;
                                     }
@@ -158,7 +185,7 @@ function getTag(typeOfMotion, positions, callback) {
                         }
 
                         var bigger = totalAmountOfCars > totalAmountOfTrains ? totalAmountOfCars : totalAmountOfTrains;
-                        tag = totalAmountOfCars > totalAmountOfTrains ? CAR : TRAIN;
+                        tag = totalAmountOfCars > totalAmountOfTrains ? STREET : RAILWAY;
                         probability = bigger / 3; //3 points with max. 1 nearest ways
 
                         if(probability > 0.25) {
@@ -168,7 +195,7 @@ function getTag(typeOfMotion, positions, callback) {
                         } else {
 
                             //Speed < 10 km/h, no building close nearby, no railways or streets close nearby
-                            callback({ tag: FOOT_OUTSIDE, probability: null });
+                            callback({ tag: BUILDING, probability: null });
                         }
                 }
             });
