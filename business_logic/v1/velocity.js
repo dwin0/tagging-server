@@ -53,7 +53,7 @@ function prepareJSON(endDate, startDate, resultingDistance) {
         time_s: resultingTime,
         velocity_ms: resultingVelocityMS,
         velocity_kmh: resultingVelocityKMH,
-        probability_0to1: null
+        probability: null
     }
 }
 

@@ -11,6 +11,7 @@ const OTHER = { id: 100, name: "other", description: "OSM-tag is defined, but no
 const UNKNOWN = { id: -1, name: "unknown", description: "No tagging possible." };
 
 
+//TODO: Put restriction ( x < 10 meters ) within sql-statement and not in js-code
 const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
     'SELECT * FROM public.multipolygons WHERE building IS NOT NULL ' +
     'ORDER BY multipolygons.wkb_geometry <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) ' +

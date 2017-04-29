@@ -1,5 +1,5 @@
 var tagging = require('./tagging');
-var db_access = require('../../persistence/db_access_v2');
+var db_access = require('../../persistence/db_access_v1');
 
 const OSM_NEAREST_OBJECTS = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
     'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
@@ -43,38 +43,38 @@ function renderTagJSON(res, results) {
 
     var json = JSON.stringify({
         title: "Calculated Tagging",
-        measuring_location: {
-            location: {
-                id: tag.id,
-                name: tag.name,
-                description: tag.description,
-                probability_0to1: tag.probability
-            },
-            surrounding: {
-                id: null,
-                name: null,
-                description: null,
-                probability_0to1: null
-            }
+        location: {
+            id: tag.id,
+            name: tag.name,
+            description: tag.description,
+            probability: tag.probability
         },
         type_of_motion: {
             id: null,
             name: null,
             description: null,
-            probability_0to1: null
+            probability: null
         },
         velocity: {
             distance_m: null,
             time_s: null,
             velocity_ms: null,
             velocity_kmh: null,
-            probability_0to1: null
+            probability: null
         },
-        population_density: {
-            id: null,
-            name: null,
-            description: null,
-            probability_0to1: null
+        surroundings: {
+            geographical_surroundings: {
+                id: null,
+                name: null,
+                description: null,
+                probability: null
+            },
+            population_density: {
+                id: null,
+                name: null,
+                description: null,
+                probability: null
+            }
         }
     });
 
@@ -104,7 +104,7 @@ function renderTagView(res, results, coordinates) {
         title: "Calculated Tag",
         results: results,
         tag: tag.name,
-        probability_0to1: tag.probability,
+        probability: tag.probability,
         coordinates: coordinates
     });
 }

@@ -78,7 +78,7 @@ function calcAverageVelocity(positions) {
         time_s: denominator,
         velocity_ms: velocity_ms,
         velocity_kmh: velocity_ms * 3.6,
-        probability_0to1: null
+        probability: null
     };
 }
 
@@ -119,7 +119,7 @@ function prepareJSON(endDate, startDate, resultingDistance) {
         time_s: resultingTime,
         velocity_ms: resultingVelocityMS,
         velocity_kmh: resultingVelocityKMH,
-        probability_0to1: null
+        probability: null
     }
 }
 

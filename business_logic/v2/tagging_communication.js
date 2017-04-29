@@ -38,38 +38,38 @@ function renderTagJSON(res, positions, speedResult) {
 
             var json = JSON.stringify({
                 title: "Calculated Tagging",
-                measuring_location: {
-                    location: {
-                        id: taggingRes.tag.id,
-                        name: taggingRes.tag.name,
-                        description: taggingRes.tag.description,
-                        probability_0to1: taggingRes.probability
-                    },
-                    surrounding: {
-                        id: null,
-                        name: null,
-                        description: null,
-                        probability_0to1: null
-                    }
+                location: {
+                    id: taggingRes.tag.id,
+                    name: taggingRes.tag.name,
+                    description: taggingRes.tag.description,
+                    probability: taggingRes.probability
                 },
                 type_of_motion: {
                     id: typeOfMotionRes.id,
                     name: typeOfMotionRes.name,
                     description: typeOfMotionRes.description,
-                    probability_0to1: null
+                    probability: null
                 },
                 velocity: {
                     distance_m: speedResult.distance,
                     time_s: speedResult.time_s,
                     velocity_ms: speedResult.velocity_ms,
                     velocity_kmh: speedResult.velocity_kmh,
-                    probability_0to1: speedResult.probability_0to1
+                    probability: speedResult.probability
                 },
-                population_density: {
-                    id: null,
-                    name: null,
-                    description: null,
-                    probability_0to1: null
+                surroundings: {
+                    geographical_surroundings: {
+                        id: null,
+                        name: null,
+                        description: null,
+                        probability: null
+                    },
+                    population_density: {
+                        id: null,
+                        name: null,
+                        description: null,
+                        probability: null
+                    }
                 }
             });
 
@@ -119,7 +119,7 @@ function renderTagView(res, speedResult, coordinates, positions) {
                 title: "Calculated Tag",
                 results: [],
                 tag: taggingRes.tag.name,
-                probability_0to1: taggingRes.probability,
+                probability: taggingRes.probability,
                 coordinates: coordinates
             };
 
