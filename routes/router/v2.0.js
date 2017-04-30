@@ -8,7 +8,7 @@ var jsonSchema = require('../jsonSchemas');
 //Tagging:
 
 router.get('/tag', function (req, res) {
-    res.render('index_v2', { title: 'Tagging-Prototype 2.0', version: 'v2' });
+    res.render('index_v2', { title: 'Tagging-Prototype 2.0', version: 'v2.0' });
 });
 
 // This route validates req.body against the taggingSchema

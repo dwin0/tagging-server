@@ -15,7 +15,7 @@ function sendTaggingRequest() {
 
     var form = document.createElement("form");
     form.setAttribute('method',"post");
-    form.setAttribute('action',"/api/v2.0/tag/view");
+    form.setAttribute('action',"/api/v2.1/tag/view");
 
     var input = document.createElement("input");
     input.setAttribute('name',"positions");
