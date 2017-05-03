@@ -1,88 +1,123 @@
 <h1>{{title}}</h1>
 <p>Welcome to {{title}}</p>
 
-<div>
-    <form action="/api/{{version}}/calculateSpeed" method="get">
-        <input type="submit" value="Geschwindigkeitsberechnung" />
-    </form>
-</div>
+<div id="map" class="form-map"></div>
+<button id="clearInput" class="btn waves-effect waves-light">Clear
+    <i class="material-icons right">location_off</i>
+</button>
+
+<form>
+    <div class="row">
+        <div class="col s12 m6">
+            <div class="card-panel indigo darken-4">
+                <label for="longitude1">Longitude 1: </label>
+                <input type="text" name="longitude1" id="longitude1" value="8.7095882"/>
+                <label for="latitude1">Latitude 1: </label>
+                <input type="text" name="latitude1" id="latitude1" value="47.3589998"/>
+                <label for="time1">Time 1: </label>
+                <input type="text" name="time1" id="time1" value="2017-03-28 07:31:44.0"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12 m6">
+            <div class="card-panel indigo darken-4">
+                <label for="longitude2">Longitude 2: </label>
+                <input type="text" name="longitude2" id="longitude2" value="8.7095882"/>
+                <label for="latitude2">Latitude 2: </label>
+                <input type="text" name="latitude2" id="latitude2" value="47.3589998"/>
+                <label for="time2">Time 2: </label>
+                <input type="text" name="time2" id="time2" value="2017-03-28 07:31:44.0"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12 m6">
+            <div class="card-panel indigo darken-4">
+                <label for="longitude3">Longitude 3: </label>
+                <input type="text" name="longitude3" id="longitude3" value="8.7095882"/>
+                <label for="latitude3">Latitude 3: </label>
+                <input type="text" name="latitude3" id="latitude3" value="47.3589998"/>
+                <label for="time3">Time 3: </label>
+                <input type="text" name="time3" id="time3" value="2017-03-28 07:31:44.0"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12 m6">
+            <div class="card-panel indigo darken-4">
+                <label for="longitude4">Longitude 4: </label>
+                <input type="text" name="longitude4" id="longitude4" value="8.7135701"/>
+                <label for="latitude4">Latitude 4: </label>
+                <input type="text" name="latitude4" id="latitude4" value="47.3530638"/>
+                <label for="time4">Time 4: </label>
+                <input type="text" name="time4" id="time4" value="2017-03-28 07:31:54.0"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12 m6">
+            <div class="card-panel indigo darken-4">
+                <label for="longitude5">Longitude 5: </label>
+                <input type="text" name="longitude5" id="longitude5" value="8.7135701"/>
+                <label for="latitude5">Latitude 5: </label>
+                <input type="text" name="latitude5" id="latitude5" value="47.3530638"/>
+                <label for="time5">Time 5: </label>
+                <input type="text" name="time5" id="time5" value="2017-03-28 07:31:54.0"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12 m6">
+            <div class="card-panel indigo darken-4">
+                <label for="longitude6">Longitude 6: </label>
+                <input type="text" name="longitude6" id="longitude6" value="8.7165203"/>
+                <label for="latitude6">Latitude 6: </label>
+                <input type="text" name="latitude6" id="latitude6" value="47.3516764"/>
+                <label for="time6">Time 6: </label>
+                <input type="text" name="time6" id="time6" value="2017-03-28 07:32:06.0"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12 m6">
+            <div class="card-panel indigo darken-4">
+                <label for="longitude7">Longitude 7: </label>
+                <input type="text" name="longitude7" id="longitude7" value="8.7165203"/>
+                <label for="latitude7">Latitude 7: </label>
+                <input type="text" name="latitude7" id="latitude7" value="47.3516764"/>
+                <label for="time7">Time 7: </label>
+                <input type="text" name="time7" id="time7" value="2017-03-28 07:32:06.0"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12 m6">
+            <div class="card-panel indigo darken-4">
+                <label for="longitude8">Longitude 8: </label>
+                <input type="text" name="longitude8" id="longitude8" value="8.7165203"/>
+                <label for="latitude8">Latitude 8: </label>
+                <input type="text" name="latitude8" id="latitude8" value="47.3516764"/>
+                <label for="time8">Time 8: </label>
+                <input type="text" name="time8" id="time8" value="2017-03-28 07:32:07.0"/>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn waves-effect waves-light" id="submitButton">Get nearest objects
+        <i class="material-icons right">send</i>
+    </button>
+</form>
 
 
-<div class="form-style-5">
-    <form>
-        <label for="longitude1">Longitude 1: </label>
-        <input type="text" name="longitude1" id="longitude1" value="8.7095882"/>
-        <label for="latitude1">Latitude 1: </label>
-        <input type="text" name="latitude1" id="latitude1" value="47.3589998"/>
-        <label for="time1">Time 1: </label>
-        <input type="text" name="time1" id="time1" value="2017-03-28 07:31:44.0"/>
-        <hr />
-        <br />
-
-        <label for="longitude2">Longitude 2: </label>
-        <input type="text" name="longitude2" id="longitude2" value="8.7095882"/>
-        <label for="latitude2">Latitude 2: </label>
-        <input type="text" name="latitude2" id="latitude2" value="47.3589998"/>
-        <label for="time2">Time 2: </label>
-        <input type="text" name="time2" id="time2" value="2017-03-28 07:31:44.0"/>
-        <hr />
-        <br />
-
-        <label for="longitude3">Longitude 3: </label>
-        <input type="text" name="longitude3" id="longitude3" value="8.7095882"/>
-        <label for="latitude3">Latitude 3: </label>
-        <input type="text" name="latitude3" id="latitude3" value="47.3589998"/>
-        <label for="time3">Time 3: </label>
-        <input type="text" name="time3" id="time3" value="2017-03-28 07:31:44.0"/>
-        <hr />
-        <br />
-
-        <label for="longitude4">Longitude 4: </label>
-        <input type="text" name="longitude4" id="longitude4" value="8.7135701"/>
-        <label for="latitude4">Latitude 4: </label>
-        <input type="text" name="latitude4" id="latitude4" value="47.3530638"/>
-        <label for="time4">Time 4: </label>
-        <input type="text" name="time4" id="time4" value="2017-03-28 07:31:54.0"/>
-        <hr />
-        <br />
-
-        <label for="longitude5">Longitude 5: </label>
-        <input type="text" name="longitude5" id="longitude5" value="8.7135701"/>
-        <label for="latitude5">Latitude 5: </label>
-        <input type="text" name="latitude5" id="latitude5" value="47.3530638"/>
-        <label for="time5">Time 5: </label>
-        <input type="text" name="time5" id="time5" value="2017-03-28 07:31:54.0"/>
-        <hr />
-        <br />
-
-        <label for="longitude6">Longitude 6: </label>
-        <input type="text" name="longitude6" id="longitude6" value="8.7165203"/>
-        <label for="latitude6">Latitude 6: </label>
-        <input type="text" name="latitude6" id="latitude6" value="47.3516764"/>
-        <label for="time6">Time 6: </label>
-        <input type="text" name="time6" id="time6" value="2017-03-28 07:32:06.0"/>
-        <hr />
-        <br />
-
-        <label for="longitude7">Longitude 7: </label>
-        <input type="text" name="longitude7" id="longitude7" value="8.7165203"/>
-        <label for="latitude7">Latitude 7: </label>
-        <input type="text" name="latitude7" id="latitude7" value="47.3516764"/>
-        <label for="time7">Time 7: </label>
-        <input type="text" name="time7" id="time7" value="2017-03-28 07:32:06.0"/>
-        <hr />
-        <br />
-
-        <label for="longitude8">Longitude 8: </label>
-        <input type="text" name="longitude8" id="longitude8" value="8.7165203"/>
-        <label for="latitude8">Latitude 8: </label>
-        <input type="text" name="latitude8" id="latitude8" value="47.3516764"/>
-        <label for="time8">Time 8: </label>
-        <input type="text" name="time8" id="time8" value="2017-03-28 07:32:07.0"/>
-
-        <input type="button" id="submitButton" value="Get nearest objects" />
-    </form>
-</div>
-
-
+<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<script type="text/javascript" src="/javascripts/initMap.js"></script>
+<script type="text/javascript" src="/javascripts/setInputAsMarker.js"></script>
 <script type="text/javascript" src="/javascripts/sendRequest_v2.1.js"></script>

@@ -1,11 +1,11 @@
-window.onload = function () {
+$(window).on('load', function () {
     setMarkers();
-};
+});
 
 
 function setMarkers() {
 
-    var coordinates = document.getElementsByClassName('coordinate');
+    var coordinates = $('.coordinate');
 
     for(var i = 0; i < coordinates.length; i++) {
 

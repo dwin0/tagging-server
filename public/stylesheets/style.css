@@ -1,130 +1,61 @@
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-a {
-  color: #00B7FF;
+#border-div{
+  padding: 50px;
 }
 
 /*Leaflet Map*/
-#map {
+.result-map {
     width: 900px;
     height: 500px;
 }
 
+.form-map {
+    position: fixed;
+    right: 20px;
+    width: 500px;
+    height: 400px;
+}
 
-/*----Forms----*/
+#clearInput {
+    position: fixed;
+    right: 350px;
+    top: 620px;
+}
 
-.button {
-  background-color: #4CAF50; /* Green */
-  border: none;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
+
+/*Material*/
+.html-method {
   text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-}
-
-.result {
-  background-color: lightgreen;
-  border: black thick;
-}
-
-.form-style-5{
-  max-width: 500px;
-  padding: 10px 20px;
-  background: #f4f7f8;
-  margin: 10px auto;
-  border-radius: 8px;
-  font-family: Georgia, "Times New Roman", Times, serif;
-}
-.form-style-5 fieldset{
-  border: none;
-}
-.form-style-5 legend {
-  font-size: 1.4em;
-  margin-bottom: 10px;
-}
-.form-style-5 label {
-  display: block;
-  margin-bottom: 8px;
-}
-.form-style-5 input[type="text"],
-.form-style-5 input[type="date"],
-.form-style-5 input[type="datetime"],
-.form-style-5 input[type="email"],
-.form-style-5 input[type="number"],
-.form-style-5 input[type="search"],
-.form-style-5 input[type="time"],
-.form-style-5 input[type="url"],
-.form-style-5 textarea,
-.form-style-5 select {
-  font-family: Georgia, "Times New Roman", Times, serif;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  outline: 0;
-  padding: 7px;
-  width: 100%;
-  box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  background: #e8eeef;
-  color:#8a97a0;
-  -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.03) inset;
-  margin: 0 0 30px;
-
-}
-.form-style-5 input[type="text"]:focus,
-.form-style-5 input[type="date"]:focus,
-.form-style-5 input[type="datetime"]:focus,
-.form-style-5 input[type="email"]:focus,
-.form-style-5 input[type="number"]:focus,
-.form-style-5 input[type="search"]:focus,
-.form-style-5 input[type="time"]:focus,
-.form-style-5 input[type="url"]:focus,
-.form-style-5 textarea:focus,
-.form-style-5 select:focus{
-  background: #d2d9dd;
-}
-.form-style-5 select{
-  -webkit-appearance: menulist-button;
-  height:35px;
-}
-.form-style-5 .number {
-  background: #1abc9c;
   color: #fff;
-  height: 30px;
-  width: 30px;
-  display: inline-block;
-  font-size: 0.8em;
-  margin-right: 4px;
-  line-height: 30px;
+  background-color: #26a69a;
   text-align: center;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.2);
-  border-radius: 15px 15px 15px 0;
+  letter-spacing: .5px;
+  transition: .2s ease-out;
+  cursor: pointer;
+  width: 100px;
+  float: left;
+  margin-right: 10px;
 }
 
-.form-style-5 input[type="submit"],
-.form-style-5 input[type="button"]
-{
-  position: relative;
-  display: block;
-  padding: 19px 39px 18px 39px;
-  color: #FFF;
-  background: #1abc9c;
-  font-size: 18px;
-  text-align: center;
-  font-style: normal;
-  width: 100%;
-  border: 1px solid #16a085;
-  margin: 0 auto 10px;
+.collapsible-header {
+  padding: 0 !important;
 }
-.form-style-5 input[type="submit"]:hover,
-.form-style-5 input[type="button"]:hover
-{
-  background: #109177;
+
+.get {
+    background-color: #26a69a;
+}
+
+.post {
+    background-color: #42a5f5;
+}
+
+label {
+    color: #FFFFFF !important;
+}
+
+input[type=text] {
+    color: #7e76ff
 }

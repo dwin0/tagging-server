@@ -1,5 +1,88 @@
-<!--TODO: Implement-->
-<p>API</p>
-<pre>Current Version: {{currentVersion}}</pre>
-<pre>Tagging-Route: <a href="{{taggingRoute}}">{{taggingRoute}}</a></pre>
-<pre>Speed-Calculation-Route: <a href="{{speedCalculationRoute}}">{{speedCalculationRoute}}</a></pre>
+<h1>API</h1>
+<pre>Aktuelle Version: {{currentVersion}}</pre>
+
+<h3>Tagging</h3>
+
+<ul class="collapsible" data-collapsible="expandable">
+    <li>
+        <div class="collapsible-header">
+            <div class="html-method get">
+                GET
+            </div>
+            api/v{{currentVersion}}/tag
+            <a href="{{taggingRoute}}"><i class="material-icons right">play_circle_outline</i></a>
+        </div>
+        <div class="collapsible-body">
+            <span>Gibt die Erfassungs-Ansicht für 8 Input-Punkte zurück.</span>
+        </div>
+    </li>
+    <li>
+        <div class="collapsible-header">
+            <div class="html-method post">
+                POST
+            </div>
+            api/v{{currentVersion}}/tag
+        </div>
+        <div class="collapsible-body">
+            <span>Erstellt ein Tagging für 8 Input-Punkte und gibt die Antwort als JSON züruck.</span>
+        </div>
+    </li>
+    <li>
+        <div class="collapsible-header">
+            <div class="html-method post">
+                POST
+            </div>
+            api/v{{currentVersion}}/tag/view
+        </div>
+        <div class="collapsible-body">
+            <span>Erstellt ein Tagging für 8 Input-Punkte und gibt die Antwort als gerendertes HTML zurück.</span>
+        </div>
+    </li>
+</ul>
+
+
+
+
+
+
+<h3>Speed Calculation</h3>
+
+<ul class="collapsible" data-collapsible="expandable">
+    <li>
+        <div class="collapsible-header">
+            <div class="html-method get">
+                GET
+            </div>
+            api/v{{currentVersion}}/calculateSpeed
+            <a href="{{speedCalculationRoute}}"><i class="material-icons right">play_circle_outline</i></a>
+        </div>
+        <div class="collapsible-body">
+            <span>Gibt die Erfassungs-Ansicht für 2 Input-Punkte zurück.</span>
+        </div>
+    </li>
+    <li>
+        <div class="collapsible-header">
+            <div class="html-method post">
+                POST
+            </div>
+            api/v{{currentVersion}}/calculateSpeed
+        </div>
+        <div class="collapsible-body">
+            <span>Erstellt eine Geschwindigkeitsberechnung für 2 Input-Punkte und gibt die Antwort als JSON züruck.</span>
+        </div>
+    </li>
+    <li>
+        <div class="collapsible-header">
+            <div class="html-method post">
+                POST
+            </div>
+            api/v{{currentVersion}}/calculateSpeed/view
+        </div>
+        <div class="collapsible-body">
+            <span>Erstellt eine Geschwindigkeitsberechnung für 2 Input-Punkte und gibt die Antwort als gerendertes HTML zurück.</span>
+        </div>
+    </li>
+</ul>
+
+
+<script type="text/javascript" src="/javascripts/api-script.js"></script>
