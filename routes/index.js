@@ -19,9 +19,9 @@ router.get('/', function(req, res) {
 //TODO: Implement
 router.get('/api', function(req, res) {
     const apiData = {
-        currentVersion: 2.1,
-        taggingRoute: 'api/v2.1/tag',
-        speedCalculationRoute: 'api/v2.1/calculateSpeed'
+        currentVersion: 3.0,
+        taggingRoute: 'api/v3.0/tag',
+        speedCalculationRoute: 'api/v3.0/calculateSpeed'
     };
 
     if(req.xhr || req.get('Content-Type') === 'application/json') {
@@ -43,9 +43,14 @@ router.use('/api/v2.0', require('./router/v2.0'));
 
 
 //Version 2.1
-router.use('/api', require('./router/v2.1'));
 router.use('/api/v2', require('./router/v2.1'));
 router.use('/api/v2.1', require('./router/v2.1'));
+
+
+//Version 3.0
+router.use('/api', require('./router/v3.0'));
+router.use('/api/v3', require('./router/v3.0'));
+router.use('/api/v3.0', require('./router/v3.0'));
 
 
 router.use(jsonSchema.handleJsonSchemaValidationError);
