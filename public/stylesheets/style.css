@@ -65,3 +65,34 @@ input[type=text] {
     margin-right: 3vw;
     display: inline-block;
 }
+
+/*JSON Syntax Highlighting*/
+pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+.string { color: green; }
+.number { color: blue; }
+.boolean { color: darkorange; }
+.null { color: magenta; }
+.key { color: #963e96; }
+
+.schema {
+    float: left;
+    width: 50%;
+}
+
+.schema, .possible-input {
+    min-width: 400px;
+}
+
+.possible-output {
+    clear: left;
+}
+
+.collapsible-body {
+    overflow: hidden;
+}
+
+/*api.hbs*/
+h3.url-title {
+    margin-top: 7vw !important;
+    font-weight: bold !important;
+}
