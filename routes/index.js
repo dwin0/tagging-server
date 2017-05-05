@@ -29,7 +29,7 @@ router.get('/api', function(req, res) {
     res.render('api', apiData);
 });
 
-router.get('/schema', function(req, res) {
+router.get('/schemas', function(req, res) {
     res.json({
         taggingSchema: jsonSchema.taggingSchema_v3,
         speedCalculationSchema: jsonSchema.velocitySchema_v1,
