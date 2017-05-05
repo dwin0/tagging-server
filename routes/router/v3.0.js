@@ -8,7 +8,7 @@ var jsonSchema = require('../jsonSchemas');
 
 //Tagging:
 router.get('/tag', function (req, res) {
-    res.render('index_v3', { title: 'Tagging-Server Version 3.0', version: '3.0' });
+    res.render('index_v3', { title: 'Tagging-Server', version: '3.0' });
 });
 
 // This route validates req.body against the taggingSchema
@@ -18,13 +18,13 @@ router.post('/tag', validate({body: jsonSchema.taggingSchema_v3}), function (req
 });
 
 
-//FindSurroundings: //TODO: specify the needed parameters for the render call
+//FindSurroundings:
 router.get('/findSurroundings', function (req, res) {
-    res.render('surroundingsIndex_v3', {});
+    res.render('surroundingsIndex_v3', { title: 'Umgebungsabfrage', version: '3.0' });
 });
 
-// This route validates req.body against the taggingSchema //TODO: evaluate whether own schema for surroundings is needed!!!
-router.post('/findSurroundings', validate({body: jsonSchema.taggingSchema_v3}), function (req, res) {
+// This route validates req.body against the taggingSchema
+router.post('/findSurroundings', validate({body: jsonSchema.surroundingsSchema_v3}), function (req, res) {
     // At this point req.body has been validated
     surroundings_v3.getSurroundingsJSON(req, res);
 });

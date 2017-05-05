@@ -127,6 +127,36 @@ const taggingSchema_v3 = {
     }
 };
 
+const surroundingsSchema_v3 = {
+    type: 'object',
+    properties: {
+        positions: {
+            type: 'array',
+            minItems: 8,
+            maxItems: 8,
+            required: true,
+            items: {
+                type: 'object',
+                required: true,
+                properties: {
+                    longitude: {
+                        type: 'number',
+                        required: true
+                    },
+                    latitude: {
+                        type: 'number',
+                        required: true
+                    },
+                    phase : {
+                        type: 'string',
+                        required: true
+                    }
+                }
+            }
+        }
+    }
+};
+
 const velocitySchema_v1 = {
     type: 'object',
     properties: {
@@ -193,5 +223,6 @@ module.exports = {
     "taggingSchema_v2": taggingSchema_v2,
     "velocitySchema_v1": velocitySchema_v1,
     "taggingSchema_v3": taggingSchema_v3,
+    "surroundingsSchema_v3": surroundingsSchema_v3,
     "handleJsonSchemaValidationError": handleJsonSchemaValidationError
 };

@@ -16,13 +16,10 @@ router.get('/', function(req, res) {
 });
 
 //Return api capabilities
-//TODO: Implement
 router.get('/api', function(req, res) {
     const apiData = {
-        version: '3.0',
-        taggingRoute: 'api/v3.0/tag',
-        speedCalculationRoute: 'api/v3.0/calculateSpeed',
-        surroundingsRoute: 'api/v3.0/findSurroundings'
+        title: 'API',
+        version: '3.0'
     };
 
     if(req.xhr || req.get('Content-Type') === 'application/json') {
@@ -30,6 +27,14 @@ router.get('/api', function(req, res) {
     }
 
     res.render('api', apiData);
+});
+
+router.get('/schema', function(req, res) {
+    res.json({
+        taggingSchema: jsonSchema.taggingSchema_v3,
+        speedCalculationSchema: jsonSchema.velocitySchema_v1,
+        surroundingsSchema: jsonSchema.surroundingsSchema_v3
+    });
 });
 
 
