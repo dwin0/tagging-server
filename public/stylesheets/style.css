@@ -59,3 +59,9 @@ label {
 input[type=text] {
     color: #7e76ff
 }
+
+.small-input {
+    width: 15vw;
+    margin-right: 3vw;
+    display: inline-block;
+}

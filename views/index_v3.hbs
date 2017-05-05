@@ -1,0 +1,26 @@
+<h1>{{title}}</h1>
+<p>Willkommen beim {{title}}</p>
+
+<div id="map" class="form-map"></div>
+<button id="clearInput" class="btn waves-effect waves-light">Clear
+    <i class="material-icons right">location_off</i>
+</button>
+
+
+<form id="tagging-form">
+
+    <div id="tagging-form-elements"></div>
+
+    <button class="btn waves-effect waves-light" id="submitButton">Get nearest objects
+        <i class="material-icons right">send</i>
+    </button>
+</form>
+
+
+<script type="text/javascript" src="/javascripts/initForm.js"></script>
+
+
+<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+<script type="text/javascript" src="/javascripts/initMap.js"></script>
+<script type="text/javascript" src="/javascripts/setInputAsMarker.js"></script>
+<script type="text/javascript" src="/javascripts/sendRequest_v3.js"></script>

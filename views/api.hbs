@@ -1,5 +1,5 @@
 <h1>API</h1>
-<pre>Aktuelle Version: {{currentVersion}}</pre>
+<pre>Aktuelle Version: {{version}}</pre>
 
 <h3>Tagging</h3>
 
@@ -9,7 +9,7 @@
             <div class="html-method get">
                 GET
             </div>
-            api/v{{currentVersion}}/tag
+            api/v{{version}}/tag
             <a href="{{taggingRoute}}"><i class="material-icons right">play_circle_outline</i></a>
         </div>
         <div class="collapsible-body">
@@ -21,21 +21,10 @@
             <div class="html-method post">
                 POST
             </div>
-            api/v{{currentVersion}}/tag
+            api/v{{version}}/tag
         </div>
         <div class="collapsible-body">
             <span>Erstellt ein Tagging für 8 Input-Punkte und gibt die Antwort als JSON züruck.</span>
-        </div>
-    </li>
-    <li>
-        <div class="collapsible-header">
-            <div class="html-method post">
-                POST
-            </div>
-            api/v{{currentVersion}}/tag/view
-        </div>
-        <div class="collapsible-body">
-            <span>Erstellt ein Tagging für 8 Input-Punkte und gibt die Antwort als gerendertes HTML zurück.</span>
         </div>
     </li>
 </ul>
@@ -53,7 +42,7 @@
             <div class="html-method get">
                 GET
             </div>
-            api/v{{currentVersion}}/calculateSpeed
+            api/v{{version}}/calculateSpeed
             <a href="{{speedCalculationRoute}}"><i class="material-icons right">play_circle_outline</i></a>
         </div>
         <div class="collapsible-body">
@@ -65,21 +54,10 @@
             <div class="html-method post">
                 POST
             </div>
-            api/v{{currentVersion}}/calculateSpeed
+            api/v{{version}}/calculateSpeed
         </div>
         <div class="collapsible-body">
             <span>Erstellt eine Geschwindigkeitsberechnung für 2 Input-Punkte und gibt die Antwort als JSON züruck.</span>
-        </div>
-    </li>
-    <li>
-        <div class="collapsible-header">
-            <div class="html-method post">
-                POST
-            </div>
-            api/v{{currentVersion}}/calculateSpeed/view
-        </div>
-        <div class="collapsible-body">
-            <span>Erstellt eine Geschwindigkeitsberechnung für 2 Input-Punkte und gibt die Antwort als gerendertes HTML zurück.</span>
         </div>
     </li>
 </ul>
