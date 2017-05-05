@@ -9,15 +9,5 @@ function getSpeedCalculationJSON(req, res) {
     })
 }
 
-function getSpeedCalculationView(req, res) {
-    velocity.getVelocity_request(req, res, function (res, endDate, startDate, resultingDistance) {
 
-        var json = velocity.prepareJSON(endDate, startDate, resultingDistance);
-        res.render('speedView', json);
-    })
-}
-
-
-
-
-module.exports = { "getSpeedCalculationView": getSpeedCalculationView, "getSpeedCalculationJSON": getSpeedCalculationJSON };
+module.exports = { "getSpeedCalculationJSON": getSpeedCalculationJSON };

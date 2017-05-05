@@ -6,7 +6,14 @@ var parallel = require("async/parallel");
 
 function getTagsJSON(req, res) {
 
-    var positions = filterPositions(req.body.positions);
+    var positions = req.body.positions;
+
+    if(typeof positions === 'string') {
+        positions = JSON.parse(positions);
+    }
+
+    positions = filterPositions(positions);
+
 
     parallel([
             function(callback) {
@@ -80,56 +87,6 @@ function renderTagJSON(res, positions, speedResult) {
 }
 
 
-
-function getTagsView(req, res) {
-
-    var positions = filterPositions(JSON.parse(req.body.positions));
-
-    var coordinates = [
-        {lat: positions[0].latitude, lon: positions[0].longitude},
-        {lat: positions[1].latitude, lon: positions[1].longitude},
-        {lat: positions[2].latitude, lon: positions[2].longitude}];
-
-
-    parallel([
-            function(callback) {
-                velocity.getVelocity_positionArray(positions, function (velocityJSON) {
-                    callback(null, velocityJSON);
-                });
-            }],
-        function(err, results) {
-            renderTagView(res, results[0], coordinates, positions);
-        });
-}
-
-function renderTagView(res, speedResult, coordinates, positions) {
-
-    var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
-
-    parallel([
-            function (callback) {
-                tagging.getTag(speedResult.velocity_kmh, positions, function (result) {
-                    callback(null, result);
-                });
-            }
-        ],
-        function (err, results) {
-
-            var taggingRes = results[0];
-
-            var json = {
-                title: "Calculated Tag",
-                results: [],
-                tag: taggingRes.tag.name,
-                probability: taggingRes.probability,
-                coordinates: coordinates
-            };
-
-            res.render('nearestView', json);
-        });
-}
-
-
 //Get measurement-points 1 (FCTStart), 4 (DownloadEnd) and 8 (RTTEnd)
 function filterPositions(positions) {
 
@@ -146,4 +103,4 @@ String.prototype.replaceAll = function(target, replacement) {
 };
 
 
-module.exports = { "getTagsView": getTagsView, "getTagsJSON": getTagsJSON };
+module.exports = { "getTagsJSON": getTagsJSON };

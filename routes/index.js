@@ -19,9 +19,10 @@ router.get('/', function(req, res) {
 //TODO: Implement
 router.get('/api', function(req, res) {
     const apiData = {
-        currentVersion: 3.0,
+        version: '3.0',
         taggingRoute: 'api/v3.0/tag',
-        speedCalculationRoute: 'api/v3.0/calculateSpeed'
+        speedCalculationRoute: 'api/v3.0/calculateSpeed',
+        surroundingsRoute: 'api/v3.0/findSurroundings'
     };
 
     if(req.xhr || req.get('Content-Type') === 'application/json') {
