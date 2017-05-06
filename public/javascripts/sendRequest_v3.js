@@ -10,8 +10,8 @@ $(document).on('ready', function () {
         case 'Geschwindigkeitsberechnung':
             submitButton.on('click', sendSpeedCalculationRequest);
             break;
-        case 'Umgebungsabfrage:':
-            //TODO:
+        case 'Umgebungsabfrage':
+            submitButton.on('click', sendSurroundingsRequest);
             break;
     }
 
@@ -40,7 +40,6 @@ function sendTaggingRequest(event) {
     sendRequest("/api/v3.0/tag", { positions: positions }, renderTaggingResult);
 }
 
-
 //Send POST-Request in specific format: velocitySchema_v3 in jsonSchemas.js
 function sendSpeedCalculationRequest(event) {
 
@@ -61,8 +60,25 @@ function sendSpeedCalculationRequest(event) {
     sendRequest("/api/v3.0/calculateSpeed", { positions: positions }, renderSpeedCalculationResult);
 }
 
+//Send POST-Request in specific format: surroundingsSchema_v3 in jsonSchemas.js
+function sendSurroundingsRequest(event) {
 
+    event.preventDefault();
+    showLoadingView();
 
+    var positions = [];
+    var numberOfPositions = getNumberOfPositions();
+
+    for(var i = 1; i <= numberOfPositions; i++) {
+        var longitude = Number($('#longitude' + i).val());
+        var latitude = Number($('#latitude' + i).val());
+        var phase = $('#phase' + i).val();
+
+        positions[i-1] = { longitude: longitude, latitude: latitude, phase: phase };
+    }
+
+    sendRequest("/api/v3.0/findSurroundings", { positions: positions }, renderSurroundingsResult);
+}
 
 function sendRequest(url, sendData, successCallback) {
 
@@ -127,6 +143,33 @@ function renderSpeedCalculationResult(data) {
     var probability = $('<li class="collection-item"><div>Wahrscheinlichkeit: ' + data.probability + '</div></li>');
 
     renderResult([distance_m, time_s, velocity_ms, velocity_kmh, probability]);
+}
+
+function renderSurroundingsResult(data) {
+
+    var header = $('<li class="collection-header"><h4>Surroundings-Resultat:</h4></li>');
+
+    var download_geographic = $('<li class="collection-item"><div>Download - Geografische Umgebung: ' + data.surroundings.download.geographical_surroundings.name + '<br />' +
+        'Wahrscheinlichkeit: ' + data.surroundings.download.geographical_surroundings.probability + '</div></li>');
+
+    var download_population = $('<li class="collection-item"><div>Download - Bevölkerungsdichte: ' + data.surroundings.download.population_density.number + '<br />' +
+        'Wahrscheinlichkeit: ' + data.surroundings.download.population_density.probability + '</div></li>');
+
+    var download_community = $('<li class="collection-item"><div>Download - Gemeindetyp: ' + data.surroundings.download.community_type.type + '<br />' +
+        'Wahrscheinlichkeit: ' + data.surroundings.download.community_type.probability + '</div></li>');
+
+    var upload_geographic = $('<li class="collection-item"><div>Upload - Geografische Umgebung: ' + data.surroundings.upload.geographical_surroundings.name + '<br />' +
+        'Wahrscheinlichkeit: ' + data.surroundings.upload.geographical_surroundings.probability + '</div></li>');
+
+    var upload_population = $('<li class="collection-item"><div>Upload - Bevölkerungsdichte: ' + data.surroundings.upload.population_density.number + '<br />' +
+        'Wahrscheinlichkeit: ' + data.surroundings.upload.population_density.probability + '</div></li>');
+
+    var upload_community = $('<li class="collection-item"><div>Upload - Gemeindetyp: ' + data.surroundings.upload.community_type.type + '<br />' +
+        'Wahrscheinlichkeit: ' + data.surroundings.upload.community_type.probability + '</div></li>');
+
+    renderResult([header,
+        download_geographic, download_population, download_community,
+        upload_geographic, upload_population, upload_community]);
 }
 
 function renderResult(appendArray) {

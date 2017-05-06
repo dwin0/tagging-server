@@ -14,8 +14,9 @@ $(window).on('load', function () {
             numberOfPositions = 2;
             createSpeedForm();
             break;
-        case 'Umgebungsabfrage:':
-            //TODO:
+        case 'Umgebungsabfrage':
+            numberOfPositions = 8;
+            createSurroundingsForm();
             break;
     }
 });
@@ -62,6 +63,27 @@ function createSpeedForm() {
     $('select').material_select();
 }
 
+function createSurroundingsForm() {
+
+    for(var i = 1; i <= numberOfPositions; i++) {
+
+        var card = $('<div class="row"><div class="col s12 m6"><div class="card-panel indigo darken-4"></div></div></div>');
+
+        var longitude = createInputElement('longitude' + i, 'Längengrad ' + i).addClass('small-input');
+        var latitude = createInputElement('latitude' + i, 'Breitengrad ' + i).addClass('small-input');
+        var phase = createSelectElement('phase' + i, 'Phase ' + i, 'Wähle eine Phase').addClass('small-input');
+
+        card.find('.card-panel').append(longitude).append(latitude).append(phase);
+
+        $('#input-form-elements').append(card);
+    }
+
+    initializeDefaultValues(surroundingsDefaultValues);
+
+    //Enable material select style
+    $('select').material_select();
+}
+
 
 function createInputElement(forString, labelText) {
     return $('<div><label for="' + forString + '">' + labelText + ' : ' +
@@ -97,8 +119,19 @@ const taggingDefaultValues = [
 ];
 
 const speedDefaultValues = [
-    [8.7135701, 47.3530638, "2017-03-28 07:31:54.0"],
-    [8.7165203, 47.3516764, "2017-03-28 07:32:07.0"]
+    [8.7135701, 47.3530638, "2017-03-28 07:31:54.0", ""],
+    [8.7165203, 47.3516764, "2017-03-28 07:32:07.0", ""]
+];
+
+const surroundingsDefaultValues = [
+    [8.7095882, 47.3589998, "", "FCTStart"],
+    [8.7095882, 47.3589998, "", "FCTEnd"],
+    [8.7095882, 47.3589998, "", "DownloadStart"],
+    [8.7135701, 47.3530638, "", "DownloadEnd"],
+    [8.7135701, 47.3530638, "", "UploadStart"],
+    [8.7165203, 47.3516764, "", "UploadEnd"],
+    [8.7165203, 47.3516764, "", "RTTStart"],
+    [8.7165203, 47.3516764, "", "RTTEnd"]
 ];
 
 function initializeDefaultValues(defaultValues) {
