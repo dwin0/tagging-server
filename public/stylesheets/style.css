@@ -6,47 +6,14 @@ body {
   padding: 50px;
 }
 
-/*Leaflet Map*/
-.form-map {
-    position: fixed;
-    right: 20px;
-    width: 500px;
-    height: 400px;
-    z-index: 10;
-}
-
-#clearInput {
-    position: fixed;
-    right: 350px;
-    top: 620px;
+#title {
+    display: none;
 }
 
 
-/*Material*/
-.html-method {
-  text-decoration: none;
-  color: #fff;
-  background-color: #26a69a;
-  text-align: center;
-  letter-spacing: .5px;
-  transition: .2s ease-out;
-  cursor: pointer;
-  width: 100px;
-  float: left;
-  margin-right: 10px;
-}
 
-.collapsible-header {
-  padding: 0 !important;
-}
 
-.get {
-    background-color: #26a69a;
-}
-
-.post {
-    background-color: #42a5f5;
-}
+/*Input-Forms*/
 
 label {
     color: #FFFFFF !important;
@@ -62,68 +29,147 @@ input[type=text] {
     display: inline-block;
 }
 
-/*JSON Syntax Highlighting*/
-pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
-.string { color: green; }
-.number { color: blue; }
-.boolean { color: darkorange; }
-.null { color: magenta; }
-.key { color: #963e96; }
+/*END Input-Forms
+----------------------------*/
 
-.schema {
-    float: left;
-    width: 50%;
-}
 
-.schema, .possible-input {
-    min-width: 400px;
-}
-
-.possible-output {
-    clear: left;
-}
-
-.collapsible-body {
-    overflow: hidden;
-}
 
 /*api.hbs*/
+
 h3.url-title {
     margin-top: 7vw !important;
     font-weight: bold !important;
 }
 
-/*index_v3.hbs*/
-#tagging-result {
-    position: fixed;
-    left: 20px;
-    width: 600px;
-    z-index: 10;
-    visibility: hidden;
-}
+    /*Collapsible method-description*/
+    .html-method {
+        text-decoration: none;
+        color: #fff;
+        text-align: center;
+        letter-spacing: .5px;
+        width: 100px;
+        float: left;
+        margin-right: 10px;
+    }
 
-#tagging-result > ul {
-    border: solid black 10px;
-}
+    .get {
+        background-color: #26a69a;
+    }
 
-#loading-icon {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    display: none;
-    z-index: 10;
-}
+    .post {
+        background-color: #42a5f5;
+    }
 
-#darkLayer {
-    display: none;
-    filter: alpha(opacity=60); /* IE */
-    opacity: 0.6; /* Safari, Opera */
-    -moz-opacity:0.60; /* FireFox */
-    z-index: 9;
-    height: 100%;
-    width: 100%;
-    background: white no-repeat center;
-    position: fixed;
-    top: 0;
-    left: 0;
-}
+    .collapsible-header {
+        padding: 0 !important;
+    }
+
+    .collapsible-body {
+        overflow: hidden;
+    }
+
+    .schema {
+        float: left;
+        width: 50%;
+    }
+
+    .schema, .possible-input {
+        min-width: 400px;
+    }
+
+    .possible-output {
+        clear: left;
+    }
+
+
+    /*JSON Syntax Highlighting*/
+    pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+    .string { color: green; }
+    .number { color: blue; }
+    .boolean { color: darkorange; }
+    .null { color: magenta; }
+    .key { color: #963e96; }
+
+/*END api.hbs
+----------------------------*/
+
+
+
+
+
+/*index_v3.hbs and speedIndex.hbs*/
+
+    /*Leaflet Map*/
+    .form-map {
+        position: fixed;
+        top: 135px;
+        right: 20px;
+        width: 500px;
+        height: 400px;
+        z-index: 10;
+    }
+
+
+    /*Buttons*/
+    #clearInput {
+        position: fixed;
+        right: 20px;
+        top: 550px;
+    }
+
+    #submitButton {
+        position: fixed;
+        right: 302px;
+        top: 550px;
+    }
+
+
+    /*loading-view*/
+    #loading-icon {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        display: none;
+        z-index: 10;
+    }
+
+    #darkLayer {
+        display: none;
+        filter: alpha(opacity=60); /* IE */
+        opacity: 0.6; /* Safari, Opera */
+        -moz-opacity:0.60; /* FireFox */
+        z-index: 9;
+        height: 100%;
+        width: 100%;
+        background: white no-repeat center;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+
+    /*result-view*/
+    #result-view {
+        position: fixed;
+        left: 20px;
+        top: 135px;
+        width: 600px;
+        z-index: 10;
+        visibility: hidden;
+    }
+
+    #result-view > ul {
+        border: solid black 10px;
+    }
+
+    .collection-header > h4 {
+        font-weight: bold;
+        font-size: large;
+    }
+
+    .collection.with-header {
+        margin: 0;
+    }
+
+/*END index_v3.hbs
+----------------------------*/

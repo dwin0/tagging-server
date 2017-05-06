@@ -148,13 +148,21 @@ const possibleTaggingOutput = {
 };
 
 const possibleSpeedCalculationInput = {
-    "startTime": "2017-03-28 07:31:54.0",
-    "endTime": "2017-03-28 07:32:07.0",
-    "longitude1": 8.7135701,
-    "latitude1": 47.3530638,
-    "longitude2": 8.7165203,
-    "latitude2": 47.3516764
+    "positions": [
+        {
+            "longitude": 8.7135701,
+            "latitude": 47.3530638,
+            "time": "2017-03-28 07:31:54.0",
+        },
+        {
+            "longitude": 8.7165203,
+            "latitude": 47.3516764,
+            "time": "2017-03-28 07:32:07.0",
+        }
+    ]
 };
+
+
 const possibleSpeedCalculationOutput = {
     "title": "Calculated velocity:",
     "distance_m": 271.06690764,
