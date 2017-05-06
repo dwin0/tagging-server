@@ -2,6 +2,8 @@
 <p>Willkommen beim {{title}} Version {{version}}</p>
 
 <div id="map" class="form-map"></div>
+<div id="tagging-result"></div>
+
 <button id="clearInput" class="btn waves-effect waves-light">Clear
     <i class="material-icons right">location_off</i>
 </button>
@@ -17,9 +19,53 @@
 </form>
 
 
+
+<div id="loading-icon" class="preloader-wrapper big active">
+    <div class="spinner-layer spinner-blue">
+        <div class="circle-clipper left">
+            <div class="circle"></div>
+        </div><div class="gap-patch">
+        <div class="circle"></div>
+    </div><div class="circle-clipper right">
+        <div class="circle"></div>
+    </div>
+    </div>
+
+    <div class="spinner-layer spinner-red">
+        <div class="circle-clipper left">
+            <div class="circle"></div>
+        </div><div class="gap-patch">
+        <div class="circle"></div>
+    </div><div class="circle-clipper right">
+        <div class="circle"></div>
+    </div>
+    </div>
+
+    <div class="spinner-layer spinner-yellow">
+        <div class="circle-clipper left">
+            <div class="circle"></div>
+        </div><div class="gap-patch">
+        <div class="circle"></div>
+    </div><div class="circle-clipper right">
+        <div class="circle"></div>
+    </div>
+    </div>
+
+    <div class="spinner-layer spinner-green">
+        <div class="circle-clipper left">
+            <div class="circle"></div>
+        </div><div class="gap-patch">
+        <div class="circle"></div>
+    </div><div class="circle-clipper right">
+        <div class="circle"></div>
+    </div>
+    </div>
+</div>
+
+<div id="darkLayer"></div>
+
+
 <script type="text/javascript" src="/javascripts/initForm.js"></script>
-
-
 <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 <script type="text/javascript" src="/javascripts/initMap.js"></script>
 <script type="text/javascript" src="/javascripts/setInputAsMarker.js"></script>

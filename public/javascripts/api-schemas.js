@@ -5,6 +5,8 @@ $(document).on('ready', function () {
         url: "/schemas",
         success: function(data, text){
 
+            //Insert schemas, possible input-values and possible output-values
+            //Schema is loaded from server, possible values are static values
             insertJSON(data.taggingSchema, '#tagging-schema > p');
             insertJSON(data.speedCalculationSchema, '#speedCalculation-schema > p');
             insertJSON(data.surroundingsSchema, '#surroundings-schema > p');
@@ -16,7 +18,7 @@ $(document).on('ready', function () {
             insertJSON(possibleSurroundingsOutput, '#possible-surroundings-output > p');
         },
         error: function (request, status, error) {
-            console.log(request.responseText);
+            console.error(request.responseText);
         }
     });
 

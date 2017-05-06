@@ -1,6 +1,8 @@
 $(window).on('load', function () {
-//TODO: load or ready?
+    createTaggingForm();
+});
 
+function createTaggingForm() {
     for(var i = 1; i <= 8; i++) {
 
         var card = $('<div class="row"><div class="col s12 m6"><div class="card-panel indigo darken-4"></div></div></div>');
@@ -16,9 +18,10 @@ $(window).on('load', function () {
     }
 
     initializeDefaultValues();
+
     //Enable material select style
     $('select').material_select();
-});
+}
 
 
 function createInputElement(forString, labelText) {
@@ -44,14 +47,14 @@ function createSelectElement(forString, labelText, disabledValue) {
 }
 
 const defaultValues = [
-    [8.7095882, 47.3589998, "2017-03-28 07:31:44.0"],
-    [8.7095882, 47.3589998, "2017-03-28 07:31:44.0"],
-    [8.7095882, 47.3589998, "2017-03-28 07:31:44.0"],
-    [8.7135701, 47.3530638, "2017-03-28 07:31:54.0"],
-    [8.7135701, 47.3530638, "2017-03-28 07:31:54.0"],
-    [8.7165203, 47.3516764, "2017-03-28 07:32:06.0"],
-    [8.7165203, 47.3516764, "2017-03-28 07:32:06.0"],
-    [8.7165203, 47.3516764, "2017-03-28 07:32:07.0"]
+    [8.7095882, 47.3589998, "2017-03-28 07:31:44.0", "FCTStart"],
+    [8.7095882, 47.3589998, "2017-03-28 07:31:44.0", "FCTEnd"],
+    [8.7095882, 47.3589998, "2017-03-28 07:31:44.0", "DownloadStart"],
+    [8.7135701, 47.3530638, "2017-03-28 07:31:54.0", "DownloadEnd"],
+    [8.7135701, 47.3530638, "2017-03-28 07:31:54.0", "UploadStart"],
+    [8.7165203, 47.3516764, "2017-03-28 07:32:06.0", "UploadEnd"],
+    [8.7165203, 47.3516764, "2017-03-28 07:32:06.0", "RTTStart"],
+    [8.7165203, 47.3516764, "2017-03-28 07:32:07.0", "RTTEnd"]
 ];
 
 function initializeDefaultValues() {
@@ -60,5 +63,6 @@ function initializeDefaultValues() {
         $('#longitude' + i).val(defaultValues[i-1][0]);
         $('#latitude' + i).val(defaultValues[i-1][1]);
         $('#time' + i).val(defaultValues[i-1][2]);
+        $('#phase' + i).val(defaultValues[i-1][3]);
     }
 }

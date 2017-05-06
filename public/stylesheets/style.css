@@ -7,16 +7,12 @@ body {
 }
 
 /*Leaflet Map*/
-.result-map {
-    width: 900px;
-    height: 500px;
-}
-
 .form-map {
     position: fixed;
     right: 20px;
     width: 500px;
     height: 400px;
+    z-index: 10;
 }
 
 #clearInput {
@@ -95,4 +91,39 @@ pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
 h3.url-title {
     margin-top: 7vw !important;
     font-weight: bold !important;
+}
+
+/*index_v3.hbs*/
+#tagging-result {
+    position: fixed;
+    left: 20px;
+    width: 600px;
+    z-index: 10;
+    visibility: hidden;
+}
+
+#tagging-result > ul {
+    border: solid black 10px;
+}
+
+#loading-icon {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    display: none;
+    z-index: 10;
+}
+
+#darkLayer {
+    display: none;
+    filter: alpha(opacity=60); /* IE */
+    opacity: 0.6; /* Safari, Opera */
+    -moz-opacity:0.60; /* FireFox */
+    z-index: 9;
+    height: 100%;
+    width: 100%;
+    background: white no-repeat center;
+    position: fixed;
+    top: 0;
+    left: 0;
 }
