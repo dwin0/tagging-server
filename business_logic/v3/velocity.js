@@ -7,10 +7,11 @@ const OSM_QUERY_DISTANCE = 'SELECT ST_Distance(ST_GeomFromText(\'POINT({lon1} {l
 
 function getVelocity_request(req, res, callback) {
 
-    var body = req.body;
-    var startDate = new Date(body.startTime);
-    var endDate = new Date(body.endTime);
-    var dbStatement = getDbStatement('speedCalculation', body);
+    var positions = req.body.positions;
+
+    var startDate = new Date(positions[0].time);
+    var endDate = new Date(positions[1].time);
+    var dbStatement = getDbStatement(positions);
 
     parallel([
             function(callback) {
@@ -36,7 +37,7 @@ function getVelocity_positionArray(positions, callback) {
         var pos2 = positions[i];
         var time_s = Math.abs(new Date(pos2.time).getTime() - new Date(pos1.time).getTime()) / 1000;
 
-        dbStatements[i-1] = getDbStatement('tags', [pos1, pos2]);
+        dbStatements[i-1] = getDbStatement([pos1, pos2]);
 
         dbRequests[i-1] = (function(i, time_s) {
             return function(callback) {
@@ -83,27 +84,13 @@ function calcAverageVelocity(positions) {
 }
 
 
-function getDbStatement(requester, positions) {
-
-    var lon1, lat1, lon2, lat2;
-
-    if(requester === 'speedCalculation') {
-        lon1 = positions.longitude1;
-        lat1 = positions.latitude1;
-        lon2 = positions.longitude2;
-        lat2 = positions.latitude2;
-    } else if(requester === 'tags') {
-        lon1 = positions[0].longitude;
-        lat1 = positions[0].latitude;
-        lon2 = positions[1].longitude;
-        lat2 = positions[1].latitude;
-    }
+function getDbStatement(positions) {
 
     return OSM_QUERY_DISTANCE
-        .replaceAll("{lon1}", lon1)
-        .replaceAll("{lat1}", lat1)
-        .replaceAll("{lon2}", lon2)
-        .replaceAll("{lat2}", lat2);
+        .replaceAll("{lon1}", positions[0].longitude)
+        .replaceAll("{lat1}", positions[0].latitude)
+        .replaceAll("{lon2}", positions[1].longitude)
+        .replaceAll("{lat2}", positions[1].latitude);
 }
 
 

@@ -58,6 +58,14 @@ const NATURAL_QUERY = 'WITH natural_match AS (SELECT "natural", wkb_geometry FRO
     'SELECT "natural" FROM natural_match ' +
     'WHERE ST_Within(ST_GeomFromText((\'{point}\'), 4326), ST_GeomFromEWKB(natural_match.wkb_geometry))';
 
+const BOUNDARY_QUERY = 'WITH boundary_match AS (SELECT boundary, wkb_geometry FROM multipolygons WHERE boundary IS NOT NULL ' +
+    'AND boundary != \'administrative\') SELECT boundary FROM boundary_match ' +
+    'WHERE ST_Within(ST_GeomFromText((\'{point}\'), 4326), ST_GeomFromEWKB(boundary_match.wkb_geometry))';
+
+const LEISURE_QUERY = 'WITH leisure_match AS (SELECT leisure, wkb_geometry FROM multipolygons WHERE leisure IS NOT NULL) ' +
+    'SELECT leisure FROM leisure_match ' +
+    'WHERE ST_Within(ST_GeomFromText((\'{point}\'), 4326), ST_GeomFromEWKB(leisure_match.wkb_geometry))';
+
 
 function getGeographicalSurroundings(positions, callback) {
     var middlePointQueries = prepareMiddlePointDbStatements(FIND_MIDDLE_POINT, positions);
@@ -71,17 +79,41 @@ function getGeographicalSurroundings(positions, callback) {
         ],
         function (err, results) {
             var naturalQueries = prepareNaturalDbStatements(NATURAL_QUERY, results);
+            var boundaryQueries = prepareBoundaryAndLeisureDbStatements(BOUNDARY_QUERY, results);
+            var leisureQueries = prepareBoundaryAndLeisureDbStatements(LEISURE_QUERY, results);
             console.log(naturalQueries);
+            console.log(boundaryQueries);
+            console.log(leisureQueries);
 
             parallel([
                     function(callback) {
                         db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), naturalQueries, function (result) {
                             callback(null, result);
                         });
+                    },
+                    function(callback) {
+                        db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), boundaryQueries, function (result) {
+                            callback(null, result);
+                        });
+                    },
+                    function(callback) {
+                        db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), leisureQueries, function (result) {
+                            callback(null, result);
+                        });
                     }
                 ],
                 function (err, results) {
                     results[0].forEach(function (element) {
+                        console.log(element);
+                        console.log(element.length > 0);
+                    });
+
+                    results[1].forEach(function (element) {
+                        console.log(element);
+                        console.log(element.length > 0);
+                    });
+
+                    results[2].forEach(function (element) {
                         console.log(element);
                         console.log(element.length > 0);
                     });
@@ -113,10 +145,21 @@ function prepareMiddlePointDbStatements(statement, positions) {
     return statements;
 }
 
+//TODO: make one dbStatement --> multiple queries are now used to test whether query is working right with default values
 function prepareNaturalDbStatements(statement, points) {
     var queries = [];
 
-    var query1 = statement.replace('{point}', 'POINT(8.7048 47.3611)');
+    var query1 = statement.replace('{point}', 'POINT(8.7048 47.3611)'); //sollte natural: wetland liefern
+    var query2 = statement.replace('{point}', points[0][1][0].st_astext);
+
+    queries.push(query1, query2);
+    return queries;
+}
+
+function prepareBoundaryAndLeisureDbStatements(statement, points) {
+    var queries = [];
+
+    var query1 = statement.replace('{point}', 'POINT(8.55777 47.2495)'); //sollte boundary: protected_area und leisure: nature_reserve liefern
     var query2 = statement.replace('{point}', points[0][1][0].st_astext);
 
     queries.push(query1, query2);
@@ -125,10 +168,8 @@ function prepareNaturalDbStatements(statement, points) {
 
 
 function returnTag(tags, callback) {
-
     var result = { download: { tag: tags, osm_tag: 'unknown' }, upload: { tag: tags, osm_tag: 'unknown2' } };
     callback(result);
-    //callback({{ tag: tags, osm_tag: 'unknown' }, {tag: tags, osm_tag: 'test'}});
 }
 
 module.exports = { "getGeographicalSurroundings": getGeographicalSurroundings };

@@ -187,13 +187,43 @@ const velocitySchema_v1 = {
     }
 };
 
+const velocitySchema_v3 = {
+    type: 'object',
+    properties: {
+        positions: {
+            type: 'array',
+            minItems: 2,
+            maxItems: 2,
+            required: true,
+            items: {
+                type: 'object',
+                required: true,
+                properties: {
+                    longitude: {
+                        type: 'number',
+                        required: true
+                    },
+                    latitude: {
+                        type: 'number',
+                        required: true
+                    },
+                    time: {
+                        type: 'string',
+                        required: true
+                    }
+                }
+            }
+        }
+    }
+};
+
 
 
 function handleJsonSchemaValidationError(err, req, res, next) {
 
     if (err.name === 'JsonSchemaValidation') {
 
-        console.log(err.message);
+        console.error(err.message);
 
         res.status(400); //bad request
 
@@ -221,8 +251,9 @@ function handleJsonSchemaValidationError(err, req, res, next) {
 module.exports = {
     "taggingSchema_v1": taggingSchema_v1,
     "taggingSchema_v2": taggingSchema_v2,
-    "velocitySchema_v1": velocitySchema_v1,
     "taggingSchema_v3": taggingSchema_v3,
+    "velocitySchema_v1": velocitySchema_v1,
+    "velocitySchema_v3": velocitySchema_v3,
     "surroundingsSchema_v3": surroundingsSchema_v3,
     "handleJsonSchemaValidationError": handleJsonSchemaValidationError
 };

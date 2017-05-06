@@ -32,6 +32,19 @@ hbs.registerHelper('ifSame', function(value1, value2, options) {
     }
 });
 
+hbs.registerHelper('ifAny', function() {
+    var value1 = arguments[0];
+    var options = arguments[arguments.length - 1];
+
+    for (var i = 1; i < arguments.length - 1; i++) {
+        if(value1 === arguments[i]) {
+            return options.fn(this);
+        }
+    }
+
+    return options.inverse(this);
+});
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
