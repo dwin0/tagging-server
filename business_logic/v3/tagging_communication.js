@@ -1,6 +1,8 @@
 var tagging = require('./tagging');
 var typeOfMotion = require('./typeOfMotion');
 var velocity = require('./velocity');
+var surroundings = require('./surroundings');
+var surroundings_communication = require('./surroundings_communication');
 var parallel = require("async/parallel");
 
 
@@ -12,8 +14,8 @@ function getTagsJSON(req, res) {
         positions = JSON.parse(positions);
     }
 
+    var surroundingsPositions = surroundings_communication.filterSurroundingsPositions(positions);
     positions = filterPositions(positions);
-
 
     parallel([
             function(callback) {
@@ -23,12 +25,12 @@ function getTagsJSON(req, res) {
             }
         ],
         function(err, results) {
-            renderTagJSON(res, positions, results[0])
+            renderTagJSON(res, positions, surroundingsPositions, results[0])
         }
     );
 }
 
-function renderTagJSON(res, positions, speedResult) {
+function renderTagJSON(res, positions, surroundingsPositions, speedResult) {
 
     var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
 
@@ -37,11 +39,24 @@ function renderTagJSON(res, positions, speedResult) {
                 tagging.getTag(speedResult.velocity_kmh, positions, function (result) {
                     callback(null, result);
                 });
+            },
+            function(callback) {
+                surroundings.getGeographicalSurroundings(surroundingsPositions, function (result) {
+                    callback(null, result);
+                });
+            },
+            function(callback) {
+                surroundings.getGeoAdminData(surroundingsPositions, function (result) {
+                    callback(null, result);
+                })
             }
         ],
         function(err, results) {
 
             var taggingRes = results[0];
+            var geographicalSurroundingsResult = results[1];
+            var geoAdminResults = results[2];
+            var jsonSurrounding = surroundings_communication.renderSurroundingsJson(geographicalSurroundingsResult, geoAdminResults);
             res.writeHead(200, {"Content-Type": "application/json"});
 
             var json = JSON.stringify({
@@ -66,20 +81,7 @@ function renderTagJSON(res, positions, speedResult) {
                     velocity_kmh: speedResult.velocity_kmh,
                     probability: speedResult.probability
                 },
-                surroundings: {
-                    geographical_surroundings: {
-                        id: null,
-                        name: null,
-                        description: null,
-                        probability: null
-                    },
-                    population_density: {
-                        id: null,
-                        name: null,
-                        description: null,
-                        probability: null
-                    }
-                }
+                surroundings: jsonSurrounding.surroundings
             });
 
             res.end(json);
