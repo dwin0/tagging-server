@@ -27,7 +27,7 @@ const CONSTRUCTEDAREA = {
     id: 3,
     name: "constructedArea",
     osm_tag: '',
-    description: "Includes OpenStreetMap-Key: landuse with the vaalues: residential, industrial, construction, commercial, quarry, railway, military, " +
+    description: "Includes OpenStreetMap-Key: landuse with the values: residential, industrial, construction, commercial, quarry, railway, military, " +
     "retail, landfill, brownfield and garages. Includes OpenStreetMap-Key: leisure with the values: sports_centre and stadium."
 };
 

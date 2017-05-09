@@ -132,17 +132,59 @@ const possibleTaggingOutput = {
         "probability": null
     },
     "surroundings": {
-        "geographical_surroundings": {
-            "id": null,
-            "name": null,
-            "description": null,
-            "probability": null
+        "download": {
+            "geographical_surroundings": {
+                "id": 1,
+                "name": "grassland",
+                "osm_tag": "wetland",
+                "description": "Includes OpenStreetMap-Key: landuse with the values: meadow, farmland, grass, farmyard, allotments, " +
+                "greenhouse_horticulture, plant_nursery, recreation_ground, village_green, greenfield and conservation. Includes " +
+                "OpenStreetMap-Key: natural with the values: scrub, grassland, wetland, fell, heath, meadow and grass. Includes " +
+                "OpenStreetMap-Key: protected_area, national_park and nature_reserve. Includes OpenStreetMap-Key: leisure with the " +
+                "values: garden, park, nature_reserve, golf_course, miniature_golf, recreation_ground and dog_park.",
+                "probability": null
+            },
+            "population_density": {
+                "number": 66.5,
+                "description": "Number of people living in 1ha",
+                "probability": null
+            },
+            "community_type": {
+                "id": 2,
+                "type": "Nebenzentrum eines Grosszentrums",
+                "community_id": "198",
+                "community_name": "Uster",
+                "canton_id": "1",
+                "canton_name": "ZH",
+                "description": "Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)",
+                "probability": null
+            }
         },
-        "population_density": {
-            "id": null,
-            "name": null,
-            "description": null,
-            "probability": null
+        "upload": {
+            "geographical_surroundings": {
+                "id": 3,
+                "name": "constructedArea",
+                "osm_tag": "residential",
+                "description": "Includes OpenStreetMap-Key: landuse with the values: residential, industrial, construction, commercial, " +
+                "quarry, railway, military, retail, landfill, brownfield and garages. Includes OpenStreetMap-Key: leisure with the values: " +
+                "sports_centre and stadium.",
+                "probability": null
+            },
+            "population_density": {
+                "number": 58,
+                "description": "Number of people living in 1ha",
+                "probability": null
+            },
+            "community_type": {
+                "id": 2,
+                "type": "Nebenzentrum eines Grosszentrums",
+                "community_id": "198",
+                "community_name": "Uster",
+                "canton_id": "1",
+                "canton_name": "ZH",
+                "description": "Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)",
+                "probability": null
+            }
         }
     }
 };
@@ -170,7 +212,7 @@ const possibleSpeedCalculationOutput = {
     "velocity_ms": 20.851300587692307,
     "velocity_kmh": 75.06468211569232,
     "probability": null
-}
+};
 
 const possibleSurroundingsInput = {
     "positions": [
@@ -216,4 +258,62 @@ const possibleSurroundingsInput = {
         }
     ]
 };
-const possibleSurroundingsOutput = { todo: 'implement' };
+const possibleSurroundingsOutput = {
+    "title": "Calculated Surroundings",
+    "surroundings": {
+        "download": {
+            "geographical_surroundings": {
+                "id": 1,
+                "name": "grassland",
+                "osm_tag": "wetland",
+                "description": "Includes OpenStreetMap-Key: landuse with the values: meadow, farmland, grass, farmyard, allotments, " +
+                "greenhouse_horticulture, plant_nursery, recreation_ground, village_green, greenfield and conservation. Includes " +
+                "OpenStreetMap-Key: natural with the values: scrub, grassland, wetland, fell, heath, meadow and grass. Includes " +
+                "OpenStreetMap-Key: protected_area, national_park and nature_reserve. Includes OpenStreetMap-Key: leisure with the " +
+                "values: garden, park, nature_reserve, golf_course, miniature_golf, recreation_ground and dog_park.",
+                "probability": null
+            },
+            "population_density": {
+                "number": 66.5,
+                "description": "Number of people living in 1ha",
+                "probability": null
+            },
+            "community_type": {
+                "id": 2,
+                "type": "Nebenzentrum eines Grosszentrums",
+                "community_id": "198",
+                "community_name": "Uster",
+                "canton_id": "1",
+                "canton_name": "ZH",
+                "description": "Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)",
+                "probability": null
+            }
+        },
+        "upload": {
+            "geographical_surroundings": {
+                "id": 3,
+                "name": "constructedArea",
+                "osm_tag": "residential",
+                "description": "Includes OpenStreetMap-Key: landuse with the values: residential, industrial, construction, commercial, " +
+                "quarry, railway, military, retail, landfill, brownfield and garages. Includes OpenStreetMap-Key: leisure with the values: " +
+                "sports_centre and stadium.",
+                "probability": null
+            },
+            "population_density": {
+                "number": 58,
+                "description": "Number of people living in 1ha",
+                "probability": null
+            },
+            "community_type": {
+                "id": 2,
+                "type": "Nebenzentrum eines Grosszentrums",
+                "community_id": "198",
+                "community_name": "Uster",
+                "canton_id": "1",
+                "canton_name": "ZH",
+                "description": "Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)",
+                "probability": null
+            }
+        }
+    }
+};
