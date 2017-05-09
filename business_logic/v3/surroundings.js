@@ -4,11 +4,11 @@ var parallel = require("async/parallel");
 var converter = require('./wgs84_ch1903');
 var request = require('request');
 
-
 //Constants for geographical surroundings:
 const GRASSLAND = {
     id: 1,
     name: "grassland",
+    osm_tag: '',
     description: "Includes OpenStreetMap-Key: landuse with the values: meadow, farmland, grass, farmyard, allotments, greenhouse_horticulture, " +
     "plant_nursery, recreation_ground, village_green, greenfield and conservation. Includes OpenStreetMap-Key: natural with the values: scrub, " +
     "grassland, wetland, fell, heath, meadow and grass. Includes OpenStreetMap-Key: protected_area, national_park and nature_reserve. Includes " +
@@ -18,6 +18,7 @@ const GRASSLAND = {
 const TREES = {
     id: 2,
     name: "trees",
+    osm_tag: '',
     description: "Includes OpenStreetMap-Key: landuse with the values: forest, vineyard and orchard. Includes OpenStreetMap-Key: natural with the " +
     "values: wood, tree and tree_row."
 };
@@ -25,6 +26,7 @@ const TREES = {
 const CONSTRUCTEDAREA = {
     id: 3,
     name: "constructedArea",
+    osm_tag: '',
     description: "Includes OpenStreetMap-Key: landuse with the vaalues: residential, industrial, construction, commercial, quarry, railway, military, " +
     "retail, landfill, brownfield and garages. Includes OpenStreetMap-Key: leisure with the values: sports_centre and stadium."
 };
@@ -32,6 +34,7 @@ const CONSTRUCTEDAREA = {
 const WATER = {
     id: 4,
     name: "water",
+    osm_tag: '',
     description: "Includes OpenStreetMap-Key: landuse with the values: basin and reservoir. Includes OpenStreetMap-Key: natural with the value: water. " +
     "Includes OpenStreetMap-Key: leisure with the values: swimming_pool, marina, water_park and slipway."
 };
@@ -39,18 +42,21 @@ const WATER = {
 const ROCKS = {
     id: 5,
     name: "rocks",
+    osm_tag: '',
     description: "Includes OpenStreetMap-Key: natural with the values: scree, bare_rock, shingle, cliff, rock and stone."
 };
 
 const OTHER = {
     id: 100,
     name:"other",
+    osm_tag: '',
     description: "OSM-tag is defined, but not supported."
 };
 
 const UNKNOWN = {
     id: -1,
     name: "unknown",
+    osm_tag: 'unknown',
     description: "No tagging possible."
 };
 
@@ -113,17 +119,27 @@ const TOURISTICAL = {
 
 const FIND_MIDDLE_POINT = "SELECT ST_AsText(ST_Centroid(ST_GeomFromText(('MULTIPOINT ( {lon1} {lat1}, {lon2} {lat2})'), 4326)));";
 
-const NATURAL_QUERY = 'WITH natural_match AS (SELECT "natural", wkb_geometry FROM multipolygons WHERE "natural" IS NOT NULL) ' +
-    'SELECT "natural" FROM natural_match ' +
-    'WHERE ST_Within(ST_GeomFromText((\'{point}\'), 4326), ST_GeomFromEWKB(natural_match.wkb_geometry))';
 
-const BOUNDARY_QUERY = 'WITH boundary_match AS (SELECT boundary, wkb_geometry FROM multipolygons WHERE boundary IS NOT NULL ' +
-    'AND boundary != \'administrative\') SELECT boundary FROM boundary_match ' +
-    'WHERE ST_Within(ST_GeomFromText((\'{point}\'), 4326), ST_GeomFromEWKB(boundary_match.wkb_geometry))';
+//TODO: create Table where the not null part is precalculated
+const NATURAL_QUERY = 'SELECT "natural" FROM multipolygons ' +
+                    'WHERE "natural" IS NOT NULL AND ST_Within(' +
+                    'ST_GeomFromText((\'{point}\'), 4326), ' +
+                    'ST_GeomFromEWKB(wkb_geometry));';
 
-const LEISURE_QUERY = 'WITH leisure_match AS (SELECT leisure, wkb_geometry FROM multipolygons WHERE leisure IS NOT NULL) ' +
-    'SELECT leisure FROM leisure_match ' +
-    'WHERE ST_Within(ST_GeomFromText((\'{point}\'), 4326), ST_GeomFromEWKB(leisure_match.wkb_geometry))';
+const BOUNDARY_QUERY = 'SELECT boundary FROM multipolygons ' +
+                    'WHERE boundary IS NOT NULL AND boundary != \'administrative\' AND ST_Within(' +
+                    'ST_GeomFromText((\'{point}\'), 4326), ' +
+                    'ST_GeomFromEWKB(wkb_geometry));';
+
+const LEISURE_QUERY = 'SELECT leisure FROM multipolygons ' +
+                    'WHERE leisure IS NOT NULL AND ST_Within(' +
+                    'ST_GeomFromText((\'{point}\'), 4326), ' +
+                    'ST_GeomFromEWKB(wkb_geometry))';
+
+const LANDUSE_QUERY = 'SELECT landuse FROM multipolygons ' +
+                    'WHERE landuse IS NOT NULL AND ST_Within(' +
+                    'ST_GeomFromText((\'{point}\'), 4326), ' +
+                    'ST_GeomFromEWKB(wkb_geometry));';
 
 const GEOADMIN_URL = 'https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry={y},{x}' +
     '&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1&lang=de&layers=all:ch.are.bevoelkerungsdichte,' +
@@ -143,16 +159,13 @@ function getGeographicalSurroundings(positions, callback) {
             var naturalQueries = prepareNaturalDbStatements(NATURAL_QUERY, results);
             var boundaryQueries = prepareBoundaryAndLeisureDbStatements(BOUNDARY_QUERY, results);
             var leisureQueries = prepareBoundaryAndLeisureDbStatements(LEISURE_QUERY, results);
+            var landuseQueries = prepareLanduseDbStatements(LANDUSE_QUERY, results);
             //console.log(naturalQueries);
             //console.log(boundaryQueries);
             //console.log(leisureQueries);
+            //console.log(landuseQueries);
 
             parallel([
-                    function(callback) {
-                        db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), naturalQueries, function (result) {
-                            callback(null, result);
-                        });
-                    },
                     function(callback) {
                         db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), boundaryQueries, function (result) {
                             callback(null, result);
@@ -162,25 +175,74 @@ function getGeographicalSurroundings(positions, callback) {
                         db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), leisureQueries, function (result) {
                             callback(null, result);
                         });
+                    },
+                    function(callback) {
+                        db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), landuseQueries, function (result) {
+                           callback(null, result);
+                        });
+                    },
+                    function(callback) {
+                        db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), naturalQueries, function (result) {
+                            callback(null, result);
+                        });
                     }
                 ],
                 function (err, results) {
-                    results[0].forEach(function (element) {
-                        //console.log(element);
-                        //console.log(element.length > 0);
-                    });
+                    var resultingTagDownload = UNKNOWN;
+                    var resultingTagUpload = UNKNOWN;
 
-                    results[1].forEach(function (element) {
-                        //console.log(element);
-                        //console.log(element.length > 0);
-                    });
+                    console.log('boundary');
+                    var boundaryDownload = results[0][0];
+                    var boundaryUpload = results[0][1];
+                    if(boundaryDownload.length > 0) {
+                        resultingTagDownload = getBoundaryTag(boundaryDownload[0].boundary);
+                    }
+                    if(boundaryUpload.length > 0) {
+                        resultingTagUpload = getBoundaryTag(boundaryUpload[0].boundary);
+                    }
+                    console.log(resultingTagDownload);
+                    console.log(resultingTagUpload);
 
-                    results[2].forEach(function (element) {
-                        //console.log(element);
-                        //console.log(element.length > 0);
-                    });
 
-                    returnSurroundingsTag(UNKNOWN, callback);
+                    console.log('leisure');
+                    var leisureDownload = results[1][0];
+                    var leisureUpload = results[1][1];
+                    if(leisureDownload.length > 0) {
+                        resultingTagDownload = getLeisureTag(leisureDownload[0].leisure);
+                    }
+                    if(leisureUpload.length > 0) {
+                        resultingTagUpload = getLeisureTag(leisureUpload[0].leisure);
+                    }
+                    console.log(resultingTagDownload);
+                    console.log(resultingTagUpload);
+
+
+                    console.log('landuse');
+                    var landuseDownload = results[2][0];
+                    var landuseUpload = results[2][1];
+                    if(landuseDownload.length > 0) {
+                        resultingTagDownload = getLanduseTag(landuseDownload[0].landuse);
+                    }
+                    if(landuseUpload.length > 0) {
+                        resultingTagUpload = getLanduseTag(landuseUpload[0].landuse);
+                    }
+                    console.log(resultingTagDownload);
+                    console.log(resultingTagUpload);
+
+
+                    console.log('natural');
+                    var naturalDownload = results[3][0];
+                    var naturalUpload = results[3][1];
+                    if(naturalDownload.length > 0) {
+                        resultingTagDownload = getNaturalTag(naturalDownload[0].natural);
+                    }
+                    if(naturalUpload.length > 0) {
+                        resultingTagUpload = getNaturalTag(naturalUpload[0].natural);
+                    }
+                    console.log(resultingTagDownload);
+                    console.log(resultingTagUpload);
+
+                    returnSurroundingsTag(resultingTagDownload, resultingTagUpload, callback);
                 }
             );
         }
@@ -219,7 +281,7 @@ function getGeoAdminData(positions, callback) {
                                 if (!error && response.statusCode === 200) {
                                     callback(null, JSON.parse(response.body));
                                 } else {
-                                    console.error("error");
+                                    console.error("error: " + response.statusCode);
                                 }
                             }
                         );
@@ -231,7 +293,7 @@ function getGeoAdminData(positions, callback) {
                                 if (!error && response.statusCode === 200) {
                                     callback(null, JSON.parse(response.body));
                                 } else {
-                                    console.error("error");
+                                    console.error("error: " + response.statusCode);
                                 }
                             }
                         );
@@ -259,7 +321,7 @@ function getGeoAdminData(positions, callback) {
                             i++;
                             populationDensityDownloadTotal += element.properties.popt_ha;
                         } else if(element.layerBodId === 'ch.are.gemeindetypen') {
-                            communityTagDownload = getTag(element.properties.typ_code);
+                            communityTagDownload = getCommunityTypeTag(element.properties.typ_code);
                             communityTypeDownload.canName = element.properties.kt_kz;
                             communityTypeDownload.canId = element.properties.kt_no;
                             communityTypeDownload.comName = element.properties.label;
@@ -274,7 +336,7 @@ function getGeoAdminData(positions, callback) {
                             j++;
                             populationDensityUploadTotal += element.properties.popt_ha;
                         } else if(element.layerBodId === 'ch.are.gemeindetypen') {
-                            communityTagUpload = getTag(element.properties.typ_code);
+                            communityTagUpload = getCommunityTypeTag(element.properties.typ_code);
                             communityTypeUpload.canName = element.properties.kt_kz;
                             communityTypeUpload.canId = element.properties.kt_no;
                             communityTypeUpload.comName = element.properties.label;
@@ -300,7 +362,7 @@ function getGeoAdminData(positions, callback) {
     );
 }
 
-function getTag(number) {
+function getCommunityTypeTag(number) {
     switch(number) {
         case "1":
             return LARGECENTRE;
@@ -322,6 +384,142 @@ function getTag(number) {
             return TOURISTICAL;
         default:
             return UNKNOWN;
+    }
+}
+
+function getBoundaryTag(designation) {
+    var tagGrassland = GRASSLAND;
+    var tagOther = OTHER;
+
+    switch(designation) {
+        case 'protected_area':
+        case 'national_park':
+        case 'nature_reserve':
+            tagGrassland.osm_tag = designation;
+            return tagGrassland;
+        default:
+            tagOther.osm_tag = designation;
+            return tagOther;
+    }
+}
+
+function getLeisureTag(designation) {
+    var tagGrassland = GRASSLAND;
+    var tagConstArea = CONSTRUCTEDAREA;
+    var tagWater = WATER;
+    var tagOther = OTHER;
+
+    switch(designation) {
+        case 'garden':
+        case 'park':
+        case 'nature_reserve':
+        case 'golf_course':
+        case 'miniature_golf':
+        case 'recreation_ground':
+        case 'dog_park':
+            tagGrassland.osm_tag = designation;
+            return tagGrassland;
+        case 'sports_centre':
+        case 'stadium':
+            tagConstArea.osm_tag = designation;
+            return tagConstArea;
+        case 'swimming_pool':
+        case 'marina':
+        case 'water_park':
+        case 'slipway':
+            tagWater.osm_tag = designation;
+            return tagWater;
+        default:
+            tagOther.osm_tag = designation;
+            return tagOther;
+    }
+}
+
+function getLanduseTag(designation) {
+    var tagGrassland = GRASSLAND;
+    var tagTrees = TREES;
+    var tagConstArea = CONSTRUCTEDAREA;
+    var tagWater = WATER;
+    var tagOther = OTHER;
+
+    switch(designation) {
+        case 'meadow':
+        case 'farmland':
+        case 'grass':
+        case 'farmyard':
+        case 'allotments':
+        case 'greenhouse_horticulture':
+        case 'plant_nursery':
+        case 'recreation_ground':
+        case 'village_green':
+        case 'greenfield':
+        case 'conservation':
+            tagGrassland.osm_tag = designation;
+            return tagGrassland;
+        case 'forest':
+        case 'vineyard':
+        case 'orchard':
+            tagTrees.osm_tag = designation;
+            return tagTrees;
+        case 'residential':
+        case 'industrial':
+        case 'construction':
+        case 'commercial':
+        case 'quarry':
+        case 'railway':
+        case 'military':
+        case 'retail':
+        case 'landfill':
+        case 'brownfield':
+        case 'garages':
+            tagConstArea.osm_tag = designation;
+            return tagConstArea;
+        case 'basin':
+        case 'reservoir':
+            tagWater.osm_tag = designation;
+            return tagWater;
+        default:
+            tagOther.osm_tag = designation;
+            return tagOther;
+    }
+}
+
+function getNaturalTag(designation) {
+    var tagGrassland = GRASSLAND;
+    var tagTrees = TREES;
+    var tagWater = WATER;
+    var tagRocks = ROCKS;
+    var tagOther = OTHER;
+
+    switch(designation) {
+        case 'scrub':
+        case 'grassland':
+        case 'wetland':
+        case 'fell':
+        case 'heath':
+        case 'meadow':
+        case 'grass':
+            tagGrassland.osm_tag = designation;
+            return tagGrassland;
+        case 'wood':
+        case 'tree':
+        case 'tree_row':
+            tagTrees.osm_tag = designation;
+            return tagTrees;
+        case 'water':
+            tagWater.osm_tag = designation;
+            return tagWater;
+        case 'scree':
+        case 'bare_rock':
+        case 'shingle':
+        case 'cliff':
+        case 'rock':
+        case 'stone':
+            tagRocks.osm_tag = designation;
+            return tagRocks;
+        default:
+            tagOther.osm_tag = designation;
+            return tagOther;
     }
 }
 
@@ -355,6 +553,16 @@ function prepareNaturalDbStatements(statement, points) {
     return queries;
 }
 
+function prepareLanduseDbStatements(statement, points) {
+    var queries = [];
+
+    var query1 = statement.replace('{point}', 'POINT(8.6875 47.2157)'); //sollte landuse: forest liefern
+    var query2 = statement.replace('{point}', points[0][1][0].st_astext);
+
+    queries.push(query1, query2);
+    return queries;
+}
+
 function prepareBoundaryAndLeisureDbStatements(statement, points) {
     var queries = [];
 
@@ -366,8 +574,8 @@ function prepareBoundaryAndLeisureDbStatements(statement, points) {
 }
 
 
-function returnSurroundingsTag(tags, callback) {
-    var result = { download: { geo: tags, osm_tag: 'unknown' }, upload: { geo: tags, osm_tag: 'unknown2' } };
+function returnSurroundingsTag(downloadTag, uploadTag, callback) {
+    var result = { download: { geo: downloadTag, osm_tag: downloadTag.osm_tag }, upload: { geo: uploadTag, osm_tag: uploadTag.osm_tag } };
     callback(result);
 }
 
