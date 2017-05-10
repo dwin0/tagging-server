@@ -101,14 +101,43 @@ const taggingSchema_v3 = {
                         type: 'number',
                         required: true
                     },
-                    altitude: {
-                        type: 'number'
+                    time: {
+                        type: 'string',
+                        required: true
+                    },
+                    phase : {
+                        type: 'string',
+                        required: true
+                    }
+                }
+            }
+        }
+    }
+};
+
+const taggingSchema_v4 = {
+    type: 'object',
+    properties: {
+        positions: {
+            type: 'array',
+            minItems: 8,
+            maxItems: 8,
+            required: true,
+            items: {
+                type: 'object',
+                required: true,
+                properties: {
+                    longitude: {
+                        type: 'number',
+                        required: true
+                    },
+                    latitude: {
+                        type: 'number',
+                        required: true
                     },
                     horizontal_accuracy: {
-                        type: 'number'
-                    },
-                    vertical_accuracy: {
-                        type: 'number'
+                        type: 'number',
+                        required: true
                     },
                     time: {
                         type: 'string',
@@ -117,9 +146,6 @@ const taggingSchema_v3 = {
                     phase : {
                         type: 'string',
                         required: true
-                    },
-                    cell_id: {
-                        type: 'number'
                     }
                 }
             }
@@ -252,6 +278,7 @@ module.exports = {
     "taggingSchema_v1": taggingSchema_v1,
     "taggingSchema_v2": taggingSchema_v2,
     "taggingSchema_v3": taggingSchema_v3,
+    "taggingSchema_v4": taggingSchema_v4,
     "velocitySchema_v1": velocitySchema_v1,
     "velocitySchema_v3": velocitySchema_v3,
     "surroundingsSchema_v3": surroundingsSchema_v3,

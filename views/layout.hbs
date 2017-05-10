@@ -59,6 +59,15 @@
   </body>
 
 
+  {{#ifSame version '4.0'}}
+      <script type="text/javascript" src="/javascripts/initForm_v4.js"></script>
+      <script type="text/javascript" src="/javascripts/sendRequest_v4.js"></script>
+  {{else}}
+      <script type="text/javascript" src="/javascripts/initForm.js"></script>
+      <script type="text/javascript" src="/javascripts/sendRequest_v3.js"></script>
+  {{/ifSame}}
+
+
   {{#ifAny title 'Tagging-Server' 'Geschwindigkeitsberechnung' 'Umgebungsabfrage' }}
 
       <div id="loading-icon" class="preloader-wrapper big active">
@@ -104,11 +113,10 @@
       </div>
       <div id="darkLayer"></div>
 
-      <script type="text/javascript" src="/javascripts/initForm.js"></script>
+
       <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
       <script type="text/javascript" src="/javascripts/initMap.js"></script>
       <script type="text/javascript" src="/javascripts/setInputAsMarker.js"></script>
-      <script type="text/javascript" src="/javascripts/sendRequest_v3.js"></script>
   {{else}}
 
   {{/ifAny}}
