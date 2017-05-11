@@ -77,26 +77,29 @@ const UNKNOWN = {
 };
 
 
-const FIND_MIDDLE_POINT = "SELECT ST_AsText(ST_Centroid(ST_GeomFromText(('MULTIPOINT ( {lon1} {lat1}, {lon2} {lat2})'), 4326)));";
+const FIND_MIDDLE_POINT = "WITH middlePoint AS " +
+    "(SELECT ST_Centroid(ST_GeomFromText(('MULTIPOINT ({lon1} {lat1}, {lon2} {lat2})'), 4326))) " +
+    "SELECT ST_AsText(st_centroid), ST_X(st_centroid), ST_Y(st_centroid) FROM middlePoint;";
+
 
 
 //TODO: create Table where the not null part is precalculated
-const NATURAL_QUERY = 'SELECT "natural" FROM multipolygons ' +
+const NATURAL_QUERY = 'SELECT "natural" FROM surroundings ' +
                     'WHERE "natural" IS NOT NULL AND ST_Within(' +
                     'ST_GeomFromText((\'{point}\'), 4326), ' +
                     'ST_GeomFromEWKB(wkb_geometry));';
 
-const BOUNDARY_QUERY = 'SELECT boundary FROM multipolygons ' +
+const BOUNDARY_QUERY = 'SELECT boundary FROM surroundings ' +
                     'WHERE boundary IS NOT NULL AND boundary != \'administrative\' AND ST_Within(' +
                     'ST_GeomFromText((\'{point}\'), 4326), ' +
                     'ST_GeomFromEWKB(wkb_geometry));';
 
-const LEISURE_QUERY = 'SELECT leisure FROM multipolygons ' +
+const LEISURE_QUERY = 'SELECT leisure FROM surroundings ' +
                     'WHERE leisure IS NOT NULL AND ST_Within(' +
                     'ST_GeomFromText((\'{point}\'), 4326), ' +
                     'ST_GeomFromEWKB(wkb_geometry))';
 
-const LANDUSE_QUERY = 'SELECT landuse FROM multipolygons ' +
+const LANDUSE_QUERY = 'SELECT landuse FROM surroundings ' +
                     'WHERE landuse IS NOT NULL AND ST_Within(' +
                     'ST_GeomFromText((\'{point}\'), 4326), ' +
                     'ST_GeomFromEWKB(wkb_geometry));';
@@ -120,6 +123,7 @@ function getGeographicalSurroundings(positions, callback) {
 
             //TODO: make 1 function for all cases
             //TODO: put in parallel-call
+            //TODO: x and y as arguments / remove st_asText from FIND_MIDDLE_POINT
             var naturalQueries = prepareNaturalDbStatements(NATURAL_QUERY, results);
             var boundaryQueries = prepareBoundaryAndLeisureDbStatements(BOUNDARY_QUERY, results);
             var leisureQueries = prepareBoundaryAndLeisureDbStatements(LEISURE_QUERY, results);
@@ -153,6 +157,7 @@ function getGeographicalSurroundings(positions, callback) {
                     var resultingTagDownload = JSON.parse(JSON.stringify(UNKNOWN));
                     var resultingTagUpload = JSON.parse(JSON.stringify(UNKNOWN));
 
+                    //TODO: Put in a separate function
                     //boundary
                     var boundaryDownload = results[0][0];
                     var boundaryUpload = results[0][1];
@@ -234,12 +239,12 @@ function getGeoAdminData(positions, callback) {
             }
         ],
         function (err, results) {
-            var pointDownload = results[0][0][0].st_astext;
-            var pointUpload = results[0][1][0].st_astext;
-            var lonDownload = pointDownload.substring(6, pointDownload.indexOf(' '));
-            var latDownload = pointDownload.substring(pointDownload.indexOf(' ') + 1, pointDownload.length - 1);
-            var lonUpload = pointUpload.substring(6, pointUpload.indexOf(' '));
-            var latUpload = pointUpload.substring(pointUpload.indexOf(' ') + 1, pointUpload.length - 1);
+            var lonDownload = results[0][0][0].st_x;
+            var latDownload = results[0][0][0].st_y;
+
+            var lonUpload = results[0][1][0].st_x;
+            var latUpload = results[0][1][0].st_y;
+
             var chyDownload = converter.WGStoCHy(latDownload, lonDownload);
             var chxDownload = converter.WGStoCHx(latDownload, lonDownload);
             var chyUpload = converter.WGStoCHy(latUpload, lonUpload);
@@ -274,6 +279,7 @@ function getGeoAdminData(positions, callback) {
                     }
                 ],
                 function (err, results) {
+
                     var downloadResult = results[0];
                     var uploadResult = results[1];
 
