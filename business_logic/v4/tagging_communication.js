@@ -2,8 +2,9 @@ var tagging = require('./tagging');
 var typeOfMotion = require('./typeOfMotion');
 var velocity = require('./velocity');
 var surroundings = require('./surroundings');
-var surroundings_communication = require('./surroundings_communication');
 var parallel = require("async/parallel");
+var jsonHelper = require('./jsonHelper');
+var positionsHelper = require('./positionsHelper');
 
 
 function getTagsJSON(req, res) {
@@ -14,8 +15,8 @@ function getTagsJSON(req, res) {
         positions = JSON.parse(positions);
     }
 
-    var surroundingsPositions = surroundings_communication.filterSurroundingsPositions(positions);
-    positions = filterPositions(positions);
+    var surroundingsPositions = positionsHelper.filterSurroundingsPositions(positions);
+    positions = positionsHelper.filterPositions(positions);
 
     parallel([
             function(callback) {
@@ -32,75 +33,40 @@ function getTagsJSON(req, res) {
 
 function renderTagJSON(res, positions, surroundingsPositions, speedResult) {
 
-    var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
-
     parallel([
             function(callback) {
+                console.time('getTag');
                 tagging.getTag(speedResult.velocity_kmh, positions, function (result) {
+                    console.timeEnd('getTag');
                     callback(null, result);
                 });
             },
             function(callback) {
+                console.time('getGeographicalSurroundings');
                 surroundings.getGeographicalSurroundings(surroundingsPositions, function (result) {
+                    console.timeEnd('getGeographicalSurroundings');
                     callback(null, result);
                 });
             },
             function(callback) {
+                console.time('getGeoAdminData');
                 surroundings.getGeoAdminData(surroundingsPositions, function (result) {
+                    console.timeEnd('getGeoAdminData');
                     callback(null, result);
                 })
             }
         ],
         function(err, results) {
 
-            var taggingRes = results[0];
-            var geographicalSurroundingsResult = results[1];
-            var geoAdminResults = results[2];
-            var jsonSurrounding = surroundings_communication.renderSurroundingsJson(geographicalSurroundingsResult, geoAdminResults);
+            var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
+
+            /*Parameters: tagging-result, type-of-motion, speed-result, geographicalSurroundings-result, geoAdmin-result */
+            var json = jsonHelper.renderTagJson(results[0], typeOfMotionRes, speedResult, results[1], results[2]);
+
             res.writeHead(200, {"Content-Type": "application/json"});
-
-            var json = JSON.stringify({
-                title: "Calculated Tagging",
-                location: {
-                    id: taggingRes.tag.id,
-                    name: taggingRes.tag.name,
-                    description: taggingRes.tag.description,
-                    probability: taggingRes.probability,
-                    allProbabilities: taggingRes.allProbabilities
-                },
-                type_of_motion: {
-                    id: typeOfMotionRes.id,
-                    name: typeOfMotionRes.name,
-                    description: typeOfMotionRes.description,
-                    probability: null
-                },
-                velocity: {
-                    distance_m: speedResult.distance,
-                    time_s: speedResult.time_s,
-                    velocity_ms: speedResult.velocity_ms,
-                    velocity_kmh: speedResult.velocity_kmh,
-                    probability: speedResult.probability
-                },
-                surroundings: jsonSurrounding.surroundings
-            });
-
-            res.end(json);
+            res.end(JSON.stringify(json));
         });
 }
-
-
-//Get measurement-points 1 (FCTStart), 4 (DownloadEnd) and 8 (RTTEnd)
-function filterPositions(positions) {
-
-    positions.sort(function (p1, p2) {
-        return new Date(p1.time).getTime() - new Date(p2.time).getTime();
-    });
-
-    return [positions[0], positions[3], positions[7]];
-}
-
-
-
 
 
 module.exports = { "getTagsJSON": getTagsJSON };

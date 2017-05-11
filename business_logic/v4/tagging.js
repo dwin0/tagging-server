@@ -74,27 +74,6 @@ const OSM_NEAREST_RAILWAYS_IN_10M = 'WITH closest_candidates AS (' +
 
 function getTag(velocity_kmh, positions, callback) {
 
-    //STATIONARY or PEDESTRIAN
-    if(velocity_kmh >= 0 && velocity_kmh < 10) {
-        calculate_RAILWAY_STREET_BUILDING(positions, callback);
-    }
-    //VEHICULAR
-    else if(velocity_kmh <= 120) {
-        calculate_RAILWAY_STREET(positions, callback);
-    }
-    //HIGH_SPEED_VEHICULAR
-    else if(velocity_kmh <= 350) {
-        checkIf_RAILWAY(positions, callback);
-    }
-    else {
-        callback({ tag: UNKNOWN, probability: null });
-    }
-}
-
-
-
-function calculate_RAILWAY_STREET_BUILDING(positions, callback) {
-
     var tags = {
         railway: {
             probability: 0.0,
@@ -109,6 +88,27 @@ function calculate_RAILWAY_STREET_BUILDING(positions, callback) {
             location: BUILDING
         }
     };
+
+    //STATIONARY or PEDESTRIAN
+    if(velocity_kmh >= 0 && velocity_kmh < 10) {
+        calculate_RAILWAY_STREET_BUILDING(tags, positions, callback);
+    }
+    //VEHICULAR
+    else if(velocity_kmh <= 120) {
+        calculate_RAILWAY_STREET(tags, positions, callback);
+    }
+    //HIGH_SPEED_VEHICULAR
+    else if(velocity_kmh <= 350) {
+        checkIf_RAILWAY(tags, positions, callback);
+    }
+    else {
+        callback({ tag: UNKNOWN, probability: null });
+    }
+}
+
+
+
+function calculate_RAILWAY_STREET_BUILDING(tags, positions, callback) {
 
     var nearestBuildingStatements = helper.getDBStatements(SWITZERLAND_NEAREST_BUILDING_IN_15M, positions);
     var nearestWaysStatements = helper.getDBStatements(OSM_NEAREST_WAYS_IN_10M, positions);
@@ -140,18 +140,7 @@ function calculate_RAILWAY_STREET_BUILDING(positions, callback) {
         });
 }
 
-function calculate_RAILWAY_STREET(positions, callback) {
-
-    var tags = {
-        railway: {
-            probability: 0.0,
-            location: RAILWAY
-        },
-        street: {
-            probability: 0.0,
-            location: STREET
-        }
-    };
+function calculate_RAILWAY_STREET(tags, positions, callback) {
 
     var nearestWaysStatements = helper.getDBStatements(OSM_NEAREST_WAYS_IN_10M, positions);
 
@@ -171,14 +160,7 @@ function calculate_RAILWAY_STREET(positions, callback) {
         });
 }
 
-function checkIf_RAILWAY(positions, callback) {
-
-    var tags = {
-        railway: {
-            probability: 0.0,
-            location: RAILWAY
-        }
-    };
+function checkIf_RAILWAY(tags, positions, callback) {
 
     var nearestRailwaysStatements = helper.getDBStatements(OSM_NEAREST_RAILWAYS_IN_10M, positions);
 
