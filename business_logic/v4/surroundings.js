@@ -90,7 +90,7 @@ const NATURAL_QUERY = 'SELECT "natural" FROM surroundings ' +
                     'ST_GeomFromEWKB(wkb_geometry));';
 
 const BOUNDARY_QUERY = 'SELECT boundary FROM surroundings ' +
-                    'WHERE boundary IS NOT NULL AND boundary != \'administrative\' AND ST_Within(' +
+                    'WHERE boundary IS NOT NULL AND ST_Within(' +
                     'ST_GeomFromText((\'{point}\'), 4326), ' +
                     'ST_GeomFromEWKB(wkb_geometry));';
 
