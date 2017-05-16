@@ -78,37 +78,39 @@ const UNKNOWN = {
 
 
 
-const FIND_MIDDLE_POINT2 = "WITH middlePoint AS " +
+const FIND_MIDDLE_POINT = "WITH middlePoint AS " +
     "(SELECT ST_Centroid(ST_GeomFromText($1, 4326))) " +
     "SELECT ST_AsText(st_centroid), ST_X(st_centroid), ST_Y(st_centroid) FROM middlePoint;";
 
 
 
-//TODO: create Table where the not null part is precalculated
 const NATURAL_QUERY = 'SELECT "natural" FROM surroundings ' +
-                    'WHERE "natural" IS NOT NULL AND ST_Within(' +
-                    'ST_GeomFromText((\'{point}\'), 4326), ' +
-                    'ST_GeomFromEWKB(wkb_geometry));';
+    'WHERE "natural" IS NOT NULL AND ST_Within(' +
+    'ST_GeomFromText($1, 4326), ' +
+    'ST_GeomFromEWKB(wkb_geometry));';
 
 const BOUNDARY_QUERY = 'SELECT boundary FROM surroundings ' +
                     'WHERE boundary IS NOT NULL AND ST_Within(' +
-                    'ST_GeomFromText((\'{point}\'), 4326), ' +
+                    'ST_GeomFromText($1, 4326), ' +
                     'ST_GeomFromEWKB(wkb_geometry));';
 
 const LEISURE_QUERY = 'SELECT leisure FROM surroundings ' +
                     'WHERE leisure IS NOT NULL AND ST_Within(' +
-                    'ST_GeomFromText((\'{point}\'), 4326), ' +
+                    'ST_GeomFromText($1, 4326), ' +
                     'ST_GeomFromEWKB(wkb_geometry))';
 
 const LANDUSE_QUERY = 'SELECT landuse FROM surroundings ' +
                     'WHERE landuse IS NOT NULL AND ST_Within(' +
-                    'ST_GeomFromText((\'{point}\'), 4326), ' +
+                    'ST_GeomFromText($1, 4326), ' +
                     'ST_GeomFromEWKB(wkb_geometry));';
 
 //TODO: 2 Abfragen daraus erstellen
 const GEOADMIN_URL = 'https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry={y},{x}' +
     '&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1&lang=de&layers=all:ch.are.bevoelkerungsdichte,' +
     'ch.are.gemeindetypen&mapExtent=0,0,1,1&returnGeometry=false&tolerance=5';
+
+
+
 
 function getGeographicalSurroundings(positions, callback) {
 
@@ -117,40 +119,51 @@ function getGeographicalSurroundings(positions, callback) {
 
     parallel([
             function(callback) {
-                db_access.queryMultipleParameterized(database, FIND_MIDDLE_POINT2, queryPositions, function (result) {
+                db_access.queryMultipleParameterized(database, FIND_MIDDLE_POINT, queryPositions, function (result) {
                     callback(null, result);
                 });
             }
         ],
         function (err, results) {
 
-            //TODO: make 1 function for all cases
-            //TODO: put in parallel-call
-            //TODO: x and y as arguments / remove st_asText from FIND_MIDDLE_POINT
-            var naturalQueries = prepareNaturalDbStatements(NATURAL_QUERY, results);
-            var boundaryQueries = prepareBoundaryAndLeisureDbStatements(BOUNDARY_QUERY, results);
-            var leisureQueries = prepareBoundaryAndLeisureDbStatements(LEISURE_QUERY, results);
-            var landuseQueries = prepareLanduseDbStatements(LANDUSE_QUERY, results);
+            //Get results from first (and only) query
+            results = results[0];
+
+            //TODO: Handle multiple results [][x]
+            /*DEMO-Points
+            natural: POINT(8.7048 47.3611) -> wetland
+            boundary: POINT(8.55777 47.2495) -> protected_area
+            leisure: POINT(8.55777 47.2495) -> nature_reserve
+            landuse: POINT(8.6875 47.2157) -> forest
+             */
+            var middlePoints = [
+                {longitude: results[0][0].st_x, latitude: results[0][0].st_y},
+                {longitude: results[1][0].st_x, latitude: results[1][0].st_y} ];
 
 
+            queryPositions = posHelper.makePoints(middlePoints);
+            var switzerlandDB = db_access.getDatabase(db_access.SWITZERLAND_DB);
+
+
+            //TODO: verarbeitung der resultate vor callback
             parallel([
                     function(callback) {
-                        db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), boundaryQueries, function (result) {
+                        db_access.queryMultipleParameterized(switzerlandDB, BOUNDARY_QUERY, queryPositions, function (result) {
                             callback(null, result);
                         });
                     },
                     function(callback) {
-                        db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), leisureQueries, function (result) {
+                        db_access.queryMultipleParameterized(switzerlandDB, LEISURE_QUERY, queryPositions, function (result) {
                             callback(null, result);
                         });
                     },
                     function(callback) {
-                        db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), landuseQueries, function (result) {
-                           callback(null, result);
+                        db_access.queryMultipleParameterized(switzerlandDB, LANDUSE_QUERY, queryPositions, function (result) {
+                            callback(null, result);
                         });
                     },
                     function(callback) {
-                        db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), naturalQueries, function (result) {
+                        db_access.queryMultipleParameterized(switzerlandDB, NATURAL_QUERY, queryPositions, function (result) {
                             callback(null, result);
                         });
                     }
@@ -238,16 +251,14 @@ function getGeoAdminData(positions, callback) {
 
     parallel([
             function(callback) {
-                db_access.queryMultipleParameterized(database, FIND_MIDDLE_POINT2, queryPositions, function (result) {
+                db_access.queryMultipleParameterized(database, FIND_MIDDLE_POINT, queryPositions, function (result) {
                     callback(null, result);
                 });
             }
         ],
         function (err, results) {
             var lonDownload = results[0][0][0].st_x;
-            console.log(results[0][0][0].st_x);
             var latDownload = results[0][0][0].st_y;
-            console.log(results[0][0][0].st_y);
 
             var lonUpload = results[0][1][0].st_x;
             var latUpload = results[0][1][0].st_y;
@@ -376,36 +387,7 @@ function getCommunityTypeTag(number) {
 
 
 
-//TODO: make one dbStatement --> multiple queries are now used to test whether query is working right with default values
-function prepareNaturalDbStatements(statement, points) {
-    var queries = [];
 
-    var query1 = statement.replace('{point}', 'POINT(8.7048 47.3611)'); //sollte natural: wetland liefern
-    var query2 = statement.replace('{point}', points[0][1][0].st_astext);
-
-    queries.push(query1, query2);
-    return queries;
-}
-
-function prepareLanduseDbStatements(statement, points) {
-    var queries = [];
-
-    var query1 = statement.replace('{point}', 'POINT(8.6875 47.2157)'); //sollte landuse: forest liefern
-    var query2 = statement.replace('{point}', points[0][1][0].st_astext);
-
-    queries.push(query1, query2);
-    return queries;
-}
-
-function prepareBoundaryAndLeisureDbStatements(statement, points) {
-    var queries = [];
-
-    var query1 = statement.replace('{point}', 'POINT(8.55777 47.2495)'); //sollte boundary: protected_area und leisure: nature_reserve liefern
-    var query2 = statement.replace('{point}', points[0][1][0].st_astext);
-
-    queries.push(query1, query2);
-    return queries;
-}
 
 
 function returnSurroundingsTag(downloadTag, uploadTag, callback) {
