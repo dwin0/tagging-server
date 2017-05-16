@@ -1,5 +1,5 @@
-var db = require('../../persistence/db_access_v3');
-var helper = require('./helper');
+var db = require('../../persistence/db_access_v4');
+var posHelper = require('./positionsHelper');
 var parallel = require("async/parallel");
 
 
@@ -41,32 +41,30 @@ const UNKNOWN = {
 //TODO: Make Limits in meters variable
 const SWITZERLAND_NEAREST_BUILDING_IN_15M = 'WITH closest_candidates AS (' +
     'SELECT * FROM public.multipolygons WHERE building IS NOT NULL ' +
-    'ORDER BY multipolygons.wkb_geometry <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) ' +
+    'ORDER BY multipolygons.wkb_geometry <-> ST_GeomFromText($1, 4326) ' +
     'ASC LIMIT 10) ' +
-    'SELECT osm_way_id, name, building, ST_Distance(wkb_geometry::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) ' +
+    'SELECT osm_way_id, name, building, ST_Distance(wkb_geometry::geography, ST_GeomFromText($1, 4326)::geography) ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(wkb_geometry::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) < 15 ' +
+    'WHERE ST_Distance(wkb_geometry::geography, ST_GeomFromText($1, 4326)::geography) < 15 ' +
     'LIMIT 1;';
-
 
 const OSM_NEAREST_WAYS_IN_10M = 'WITH closest_candidates AS (' +
     'SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
-    'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
-    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) ' +
+    'ORDER BY geom_way <-> ST_GeomFromText($1, 4326) LIMIT 100) ' +
+    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) < 10 ' +
-    'ORDER BY ST_Distance(geom_way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) ' +
+    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) < 10 ' +
+    'ORDER BY ST_Distance(geom_way, ST_GeomFromText($1, 4326)) ' +
     'LIMIT 3;';
-
 
 const OSM_NEAREST_RAILWAYS_IN_10M = 'WITH closest_candidates AS (' +
     'SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
     'WHERE clazz >= 50' +
-    'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
-    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) ' +
+    'ORDER BY geom_way <-> ST_GeomFromText($1, 4326) LIMIT 100) ' +
+    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) < 10 ' +
-    'ORDER BY ST_Distance(geom_way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) ' +
+    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) < 10 ' +
+    'ORDER BY ST_Distance(geom_way, ST_GeomFromText($1, 4326)) ' +
     'LIMIT 1;';
 
 
@@ -110,20 +108,21 @@ function getTag(velocity_kmh, positions, callback) {
 
 function calculate_RAILWAY_STREET_BUILDING(tags, positions, callback) {
 
-    var nearestBuildingStatements = helper.getDBStatements(SWITZERLAND_NEAREST_BUILDING_IN_15M, positions);
-    var nearestWaysStatements = helper.getDBStatements(OSM_NEAREST_WAYS_IN_10M, positions);
+    var switzerlandDB = db.getDatabase(db.SWITZERLAND_DB);
+    var streetDB = db.getDatabase(db.STREETS_DB);
+    var queryPositions = posHelper.makePoints(positions);
 
     parallel([
             //Get the nearest building within 15 meters of each of the 3 positions
             function(callback) {
-                db.queryMultiple(db.getDatabase(db.SWITZERLAND_DB), nearestBuildingStatements, function (result) {
-                    callback(null, result);
+                db.queryMultipleParameterized(switzerlandDB, SWITZERLAND_NEAREST_BUILDING_IN_15M, queryPositions, function (result) {
+                        callback(null, result);
                 });
             },
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultiple(db.getDatabase(db.STREETS_DB), nearestWaysStatements, function (result) {
-                    callback(null, result);
+                db.queryMultipleParameterized(streetDB, OSM_NEAREST_WAYS_IN_10M, queryPositions, function (result) {
+                        callback(null, result);
                 });
             }
         ],
@@ -142,13 +141,14 @@ function calculate_RAILWAY_STREET_BUILDING(tags, positions, callback) {
 
 function calculate_RAILWAY_STREET(tags, positions, callback) {
 
-    var nearestWaysStatements = helper.getDBStatements(OSM_NEAREST_WAYS_IN_10M, positions);
+    var database = db.getDatabase(db.STREETS_DB);
+    var queryPositions = posHelper.makePoints(positions);
 
     parallel([
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultiple(db.getDatabase(db.STREETS_DB), nearestWaysStatements, function (result) {
-                    callback(null, result);
+                db.queryMultipleParameterized(database, OSM_NEAREST_WAYS_IN_10M, queryPositions, function (result) {
+                        callback(null, result);
                 });
             }
         ],
@@ -162,13 +162,14 @@ function calculate_RAILWAY_STREET(tags, positions, callback) {
 
 function checkIf_RAILWAY(tags, positions, callback) {
 
-    var nearestRailwaysStatements = helper.getDBStatements(OSM_NEAREST_RAILWAYS_IN_10M, positions);
+    var database = db.getDatabase(db.STREETS_DB);
+    var queryPositions = posHelper.makePoints(positions);
 
     parallel([
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultiple(db.getDatabase(db.STREETS_DB), nearestRailwaysStatements, function (result) {
-                    callback(null, result);
+                db.queryMultipleParameterized(database, OSM_NEAREST_RAILWAYS_IN_10M, queryPositions, function (result) {
+                        callback(null, result);
                 });
             }
         ],

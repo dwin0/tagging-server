@@ -1,4 +1,3 @@
-
 //Get measurement-points 1 (FCTStart), 4 (DownloadEnd) and 8 (RTTEnd)
 function filterPositions(positions) {
 
@@ -28,9 +27,36 @@ function filterSurroundingsPositions(positions) {
     return newPositions;
 }
 
+//Returns positions in the required format for parametrized queries
+function makePoints(positions) {
+
+    var posArray = [];
+
+    for(var i = 0; i < positions.length; i++) {
+        posArray[i] = "POINT(" + positions[i].longitude + " "  + positions[i].latitude + ")";
+    }
+
+    return posArray;
+}
+
+
+function makeMultipoints(positions) {
+
+    var posArray = [];
+
+    for(var i = 0; i < positions.length -1; i++) {
+        posArray[i] = "MULTIPOINT (" + positions[i].longitude + " " + positions[i].latitude + ", " +
+            positions[i+1].longitude + " " + positions[i+1].latitude + ")";
+    }
+
+    return posArray;
+}
+
 
 
 module.exports = {
     "filterPositions": filterPositions,
-    "filterSurroundingsPositions": filterSurroundingsPositions
+    "filterSurroundingsPositions": filterSurroundingsPositions,
+    "makePoints": makePoints,
+    "makeMultipoints": makeMultipoints
 };

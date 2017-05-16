@@ -1,3 +1,5 @@
+//TODO: überall auf JSON-Schreibweise (Camel-Case) prüfen
+
 const taggingSchema_v1 = {
     type: 'object',
     properties: {

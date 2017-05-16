@@ -1,7 +1,7 @@
-var db_access= require('../../persistence/db_access_v3');
-var helper = require('./helper');
+var db_access= require('../../persistence/db_access_v4');
 var parallel = require("async/parallel");
 var converter = require('./wgs84_ch1903');
+var posHelper = require('./positionsHelper');
 var request = require('request');
 
 
@@ -77,8 +77,9 @@ const UNKNOWN = {
 };
 
 
-const FIND_MIDDLE_POINT = "WITH middlePoint AS " +
-    "(SELECT ST_Centroid(ST_GeomFromText(('MULTIPOINT ({lon1} {lat1}, {lon2} {lat2})'), 4326))) " +
+
+const FIND_MIDDLE_POINT2 = "WITH middlePoint AS " +
+    "(SELECT ST_Centroid(ST_GeomFromText($1, 4326))) " +
     "SELECT ST_AsText(st_centroid), ST_X(st_centroid), ST_Y(st_centroid) FROM middlePoint;";
 
 
@@ -110,11 +111,13 @@ const GEOADMIN_URL = 'https://api3.geo.admin.ch/rest/services/all/MapServer/iden
     'ch.are.gemeindetypen&mapExtent=0,0,1,1&returnGeometry=false&tolerance=5';
 
 function getGeographicalSurroundings(positions, callback) {
-    var middlePointQueries = prepareMiddlePointDbStatements(FIND_MIDDLE_POINT, positions);
+
+    var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
+    var queryPositions = posHelper.makeMultipoints(positions);
 
     parallel([
             function(callback) {
-                db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), middlePointQueries, function (result) {
+                db_access.queryMultipleParameterized(database, FIND_MIDDLE_POINT2, queryPositions, function (result) {
                     callback(null, result);
                 });
             }
@@ -229,18 +232,22 @@ function getGeographicalSurroundings(positions, callback) {
 }
 
 function getGeoAdminData(positions, callback) {
-    var middlePointQueries = prepareMiddlePointDbStatements(FIND_MIDDLE_POINT, positions);
+
+    var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
+    var queryPositions = posHelper.makeMultipoints(positions);
 
     parallel([
             function(callback) {
-                db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), middlePointQueries, function (result) {
+                db_access.queryMultipleParameterized(database, FIND_MIDDLE_POINT2, queryPositions, function (result) {
                     callback(null, result);
                 });
             }
         ],
         function (err, results) {
             var lonDownload = results[0][0][0].st_x;
+            console.log(results[0][0][0].st_x);
             var latDownload = results[0][0][0].st_y;
+            console.log(results[0][0][0].st_y);
 
             var lonUpload = results[0][1][0].st_x;
             var latUpload = results[0][1][0].st_y;
@@ -367,24 +374,7 @@ function getCommunityTypeTag(number) {
     }
 }
 
-function prepareMiddlePointDbStatements(statement, positions) {
-    var statements = [];
 
-    var statement1 = statement
-        .replace('{lat1}', positions[0].latitude)
-        .replace('{lon1}', positions[0].longitude)
-        .replace('{lat2}', positions[1].latitude)
-        .replace('{lon2}', positions[1].longitude);
-
-    var statement2 = statement
-        .replace('{lat1}', positions[1].latitude)
-        .replace('{lon1}', positions[1].longitude)
-        .replace('{lat2}', positions[2].latitude)
-        .replace('{lon2}', positions[2].longitude);
-
-    statements.push(statement1, statement2);
-    return statements;
-}
 
 //TODO: make one dbStatement --> multiple queries are now used to test whether query is working right with default values
 function prepareNaturalDbStatements(statement, points) {
