@@ -1,5 +1,6 @@
 var db = require('../../persistence/db_access_v4');
 var posHelper = require('./positionsHelper');
+var queries = require('./dbQueries');
 var parallel = require("async/parallel");
 
 
@@ -28,40 +29,6 @@ const UNKNOWN = {
     name: "unknown",
     description: "No tagging possible."
 };
-
-
-
-
-//TODO: Make Limits in meters variable
-const SWITZERLAND_NEAREST_BUILDING_IN_15M = 'WITH closest_candidates AS (' +
-    'SELECT * FROM public.multipolygons WHERE building IS NOT NULL ' +
-    'ORDER BY multipolygons.wkb_geometry <-> ST_GeomFromText($1, 4326) ' +
-    'ASC LIMIT 10) ' +
-    'SELECT osm_way_id, name, building, ST_Distance(wkb_geometry::geography, ST_GeomFromText($1, 4326)::geography) ' +
-    'FROM closest_candidates ' +
-    'WHERE ST_Distance(wkb_geometry::geography, ST_GeomFromText($1, 4326)::geography) < 15 ' +
-    'LIMIT 1;';
-
-const OSM_NEAREST_WAYS_IN_10M = 'WITH closest_candidates AS (' +
-    'SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
-    'ORDER BY geom_way <-> ST_GeomFromText($1, 4326) LIMIT 100) ' +
-    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) ' +
-    'FROM closest_candidates ' +
-    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) < 10 ' +
-    'ORDER BY ST_Distance(geom_way, ST_GeomFromText($1, 4326)) ' +
-    'LIMIT 3;';
-
-const OSM_NEAREST_RAILWAYS_IN_10M = 'WITH closest_candidates AS (' +
-    'SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
-    'WHERE clazz >= 50' +
-    'ORDER BY geom_way <-> ST_GeomFromText($1, 4326) LIMIT 100) ' +
-    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) ' +
-    'FROM closest_candidates ' +
-    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) < 10 ' +
-    'ORDER BY ST_Distance(geom_way, ST_GeomFromText($1, 4326)) ' +
-    'LIMIT 1;';
-
-
 
 
 function getTag(velocity_kmh, positions, callback) {
@@ -109,13 +76,13 @@ function calculate_RAILWAY_STREET_BUILDING(tags, positions, callback) {
     parallel([
             //Get the nearest building within 15 meters of each of the 3 positions
             function(callback) {
-                db.queryMultipleParameterized(switzerlandDB, SWITZERLAND_NEAREST_BUILDING_IN_15M, queryPositions, function (result) {
+                db.queryMultipleParameterized(switzerlandDB, queries.SWITZERLAND_NEAREST_BUILDING_IN_15M, queryPositions, function (result) {
                         callback(null, result);
                 });
             },
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultipleParameterized(streetDB, OSM_NEAREST_WAYS_IN_10M, queryPositions, function (result) {
+                db.queryMultipleParameterized(streetDB, queries.OSM_NEAREST_WAYS_IN_10M, queryPositions, function (result) {
                         callback(null, result);
                 });
             }
@@ -141,7 +108,7 @@ function calculate_RAILWAY_STREET(tags, positions, callback) {
     parallel([
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultipleParameterized(database, OSM_NEAREST_WAYS_IN_10M, queryPositions, function (result) {
+                db.queryMultipleParameterized(database, queries.OSM_NEAREST_WAYS_IN_10M, queryPositions, function (result) {
                         callback(null, result);
                 });
             }
@@ -162,7 +129,7 @@ function checkIf_RAILWAY(tags, positions, callback) {
     parallel([
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultipleParameterized(database, OSM_NEAREST_RAILWAYS_IN_10M, queryPositions, function (result) {
+                db.queryMultipleParameterized(database, queries.OSM_NEAREST_RAILWAYS_IN_10M, queryPositions, function (result) {
                         callback(null, result);
                 });
             }

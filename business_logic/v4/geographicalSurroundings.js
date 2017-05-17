@@ -2,6 +2,7 @@ var db_access= require('../../persistence/db_access_v4');
 var parallel = require("async/parallel");
 var posHelper = require('./positionsHelper');
 var jsonHelper = require('./jsonHelper');
+var queries = require('./dbQueries');
 
 
 const UNKNOWN = {
@@ -12,30 +13,6 @@ const UNKNOWN = {
     description: "No tagging possible."
 };
 
-const FIND_MIDDLE_POINT = "WITH middlePoint AS " +
-    "(SELECT ST_Centroid(ST_GeomFromText($1, 4326))) " +
-    "SELECT ST_AsText(st_centroid), ST_X(st_centroid), ST_Y(st_centroid) FROM middlePoint;";
-
-const NATURAL_QUERY = 'SELECT "natural" FROM surroundings ' +
-    'WHERE "natural" IS NOT NULL AND ST_Within(' +
-    'ST_GeomFromText($1, 4326), ' +
-    'ST_GeomFromEWKB(wkb_geometry));';
-
-const BOUNDARY_QUERY = 'SELECT boundary FROM surroundings ' +
-    'WHERE boundary IS NOT NULL AND ST_Within(' +
-    'ST_GeomFromText($1, 4326), ' +
-    'ST_GeomFromEWKB(wkb_geometry));';
-
-const LEISURE_QUERY = 'SELECT leisure FROM surroundings ' +
-    'WHERE leisure IS NOT NULL AND ST_Within(' +
-    'ST_GeomFromText($1, 4326), ' +
-    'ST_GeomFromEWKB(wkb_geometry))';
-
-const LANDUSE_QUERY = 'SELECT landuse FROM surroundings ' +
-    'WHERE landuse IS NOT NULL AND ST_Within(' +
-    'ST_GeomFromText($1, 4326), ' +
-    'ST_GeomFromEWKB(wkb_geometry));';
-
 
 function getGeographicalSurroundings(positions, callback) {
 
@@ -44,7 +21,7 @@ function getGeographicalSurroundings(positions, callback) {
 
     parallel([
             function(callback) {
-                db_access.queryMultipleParameterized(database, FIND_MIDDLE_POINT, queryPositions, function (result) {
+                db_access.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (result) {
                     callback(null, result);
                 });
             }
@@ -70,7 +47,7 @@ function getGeographicalSurroundings(positions, callback) {
 
             parallel([
                     function(callback) {
-                        db_access.queryMultipleParameterized(switzerlandDB, BOUNDARY_QUERY, queryPositions, function (result) {
+                        db_access.queryMultipleParameterized(switzerlandDB, queries.BOUNDARY_QUERY, queryPositions, function (result) {
 
                             //TODO: description, ev. up/down unterschiedlich
                             var resultObj = prepareResult(result, 'boundary', null);
@@ -78,7 +55,7 @@ function getGeographicalSurroundings(positions, callback) {
                         });
                     },
                     function(callback) {
-                        db_access.queryMultipleParameterized(switzerlandDB, NATURAL_QUERY, queryPositions, function (result) {
+                        db_access.queryMultipleParameterized(switzerlandDB, queries.NATURAL_QUERY, queryPositions, function (result) {
 
                             //TODO: description
                             var resultObj = prepareResult(result, 'natural', null);
@@ -86,7 +63,7 @@ function getGeographicalSurroundings(positions, callback) {
                         });
                     },
                     function(callback) {
-                        db_access.queryMultipleParameterized(switzerlandDB, LEISURE_QUERY, queryPositions, function (result) {
+                        db_access.queryMultipleParameterized(switzerlandDB, queries.LEISURE_QUERY, queryPositions, function (result) {
 
                             //TODO: description
                             var resultObj = prepareResult(result, 'leisure', null);
@@ -94,7 +71,7 @@ function getGeographicalSurroundings(positions, callback) {
                         });
                     },
                     function(callback) {
-                        db_access.queryMultipleParameterized(switzerlandDB, LANDUSE_QUERY, queryPositions, function (result) {
+                        db_access.queryMultipleParameterized(switzerlandDB, queries.LANDUSE_QUERY, queryPositions, function (result) {
 
                             //TODO: description
                             var resultObj = prepareResult(result, 'landuse', null);

@@ -1,4 +1,3 @@
-
 function renderTagJson(taggingRes, typeOfMotion, speedResult, geographicalSurroundingsResult, geoAdminResults) {
 
     var jsonSurrounding = renderSurroundingsJson(geographicalSurroundingsResult, geoAdminResults);
@@ -28,7 +27,6 @@ function renderTagJson(taggingRes, typeOfMotion, speedResult, geographicalSurrou
         surroundings: jsonSurrounding.surroundings
     }
 }
-
 
 
 function renderSurroundingsJson(geographicalSurroundingsResult, geoAdminResults) {
@@ -87,7 +85,6 @@ function renderSurroundingsJson(geographicalSurroundingsResult, geoAdminResults)
 }
 
 
-
 function prepareSurroundingsDownUp(resultObj) {
 
     return {
@@ -103,7 +100,6 @@ function prepareSurroundingsDownUp(resultObj) {
         }
     };
 }
-
 
 
 module.exports = {

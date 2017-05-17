@@ -75,10 +75,9 @@ function queryMultipleParameterized(database, statement, positions, callback) {
 }
 
 
+function singleQueryParameterized(database, statement, positions, callback) {
 
-function singleQuery(database, queryStatement, callback) {
-
-    database.query(queryStatement, function (err, result) {
+    database.query(statement, positions, function (err, result) {
         if (err) {
             return console.error('error happened during query', err)
         }
@@ -88,5 +87,11 @@ function singleQuery(database, queryStatement, callback) {
 }
 
 
-module.exports = { "singleQuery": singleQuery, "getDatabase": getDatabase,
-    "SWITZERLAND_DB": SWITZERLAND_DB, "STREETS_DB": STREETS_DB, "queryMultipleParameterized": queryMultipleParameterized };
+
+module.exports = {
+    "getDatabase": getDatabase,
+    "SWITZERLAND_DB": SWITZERLAND_DB,
+    "STREETS_DB": STREETS_DB,
+    "singleQueryParameterized": singleQueryParameterized,
+     "queryMultipleParameterized": queryMultipleParameterized
+};

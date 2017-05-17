@@ -1,8 +1,7 @@
-var db_access = require('../../persistence/db_access_v3');
+var db_access = require('../../persistence/db_access_v4');
+var posHelper = require('./positionsHelper');
+var queries = require('./dbQueries');
 var parallel = require("async/parallel");
-
-const OSM_QUERY_DISTANCE = 'SELECT ST_Distance(ST_GeomFromText(\'POINT({lon1} {lat1})\',4326)::geography, ' +
-    'ST_GeomFromText(\'POINT({lon2} {lat2})\', 4326)::geography);';
 
 
 function getVelocity_request(req, res, callback) {
@@ -11,11 +10,14 @@ function getVelocity_request(req, res, callback) {
 
     var startDate = new Date(positions[0].time);
     var endDate = new Date(positions[1].time);
-    var dbStatement = getDbStatement(positions);
+    var queryPositions = posHelper.makePoints(positions);
 
     parallel([
             function(callback) {
-                db_access.singleQuery(db_access.getDatabase(db_access.STREETS_DB), dbStatement, function (result) {
+
+                var database = db_access.getDatabase(db_access.STREETS_DB);
+
+                db_access.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (result) {
                     callback(null, result[0].st_distance)
                 });
             }],
@@ -27,7 +29,6 @@ function getVelocity_request(req, res, callback) {
 
 function getVelocity_positionArray(positions, callback) {
 
-    var dbStatements = [];
     var dbRequests = [];
 
     //prepare dbRequests
@@ -37,16 +38,15 @@ function getVelocity_positionArray(positions, callback) {
         var pos2 = positions[i];
         var time_s = Math.abs(new Date(pos2.time).getTime() - new Date(pos1.time).getTime()) / 1000;
 
-        dbStatements[i-1] = getDbStatement([pos1, pos2]);
+        const queryPositions = posHelper.makePoints([pos1, pos2]);
 
         dbRequests[i-1] = (function(i, time_s) {
             return function(callback) {
-                db_access.singleQuery(db_access.getDatabase(db_access.STREETS_DB), dbStatements[i-1], function (res) {
+                var database = db_access.getDatabase(db_access.STREETS_DB);
+                db_access.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (res) {
                     var resultingVelocityMS = res[0].st_distance / time_s;
                     callback(null, { startPosition: i-1, endPosition: i, time_s: time_s, distance: res[0].st_distance,
                         resultingVelocityMS: resultingVelocityMS } );
-                    /*For Debugging: callback(null, { startPosition: i-1, endPosition: i, time_s: time_s, distance: res,
-                    resultingVelocityMS: resultingVelocityMS } );*/
                 });
             };
         }(i, time_s));
@@ -81,16 +81,6 @@ function calcAverageVelocity(positions) {
         velocity_kmh: velocity_ms * 3.6,
         probability: null
     };
-}
-
-
-function getDbStatement(positions) {
-
-    return OSM_QUERY_DISTANCE
-        .replaceAll("{lon1}", positions[0].longitude)
-        .replaceAll("{lat1}", positions[0].latitude)
-        .replaceAll("{lon2}", positions[1].longitude)
-        .replaceAll("{lat2}", positions[1].latitude);
 }
 
 

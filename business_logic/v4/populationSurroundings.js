@@ -2,6 +2,7 @@ var db_access= require('../../persistence/db_access_v4');
 var parallel = require("async/parallel");
 var converter = require('./wgs84_ch1903');
 var posHelper = require('./positionsHelper');
+var queries = require('./dbQueries');
 var request = require('request');
 
 
@@ -69,11 +70,6 @@ const UNKNOWN = {
 };
 
 
-const FIND_MIDDLE_POINT = "WITH middlePoint AS " +
-    "(SELECT ST_Centroid(ST_GeomFromText($1, 4326))) " +
-    "SELECT ST_AsText(st_centroid), ST_X(st_centroid), ST_Y(st_centroid) FROM middlePoint;";
-
-
 //TODO: in doku -> wenn gemeindetyp [], sehr wahrscheinlich see
 const GEOADMIN_URL_BEVOELKERUNGSDICHTE = 'https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry={y},{x}' +
     '&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1&lang=de&layers=all:ch.are.bevoelkerungsdichte' +
@@ -92,7 +88,7 @@ function getGeoAdminData(positions, callback) {
 
     parallel([
             function(callback) {
-                db_access.queryMultipleParameterized(database, FIND_MIDDLE_POINT, queryPositions, function (result) {
+                db_access.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (result) {
                     callback(null, result);
                 });
             }
