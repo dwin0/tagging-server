@@ -1,7 +1,8 @@
 var tagging = require('./tagging');
 var typeOfMotion = require('./typeOfMotion');
 var velocity = require('./velocity');
-var surroundings = require('./surroundings');
+var populationSurroundings = require('./populationSurroundings');
+var geographicalSurroundings = require('./geographicalSurroundings');
 var parallel = require("async/parallel");
 var jsonHelper = require('./jsonHelper');
 var positionsHelper = require('./positionsHelper');
@@ -43,14 +44,14 @@ function renderTagJSON(res, positions, surroundingsPositions, speedResult) {
             },
             function(callback) {
                 console.time('getGeographicalSurroundings');
-                surroundings.getGeographicalSurroundings(surroundingsPositions, function (result) {
+                geographicalSurroundings.getGeographicalSurroundings(surroundingsPositions, function (result) {
                     console.timeEnd('getGeographicalSurroundings');
                     callback(null, result);
                 });
             },
             function(callback) {
                 console.time('getGeoAdminData');
-                surroundings.getGeoAdminData(surroundingsPositions, function (result) {
+                populationSurroundings.getGeoAdminData(surroundingsPositions, function (result) {
                     console.timeEnd('getGeoAdminData');
                     callback(null, result);
                 })

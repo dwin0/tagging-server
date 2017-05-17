@@ -23,12 +23,6 @@ const BUILDING = {
     description: "Includes positions in or on top of a building."
 };
 
-const OTHER = {
-    id: 100,
-    name:"other",
-    description: "OSM-tag is defined, but not supported."
-};
-
 const UNKNOWN = {
     id: -1,
     name: "unknown",

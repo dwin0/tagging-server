@@ -1,4 +1,5 @@
-var surroundings = require('./surroundings');
+var populationSurroundings = require('./populationSurroundings');
+var geographicalSurroundings = require('./geographicalSurroundings');
 var parallel = require("async/parallel");
 var jsonHelper = require('./jsonHelper');
 var positionsHelper = require('./positionsHelper');
@@ -27,12 +28,12 @@ function getSurroundingsJSON(req, res) {
     } else {
         parallel([
                 function(callback) {
-                    surroundings.getGeographicalSurroundings(positions, function (result) {
+                    geographicalSurroundings.getGeographicalSurroundings(positions, function (result) {
                         callback(null, result);
                     });
                 },
                 function(callback) {
-                    surroundings.getGeoAdminData(positions, function (result) {
+                    populationSurroundings.getGeoAdminData(positions, function (result) {
                         callback(null, result);
                     })
                 }

@@ -43,33 +43,6 @@ function getDatabase(dbName) {
 }
 
 
-
-function queryMultiple(database, statements, callback) {
-
-    var dbRequests = [];
-
-    for(var i = 0; i < statements.length; i++) {
-
-        dbRequests[i] = (function (i) {
-            return function(callback) {
-                database.query(statements[i], function (err, result) {
-                    if (err) {
-                        return console.error('error happened during query', err)
-                    }
-                    callback(null, result.rows);
-                });
-            };
-        })(i);
-    }
-
-    parallel(dbRequests,
-        function(err, results) {
-            callback(results)
-        });
-}
-
-
-
 /**
  * @param database
  * @param statement
@@ -115,5 +88,5 @@ function singleQuery(database, queryStatement, callback) {
 }
 
 
-module.exports = { "queryMultiple": queryMultiple, "singleQuery": singleQuery, "getDatabase": getDatabase,
+module.exports = { "singleQuery": singleQuery, "getDatabase": getDatabase,
     "SWITZERLAND_DB": SWITZERLAND_DB, "STREETS_DB": STREETS_DB, "queryMultipleParameterized": queryMultipleParameterized };

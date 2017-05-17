@@ -45,10 +45,10 @@ function renderSurroundingsJson(geographicalSurroundingsResult, geoAdminResults)
                 community_type: {
                     id: geoAdminResults.download.type.tag.id,
                     type: geoAdminResults.download.type.tag.name,
-                    community_id: geoAdminResults.download.type.res.comId,
-                    community_name: geoAdminResults.download.type.res.comName,
-                    canton_id: geoAdminResults.download.type.res.canId,
-                    canton_name: geoAdminResults.download.type.res.canName,
+                    community_id: geoAdminResults.download.type.res.communityId,
+                    community_name: geoAdminResults.download.type.res.communityName,
+                    canton_id: geoAdminResults.download.type.res.cantonId,
+                    canton_name: geoAdminResults.download.type.res.cantonName,
                     description: geoAdminResults.download.type.tag.description,
                     probability: null
                 },
@@ -68,10 +68,10 @@ function renderSurroundingsJson(geographicalSurroundingsResult, geoAdminResults)
                 community_type: {
                     id: geoAdminResults.upload.type.tag.id,
                     type: geoAdminResults.upload.type.tag.name,
-                    community_id: geoAdminResults.upload.type.res.comId,
-                    community_name: geoAdminResults.upload.type.res.comName,
-                    canton_id: geoAdminResults.upload.type.res.canId,
-                    canton_name: geoAdminResults.upload.type.res.canName,
+                    community_id: geoAdminResults.upload.type.res.communityId,
+                    community_name: geoAdminResults.upload.type.res.communityName,
+                    canton_id: geoAdminResults.upload.type.res.cantonId,
+                    canton_name: geoAdminResults.upload.type.res.cantonName,
                     description: geoAdminResults.upload.type.tag.description,
                     probability: null
                 },
