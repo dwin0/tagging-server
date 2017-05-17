@@ -88,7 +88,26 @@ function renderSurroundingsJson(geographicalSurroundingsResult, geoAdminResults)
 
 
 
+function prepareSurroundingsDownUp(resultObj) {
+
+    return {
+        download: {
+            osm_key: resultObj.down.osm_key,
+            osm_value: resultObj.down.osm_value,
+            description: resultObj.down.description
+        },
+        upload: {
+            osm_key: resultObj.up.osm_key,
+            osm_value: resultObj.up.osm_value,
+            description: resultObj.up.description
+        }
+    };
+}
+
+
+
 module.exports = {
     "renderSurroundingsJson": renderSurroundingsJson,
-    "renderTagJson": renderTagJson
+    "renderTagJson": renderTagJson,
+    "prepareSurroundingsDownUp": prepareSurroundingsDownUp
 };

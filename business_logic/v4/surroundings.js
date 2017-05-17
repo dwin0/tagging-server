@@ -2,6 +2,7 @@ var db_access= require('../../persistence/db_access_v4');
 var parallel = require("async/parallel");
 var converter = require('./wgs84_ch1903');
 var posHelper = require('./positionsHelper');
+var jsonHelper = require('./jsonHelper');
 var request = require('request');
 
 
@@ -111,7 +112,6 @@ const GEOADMIN_URL = 'https://api3.geo.admin.ch/rest/services/all/MapServer/iden
 
 
 
-
 function getGeographicalSurroundings(positions, callback) {
 
     var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
@@ -129,7 +129,6 @@ function getGeographicalSurroundings(positions, callback) {
             //Get results from first (and only) query
             results = results[0];
 
-            //TODO: Handle multiple results [][x]
             /*DEMO-Points
             natural: POINT(8.7048 47.3611) -> wetland
             boundary: POINT(8.55777 47.2495) -> protected_area
@@ -138,111 +137,122 @@ function getGeographicalSurroundings(positions, callback) {
              */
             var middlePoints = [
                 {longitude: results[0][0].st_x, latitude: results[0][0].st_y},
-                {longitude: results[1][0].st_x, latitude: results[1][0].st_y} ];
+                {longitude: 8.6875, latitude: 47.2157} ];
 
 
             queryPositions = posHelper.makePoints(middlePoints);
             var switzerlandDB = db_access.getDatabase(db_access.SWITZERLAND_DB);
 
-
-            //TODO: verarbeitung der resultate vor callback
             parallel([
                     function(callback) {
                         db_access.queryMultipleParameterized(switzerlandDB, BOUNDARY_QUERY, queryPositions, function (result) {
-                            callback(null, result);
-                        });
-                    },
-                    function(callback) {
-                        db_access.queryMultipleParameterized(switzerlandDB, LEISURE_QUERY, queryPositions, function (result) {
-                            callback(null, result);
-                        });
-                    },
-                    function(callback) {
-                        db_access.queryMultipleParameterized(switzerlandDB, LANDUSE_QUERY, queryPositions, function (result) {
-                            callback(null, result);
+
+                            //TODO: description, ev. up/down unterschiedlich
+                            var resultObj = prepareResult(result, 'boundary', null);
+                            callback(null, resultObj);
                         });
                     },
                     function(callback) {
                         db_access.queryMultipleParameterized(switzerlandDB, NATURAL_QUERY, queryPositions, function (result) {
-                            callback(null, result);
+
+                            //TODO: description
+                            var resultObj = prepareResult(result, 'natural', null);
+                            callback(null, resultObj);
+                        });
+                    },
+                    function(callback) {
+                        db_access.queryMultipleParameterized(switzerlandDB, LEISURE_QUERY, queryPositions, function (result) {
+
+                            //TODO: description
+                            var resultObj = prepareResult(result, 'leisure', null);
+                            callback(null, resultObj);
+                        });
+                    },
+                    function(callback) {
+                        db_access.queryMultipleParameterized(switzerlandDB, LANDUSE_QUERY, queryPositions, function (result) {
+
+                            //TODO: description
+                            var resultObj = prepareResult(result, 'landuse', null);
+                            callback(null, resultObj);
                         });
                     }
+
                 ],
-                function (err, results) { //TODO: check if multiple results
+                function (err, results) {
 
-                    var resultingTagDownload = JSON.parse(JSON.stringify(UNKNOWN));
-                    var resultingTagUpload = JSON.parse(JSON.stringify(UNKNOWN));
-
-                    //TODO: Put in a separate function
-                    //boundary
-                    var boundaryDownload = results[0][0];
-                    var boundaryUpload = results[0][1];
-
-                    if(boundaryDownload.length) {
-                        resultingTagDownload.osm_key = 'boundary';
-                        resultingTagDownload.osm_value = boundaryDownload[0].boundary;
-                        resultingTagDownload.description = null; //TODO
-                    }
-                    if(boundaryUpload.length) {
-                        resultingTagUpload.osm_key = 'boundary';
-                        resultingTagUpload.osm_value = boundaryUpload[0].boundary;
-                        resultingTagUpload.description = null; //TODO
-                    }
-
-
-                    //natural
-                    var naturalDownload = results[3][0];
-                    var naturalUpload = results[3][1];
-
-                    if(naturalDownload.length) {
-                        resultingTagDownload.osm_key = 'natural';
-                        resultingTagDownload.osm_value = naturalDownload[0].natural;
-                        resultingTagDownload.description = null; //TODO
-                    }
-                    if(naturalUpload.length) {
-                        resultingTagUpload.osm_key = 'natural';
-                        resultingTagUpload.osm_value = naturalUpload[0].natural;
-                        resultingTagUpload.description = null; //TODO
-                    }
-
-
-                   //leisure
-                    var leisureDownload = results[1][0];
-                    var leisureUpload = results[1][1];
-
-                    if(leisureDownload.length) {
-                        resultingTagDownload.osm_key = 'leisure';
-                        resultingTagDownload.osm_value = leisureDownload[0].leisure;
-                        resultingTagDownload.description = null; //TODO
-                    }
-                    if(leisureUpload.length) {
-                        resultingTagUpload.osm_key = 'leisure';
-                        resultingTagUpload.osm_value = leisureUpload[0].leisure;
-                        resultingTagUpload.description = null; //TODO
-                    }
-
-
-                    //landuse
-                    var landuseDownload = results[2][0];
-                    var landuseUpload = results[2][1];
-
-                    if(landuseDownload.length) {
-                        resultingTagDownload.osm_key = 'landuse';
-                        resultingTagDownload.osm_value = landuseDownload[0].landuse;
-                        resultingTagDownload.description = null; //TODO
-                    }
-                    if(landuseUpload.length) {
-                        resultingTagUpload.osm_key = 'landuse';
-                        resultingTagUpload.osm_value = landuseUpload[0].landuse;
-                        resultingTagUpload.description = null; //TODO
-                    }
-
-                    returnSurroundingsTag(resultingTagDownload, resultingTagUpload, callback);
+                    var resultObj = findMostSpecific(results);
+                    callback(jsonHelper.prepareSurroundingsDownUp(resultObj));
                 }
             );
         }
     );
 }
+
+function prepareResult(result, osmKey, description) {
+
+    //TODO: check if multiple results
+    var resultObj = {
+        down: {
+            empty: true,
+            osm_key: osmKey,
+            osm_value: null,
+            description: description
+        },
+        up: {
+            empty: true,
+            osm_key: osmKey,
+            osm_value: null,
+            description: description
+        }
+    };
+
+    if(result[0].length) {
+        resultObj.down.empty = false;
+        resultObj.down.osm_value = result[0][0][osmKey];
+    }
+
+    if(result[1].length) {
+        resultObj.up.empty = false;
+        resultObj.up.osm_value = result[1][0][osmKey];
+    }
+
+    return resultObj;
+}
+
+function findMostSpecific(results) {
+
+    var resultObj = {
+        down: {
+            empty: true,
+            osm_key: UNKNOWN.osm_key,
+            osm_value: UNKNOWN.osm_value,
+            description: UNKNOWN.description
+        },
+        up: {
+            empty: true,
+            osm_key: UNKNOWN.osm_key,
+            osm_value: UNKNOWN.osm_value,
+            description: UNKNOWN.description
+        }
+    };
+
+    for(var i = 0; i < results.length; i++) {
+
+        if(!results[i].down.empty) {
+            resultObj.down = results[i].down;
+        }
+
+        if(!results[i].up.empty) {
+            resultObj.up = results[i].up;
+        }
+    }
+
+    return resultObj;
+}
+
+
+
+
 
 function getGeoAdminData(positions, callback) {
 
@@ -386,15 +396,5 @@ function getCommunityTypeTag(number) {
 }
 
 
-
-
-
-
-function returnSurroundingsTag(downloadTag, uploadTag, callback) {
-    var result = {
-        download: { osm_key: downloadTag.osm_key, osm_value: downloadTag.osm_value, description: downloadTag.description },
-        upload: { osm_key: uploadTag.osm_key, osm_value: uploadTag.osm_value, description: uploadTag.description } };
-    callback(result);
-}
 
 module.exports = { "getGeographicalSurroundings": getGeographicalSurroundings, "getGeoAdminData": getGeoAdminData };
