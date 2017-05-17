@@ -180,7 +180,7 @@ function getPopulationDensity(geoAdminResult) {
         total += res.properties.popt_ha;
     });
 
-    return total / geoAdminResult.results.length;
+    return Math.round(total / geoAdminResult.results.length);
 }
 
 function getCommunityType(geoAdminResult) {

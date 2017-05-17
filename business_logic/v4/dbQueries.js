@@ -1,3 +1,6 @@
+var config = require('../../config/configReader').queryConfig;
+
+
 /*---------- populationSurroundings.js, geographicalSurroundings.js ----------*/
 
 const FIND_MIDDLE_POINT = "WITH middlePoint AS " +
@@ -38,32 +41,32 @@ const LANDUSE_QUERY = 'SELECT landuse FROM surroundings ' +
 
 
 /*--------- tagging.js -------------------------------------------------------*/
-//TODO: Make Limits in meters variable
-const SWITZERLAND_NEAREST_BUILDING_IN_15M = 'WITH closest_candidates AS (' +
+
+const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
     'SELECT * FROM public.multipolygons WHERE building IS NOT NULL ' +
     'ORDER BY multipolygons.wkb_geometry <-> ST_GeomFromText($1, 4326) ' +
-    'ASC LIMIT 10) ' +
+    'ASC LIMIT ' + config.nearestBuilding.numberOfClosestCandidates + ') ' +
     'SELECT osm_way_id, name, building, ST_Distance(wkb_geometry::geography, ST_GeomFromText($1, 4326)::geography) ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(wkb_geometry::geography, ST_GeomFromText($1, 4326)::geography) < 15 ' +
+    'WHERE ST_Distance(wkb_geometry::geography, ST_GeomFromText($1, 4326)::geography) < ' + config.nearestBuilding.st_distanceToMeasuringLocation + ' ' +
     'LIMIT 1;';
 
-const OSM_NEAREST_WAYS_IN_10M = 'WITH closest_candidates AS (' +
+const OSM_NEAREST_WAYS = 'WITH closest_candidates AS (' +
     'SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
-    'ORDER BY geom_way <-> ST_GeomFromText($1, 4326) LIMIT 100) ' +
+    'ORDER BY geom_way <-> ST_GeomFromText($1, 4326) LIMIT ' + config.nearestWays.numberOfClosestCandidates + ') ' +
     'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) < 10 ' +
+    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) < ' + config.nearestWays.st_distanceToMeasuringLocation + ' ' +
     'ORDER BY ST_Distance(geom_way, ST_GeomFromText($1, 4326)) ' +
     'LIMIT 3;';
 
-const OSM_NEAREST_RAILWAYS_IN_10M = 'WITH closest_candidates AS (' +
+const OSM_NEAREST_RAILWAYS = 'WITH closest_candidates AS (' +
     'SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
     'WHERE clazz >= 50' +
-    'ORDER BY geom_way <-> ST_GeomFromText($1, 4326) LIMIT 100) ' +
+    'ORDER BY geom_way <-> ST_GeomFromText($1, 4326) LIMIT ' + config.nearestRailways.numberOfClosestCandidates + ') ' +
     'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) < 10 ' +
+    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) < ' + config.nearestRailways.st_distanceToMeasuringLocation + ' ' +
     'ORDER BY ST_Distance(geom_way, ST_GeomFromText($1, 4326)) ' +
     'LIMIT 1;';
 
@@ -88,8 +91,8 @@ module.exports = {
     "BOUNDARY_QUERY": BOUNDARY_QUERY,
     "LEISURE_QUERY": LEISURE_QUERY,
     "LANDUSE_QUERY": LANDUSE_QUERY,
-    "SWITZERLAND_NEAREST_BUILDING_IN_15M": SWITZERLAND_NEAREST_BUILDING_IN_15M,
-    "OSM_NEAREST_WAYS_IN_10M": OSM_NEAREST_WAYS_IN_10M,
-    "OSM_NEAREST_RAILWAYS_IN_10M": OSM_NEAREST_RAILWAYS_IN_10M,
+    "SWITZERLAND_NEAREST_BUILDING": SWITZERLAND_NEAREST_BUILDING,
+    "OSM_NEAREST_WAYS": OSM_NEAREST_WAYS,
+    "OSM_NEAREST_RAILWAYS": OSM_NEAREST_RAILWAYS,
     "OSM_QUERY_DISTANCE": OSM_QUERY_DISTANCE
 };

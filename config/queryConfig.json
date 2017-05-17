@@ -1,0 +1,14 @@
+{
+  "nearestRailways": {
+    "numberOfClosestCandidates": 100,
+    "st_distanceToMeasuringLocation": 10
+  },
+  "nearestWays": {
+    "numberOfClosestCandidates": 100,
+    "st_distanceToMeasuringLocation": 10
+  },
+  "nearestBuilding": {
+    "numberOfClosestCandidates": 10,
+    "st_distanceToMeasuringLocation": 15
+  }
+}

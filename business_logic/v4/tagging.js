@@ -76,13 +76,13 @@ function calculate_RAILWAY_STREET_BUILDING(tags, positions, callback) {
     parallel([
             //Get the nearest building within 15 meters of each of the 3 positions
             function(callback) {
-                db.queryMultipleParameterized(switzerlandDB, queries.SWITZERLAND_NEAREST_BUILDING_IN_15M, queryPositions, function (result) {
+                db.queryMultipleParameterized(switzerlandDB, queries.SWITZERLAND_NEAREST_BUILDING, queryPositions, function (result) {
                         callback(null, result);
                 });
             },
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultipleParameterized(streetDB, queries.OSM_NEAREST_WAYS_IN_10M, queryPositions, function (result) {
+                db.queryMultipleParameterized(streetDB, queries.OSM_NEAREST_WAYS, queryPositions, function (result) {
                         callback(null, result);
                 });
             }
@@ -108,7 +108,7 @@ function calculate_RAILWAY_STREET(tags, positions, callback) {
     parallel([
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultipleParameterized(database, queries.OSM_NEAREST_WAYS_IN_10M, queryPositions, function (result) {
+                db.queryMultipleParameterized(database, queries.OSM_NEAREST_WAYS, queryPositions, function (result) {
                         callback(null, result);
                 });
             }
@@ -129,7 +129,7 @@ function checkIf_RAILWAY(tags, positions, callback) {
     parallel([
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultipleParameterized(database, queries.OSM_NEAREST_RAILWAYS_IN_10M, queryPositions, function (result) {
+                db.queryMultipleParameterized(database, queries.OSM_NEAREST_RAILWAYS, queryPositions, function (result) {
                         callback(null, result);
                 });
             }
