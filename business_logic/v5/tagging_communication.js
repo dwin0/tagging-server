@@ -10,14 +10,7 @@ var positionsHelper = require('./positionsHelper');
 
 function getTagsJSON(req, res) {
 
-    var positions = req.body.positions;
-
-    if(typeof positions === 'string') {
-        positions = JSON.parse(positions);
-    }
-
-    var surroundingsPositions = positionsHelper.filterSurroundingsPositions(positions);
-    positions = positionsHelper.filterPositions(positions);
+    var positions = positionsHelper.choosePositions(req.body.positions, res);
 
     parallel([
             function(callback) {
@@ -27,12 +20,12 @@ function getTagsJSON(req, res) {
             }
         ],
         function(err, results) {
-            renderTagJSON(res, positions, surroundingsPositions, results[0])
+            renderTagJSON(res, positions, results[0])
         }
     );
 }
 
-function renderTagJSON(res, positions, surroundingsPositions, speedResult) {
+function renderTagJSON(res, positions, speedResult) {
 
     parallel([
             function(callback) {
@@ -44,14 +37,14 @@ function renderTagJSON(res, positions, surroundingsPositions, speedResult) {
             },
             function(callback) {
                 console.time('getGeographicalSurroundings');
-                geographicalSurroundings.getGeographicalSurroundings(surroundingsPositions, function (result) {
+                geographicalSurroundings.getGeographicalSurroundings(positions, function (result) {
                     console.timeEnd('getGeographicalSurroundings');
                     callback(null, result);
                 });
             },
             function(callback) {
                 console.time('getGeoAdminData');
-                populationSurroundings.getGeoAdminData(surroundingsPositions, function (result) {
+                populationSurroundings.getGeoAdminData(positions, function (result) {
                     console.timeEnd('getGeoAdminData');
                     callback(null, result);
                 })
