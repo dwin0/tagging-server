@@ -59,9 +59,13 @@
   </body>
 
 
+  <!--TODO: handle v1-v3-->
   {{#ifSame version '4.0'}}
       <script type="text/javascript" src="/javascripts/initForm_v4.js"></script>
       <script type="text/javascript" src="/javascripts/sendRequest_v4.js"></script>
+  {{else ifSame version '5.0'}}
+      <script type="text/javascript" src="/javascripts/initForm_v4.js"></script>
+      <script type="text/javascript" src="/javascripts/sendRequest_v5.js"></script>
   {{else}}
       <script type="text/javascript" src="/javascripts/initForm.js"></script>
       <script type="text/javascript" src="/javascripts/sendRequest_v3.js"></script>
