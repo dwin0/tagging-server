@@ -17,8 +17,6 @@ const UNKNOWN = { id: -1, name: "unknown", description: "No tagging possible." }
 function getType(speed) {
 
     switch(true) {
-        case (speed < 0):
-            return new Error('speed is negative');
         case (speed >= 0 && speed < 3):
             return STATIONARY;
         case (speed >= 3 && speed < 10):

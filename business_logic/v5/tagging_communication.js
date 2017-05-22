@@ -15,36 +15,21 @@ function getTags(req, res) {
         return;
     }
 
+
     parallel([
             function(callback) {
                 velocity.getVelocity_positionArray(positions, function (velocityJSON) {
                     callback(null, velocityJSON);
                 });
-            },
-            function (callback) {
-                positionsHelper.checkIfSwitzerland(positions, function (result) {
-                    var allPointsInSwitzerland = result[0].point1 && result[0].point2 && result[0].point3;
-                    callback(null, allPointsInSwitzerland);
-                })
             }
         ],
         function(err, results) {
-            calculateTags(res, positions, results[0], results[1])
+            calculateTags(res, positions, results[0])
         }
     );
 }
 
-function calculateTags(res, positions, speedResult, allPointsInSwitzerland) {
-
-    if(!allPointsInSwitzerland) {
-
-        res.status(400).json({
-            statusText: 'Bad Request',
-            description: 'Not all positions are located within switzerland.'
-        });
-
-        return;
-    }
+function calculateTags(res, positions, speedResult) {
 
     var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
 
@@ -81,9 +66,29 @@ function calculateTags(res, positions, speedResult, allPointsInSwitzerland) {
                     console.timeEnd('getGeoAdminData');
                     callback(null, result);
                 })
+            },
+            function (callback) {
+                console.time('checkIfSwitzerland');
+                positionsHelper.checkIfSwitzerland(positions, function (result) {
+                    var allPointsInSwitzerland = result[0].point1 && result[0].point2 && result[0].point3;
+                    console.timeEnd('checkIfSwitzerland');
+                    callback(null, allPointsInSwitzerland);
+                })
             }
         ],
         function(err, results) {
+
+            var allPointsInSwitzerland = results[3];
+
+            if(!allPointsInSwitzerland) {
+
+                res.status(400).json({
+                    statusText: 'Bad Request',
+                    description: 'Not all positions are located within switzerland.'
+                });
+
+                return;
+            }
 
             /*Parameters: tagging-result, type-of-motion, speed-result, geographicalSurroundings-result, geoAdmin-result */
             var response = jsonHelper.renderTagJson(results[0], typeOfMotionRes, speedResult, results[1], results[2]);

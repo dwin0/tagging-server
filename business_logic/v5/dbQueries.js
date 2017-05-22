@@ -88,7 +88,7 @@ const OSM_QUERY_DISTANCE = 'SELECT ST_Distance(ST_GeomFromText($1,4326)::geograp
 
 
 
-//TODO: separate Table for this entry
+//TODO: separate Table for this entry -> not faster
 /*--------- positionHelper.js ------------------------------------------------------*/
 
 const INSIDE_SWITZERLAND = 'WITH switzerland AS (SELECT wkb_geometry FROM multipolygons WHERE osm_id = \'51701\') ' +
