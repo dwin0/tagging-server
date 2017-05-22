@@ -1,3 +1,8 @@
+var db_access= require('../../persistence/db_access_v4');
+var queries = require('./dbQueries');
+
+
+
 /**
  * Filters the 8 input-positions for the 3 bests.
  * Positions 1-3, 4-5 and 6-8 are close to each other. This methods chooses the best position out of each group.
@@ -15,19 +20,27 @@ function choosePositions(positions, res) {
         return new Date(p1.time).getTime() - new Date(p2.time).getTime();
     });
 
-    var beforeDownloadCandidates = [positions[0], positions[1], positions[2]];
-    beforeDownloadCandidates = filterValidLatLon(beforeDownloadCandidates, res);
-    var beforeDownload = chooseBeforeDownload(beforeDownloadCandidates);
+    var beforeDownload = chooseForPhase([positions[0], positions[1], positions[2]], res, chooseBeforeDownload);
+    var beforeUpload = chooseForPhase([positions[3], positions[4]], res, chooseBeforeUpload);
+    var afterUpload = chooseForPhase([positions[5], positions[6], positions[7]], res, chooseAfterUpload);
 
-    var beforeUploadCandidates = [positions[3], positions[4]];
-    beforeUploadCandidates = filterValidLatLon(beforeUploadCandidates, res);
-    var beforeUpload = chooseBeforeUpload(beforeUploadCandidates);
-
-    var afterUploadCandidates = [positions[5], positions[6], positions[7]];
-    afterUploadCandidates = filterValidLatLon(afterUploadCandidates, res);
-    var afterUpload = chooseAfterUpload(afterUploadCandidates);
+    if(typeof beforeDownload === 'undefined' ||
+        typeof beforeUpload === 'undefined' ||
+        typeof afterUpload === 'undefined')
+    {
+        return;
+    }
 
     return [beforeDownload, beforeUpload, afterUpload];
+}
+
+function chooseForPhase(phaseCandidates, res, phaseSelectionMethod) {
+
+    var validCandidates = filterValidLatLon(phaseCandidates, res);
+    if(typeof validCandidates === 'undefined') {
+        return;
+    }
+    return phaseSelectionMethod(validCandidates);
 }
 
 
@@ -37,19 +50,19 @@ function filterValidLatLon(posArray, res) {
 
     posArray.forEach(function (pos) {
 
-        if(pos.longitude !== 0 && pos.latitude !== 0) {
+        if(pos.latitude !== 0 && pos.longitude !== 0) {
             validPositions.push(pos);
         }
     });
 
     if(validPositions.length === 0) {
 
-        res.json(400, {
+        res.status(400).json({
             statusText: 'Bad Request',
-            description: 'Cannot tag positions with multiple occurrences of longitude or latitude 0.',
-            receivedElements: posArray
+            description: 'Cannot tag positions with multiple occurrences of longitude or latitude 0.'
         });
 
+        return;
     }
 
     return validPositions;
@@ -168,6 +181,16 @@ function chooseAfterUpload(posArray) {
 
 
 
+function checkIfSwitzerland(positions, callback) {
+
+    var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
+    var queryPositions = makePoints(positions);
+
+    db_access.singleQueryParameterized(database, queries.INSIDE_SWITZERLAND, queryPositions, function (result) {
+        callback(result);
+    });
+}
+
 
 
 
@@ -202,6 +225,7 @@ function makeMultipoints(positions) {
 
 module.exports = {
     "choosePositions": choosePositions,
+    "checkIfSwitzerland": checkIfSwitzerland,
     "makePoints": makePoints,
     "makeMultipoints": makeMultipoints
 };

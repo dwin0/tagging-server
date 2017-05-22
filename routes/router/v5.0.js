@@ -14,7 +14,7 @@ router.get('/tag', function (req, res) {
 // This route validates req.body against the taggingSchema
 router.post('/tag', validate({body: jsonSchema.taggingSchema_v4}), function (req, res) {
     // At this point req.body has been validated
-    tagging_v5.getTagsJSON(req, res);
+    tagging_v5.getTags(req, res);
 });
 
 
@@ -26,7 +26,7 @@ router.get('/findSurroundings', function (req, res) {
 // This route validates req.body against the taggingSchema
 router.post('/findSurroundings', validate({body: jsonSchema.surroundingsSchema_v3}), function (req, res) {
     // At this point req.body has been validated
-    surroundings_v5.getSurroundingsJSON(req, res);
+    surroundings_v5.getSurroundings(req, res);
 });
 
 
@@ -36,7 +36,7 @@ router.get('/calculateSpeed', function (req, res) {
 });
 
 router.post('/calculateSpeed', validate({body: jsonSchema.velocitySchema_v3}), function (req, res) {
-    velocity_v5.getSpeedCalculationJSON(req, res);
+    velocity_v5.getSpeedCalculation(req, res);
 });
 
 

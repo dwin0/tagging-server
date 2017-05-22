@@ -5,9 +5,12 @@ var jsonHelper = require('./jsonHelper');
 var positionsHelper = require('./positionsHelper');
 
 
-function getSurroundingsJSON(req, res) {
+function getSurroundings(req, res) {
 
     var positions = positionsHelper.choosePositions(req.body.positions, res);
+    if(typeof positions === 'undefined') {
+        return;
+    }
 
     parallel([
             function(callback) {
@@ -24,13 +27,11 @@ function getSurroundingsJSON(req, res) {
         function(err, results) {
 
             /*Parameters: geographicalSurroundings-result, geoAdmin-result */
-            var json = jsonHelper.renderSurroundingsJson(results[0], results[1]);
-
-            res.writeHead(200, {"Content-Type": "application/json"});
-            res.end(JSON.stringify(json));
+            var response = jsonHelper.renderSurroundingsJson(results[0], results[1]);
+            res.status(200).json(response);
         }
     );
 }
 
 
-module.exports = { "getSurroundingsJSON": getSurroundingsJSON };
+module.exports = { "getSurroundings": getSurroundings };

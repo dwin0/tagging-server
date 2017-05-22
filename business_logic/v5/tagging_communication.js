@@ -8,24 +8,57 @@ var jsonHelper = require('./jsonHelper');
 var positionsHelper = require('./positionsHelper');
 
 
-function getTagsJSON(req, res) {
+function getTags(req, res) {
 
     var positions = positionsHelper.choosePositions(req.body.positions, res);
+    if(typeof positions === 'undefined') {
+        return;
+    }
 
     parallel([
             function(callback) {
                 velocity.getVelocity_positionArray(positions, function (velocityJSON) {
                     callback(null, velocityJSON);
                 });
+            },
+            function (callback) {
+                positionsHelper.checkIfSwitzerland(positions, function (result) {
+                    var allPointsInSwitzerland = result[0].point1 && result[0].point2 && result[0].point3;
+                    callback(null, allPointsInSwitzerland);
+                })
             }
         ],
         function(err, results) {
-            renderTagJSON(res, positions, results[0])
+            calculateTags(res, positions, results[0], results[1])
         }
     );
 }
 
-function renderTagJSON(res, positions, speedResult) {
+function calculateTags(res, positions, speedResult, allPointsInSwitzerland) {
+
+    if(!allPointsInSwitzerland) {
+
+        res.status(400).json({
+            statusText: 'Bad Request',
+            description: 'Not all positions are located within switzerland.'
+        });
+
+        return;
+    }
+
+    var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
+
+    if(typeOfMotionRes.name === "unknown") {
+
+        res.status(400).json({
+            statusText: 'Bad Request',
+            description: 'The input-positions are too far away from each other.',
+            velocity_kmh: speedResult.velocity_kmh
+        });
+
+        return;
+    }
+
 
     parallel([
             function(callback) {
@@ -52,15 +85,11 @@ function renderTagJSON(res, positions, speedResult) {
         ],
         function(err, results) {
 
-            var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
-
             /*Parameters: tagging-result, type-of-motion, speed-result, geographicalSurroundings-result, geoAdmin-result */
-            var json = jsonHelper.renderTagJson(results[0], typeOfMotionRes, speedResult, results[1], results[2]);
-
-            res.writeHead(200, {"Content-Type": "application/json"});
-            res.end(JSON.stringify(json));
+            var response = jsonHelper.renderTagJson(results[0], typeOfMotionRes, speedResult, results[1], results[2]);
+            res.status(200).json(response);
         });
 }
 
 
-module.exports = { "getTagsJSON": getTagsJSON };
+module.exports = { "getTags": getTags };

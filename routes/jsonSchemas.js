@@ -268,6 +268,7 @@ function handleJsonSchemaValidationError(err, req, res, next) {
         } else {
             // If this is an html request then you should probably have
             // some type of Bad Request html template to respond with
+            //TODO: entfernen
             res.render('badrequest', responseData);
         }
     } else {
