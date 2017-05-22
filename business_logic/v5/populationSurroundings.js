@@ -1,6 +1,6 @@
 var db_access= require('../../persistence/db_access_v4');
 var parallel = require("async/parallel");
-var converter = require('./wgs84_ch1903');
+var urlHelper = require('./UrlHelper');
 var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
 var request = require('request');
@@ -98,15 +98,15 @@ function getGeoAdminData(positions, callback) {
             var requests = [];
 
             //download
-            requests[0] = getGeoAdminURL(results[0][0][0], GEOADMIN_URL_BEVOELKERUNGSDICHTE);
-            requests[1] = getGeoAdminURL(results[0][0][0], GEOADMIN_URL_GEMEINDETYP);
+            requests[0] = urlHelper.getGeoAdminURL(results[0][0][0], GEOADMIN_URL_BEVOELKERUNGSDICHTE);
+            requests[1] = urlHelper.getGeoAdminURL(results[0][0][0], GEOADMIN_URL_GEMEINDETYP);
 
             //upload
-            requests[2] = getGeoAdminURL(results[0][1][0], GEOADMIN_URL_BEVOELKERUNGSDICHTE);
-            requests[3] = getGeoAdminURL(results[0][1][0], GEOADMIN_URL_GEMEINDETYP);
+            requests[2] = urlHelper.getGeoAdminURL(results[0][1][0], GEOADMIN_URL_BEVOELKERUNGSDICHTE);
+            requests[3] = urlHelper.getGeoAdminURL(results[0][1][0], GEOADMIN_URL_GEMEINDETYP);
 
 
-            var requestFunctions = getGeoAdminRequests(requests);
+            var requestFunctions = urlHelper.getGeoAdminRequests(requests);
 
             parallel(requestFunctions,
 
@@ -136,41 +136,7 @@ function getGeoAdminData(positions, callback) {
     );
 }
 
-function getGeoAdminURL(point, URL) {
 
-    var longitude = point.st_x;
-    var latitude = point.st_y;
-
-    var chY = converter.WGStoCHy(latitude, longitude);
-    var chX = converter.WGStoCHx(latitude, longitude);
-
-    return URL.replace('{y}', chY).replace('{x}', chX);
-}
-
-function getGeoAdminRequests(requests) {
-
-    var requestFunctions = [];
-
-    for(var i = 0; i < requests.length; i++) {
-
-        requestFunctions[i] = (function (i) {
-            return function(callback) {
-                request.get(
-                    requests[i],
-                    function (error, response) {
-                        if (!error && response.statusCode === 200) {
-                            callback(null, JSON.parse(response.body));
-                        } else {
-                            console.error("error: " + response.statusCode);
-                        }
-                    }
-                );
-            };
-        })(i);
-    }
-
-    return requestFunctions;
-}
 
 function getPopulationDensity(geoAdminResult) {
 

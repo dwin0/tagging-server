@@ -15,7 +15,6 @@ function getTags(req, res) {
         return;
     }
 
-
     parallel([
             function(callback) {
                 velocity.getVelocity_positionArray(positions, function (velocityJSON) {
@@ -44,7 +43,7 @@ function calculateTags(res, positions, speedResult) {
         return;
     }
 
-
+    //TODO: check if faster if long operations are put at the beginning
     parallel([
             function(callback) {
                 console.time('getTag');
@@ -70,9 +69,8 @@ function calculateTags(res, positions, speedResult) {
             function (callback) {
                 console.time('checkIfSwitzerland');
                 positionsHelper.checkIfSwitzerland(positions, function (result) {
-                    var allPointsInSwitzerland = result[0].point1 && result[0].point2 && result[0].point3;
                     console.timeEnd('checkIfSwitzerland');
-                    callback(null, allPointsInSwitzerland);
+                    callback(null, result);
                 })
             }
         ],
@@ -89,6 +87,7 @@ function calculateTags(res, positions, speedResult) {
 
                 return;
             }
+
 
             /*Parameters: tagging-result, type-of-motion, speed-result, geographicalSurroundings-result, geoAdmin-result */
             var response = jsonHelper.renderTagJson(results[0], typeOfMotionRes, speedResult, results[1], results[2]);

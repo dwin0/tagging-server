@@ -87,25 +87,6 @@ const OSM_QUERY_DISTANCE = 'SELECT ST_Distance(ST_GeomFromText($1,4326)::geograp
 
 
 
-
-//TODO: separate Table for this entry -> not faster
-/*--------- positionHelper.js ------------------------------------------------------*/
-
-const INSIDE_SWITZERLAND = 'WITH switzerland AS (SELECT wkb_geometry FROM multipolygons WHERE osm_id = \'51701\') ' +
-    'SELECT ST_Within(ST_GeomFromText($1, 4326), wkb_geometry) AS point1, ' +
-    'ST_Within(ST_GeomFromText($2, 4326), wkb_geometry) AS point2, ' +
-    'ST_Within(ST_GeomFromText($3, 4326), wkb_geometry) AS point3 ' +
-    'FROM switzerland;';
-
-/*END velocity.js ------------------------------------------------------*/
-
-
-
-
-
-
-
-
 module.exports = {
     "FIND_MIDDLE_POINT": FIND_MIDDLE_POINT,
     "NATURAL_QUERY": NATURAL_QUERY,
@@ -115,6 +96,5 @@ module.exports = {
     "SWITZERLAND_NEAREST_BUILDING": SWITZERLAND_NEAREST_BUILDING,
     "OSM_NEAREST_WAYS": OSM_NEAREST_WAYS,
     "OSM_NEAREST_RAILWAYS": OSM_NEAREST_RAILWAYS,
-    "OSM_QUERY_DISTANCE": OSM_QUERY_DISTANCE,
-    "INSIDE_SWITZERLAND": INSIDE_SWITZERLAND
+    "OSM_QUERY_DISTANCE": OSM_QUERY_DISTANCE
 };
