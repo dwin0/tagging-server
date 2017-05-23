@@ -31,7 +31,7 @@ const UNKNOWN = {
 };
 
 
-function getTag(velocity_kmh, positions, callback) {
+function getTag(typeOfMotion, positions, callback) {
 
     var tags = {
         railway: {
@@ -48,20 +48,27 @@ function getTag(velocity_kmh, positions, callback) {
         }
     };
 
-    //STATIONARY or PEDESTRIAN
-    if(velocity_kmh >= 0 && velocity_kmh < 10) {
-        calculate_RAILWAY_STREET_BUILDING(tags, positions, callback);
-    }
-    //VEHICULAR
-    else if(velocity_kmh <= 120) {
-        calculate_RAILWAY_STREET(tags, positions, callback);
-    }
-    //HIGH_SPEED_VEHICULAR
-    else if(velocity_kmh <= 350) {
-        checkIf_RAILWAY(tags, positions, callback);
-    }
-    else {
-        callback({ tag: UNKNOWN, probability: null });
+    switch(typeOfMotion.id) {
+
+        //STATIONARY
+        case 1:
+        //PEDESTRIAN
+        case 2:
+            calculate_RAILWAY_STREET_BUILDING(tags, positions, callback);
+            break;
+
+        //VEHICULAR
+        case 3:
+            calculate_RAILWAY_STREET(tags, positions, callback);
+            break;
+
+        //HIGH_SPEED_VEHICULAR
+        case 4:
+            checkIf_RAILWAY(tags, positions, callback);
+            break;
+
+        default:
+            callback({ tag: UNKNOWN, probability: null });
     }
 }
 

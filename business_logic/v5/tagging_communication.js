@@ -47,7 +47,7 @@ function calculateTags(res, positions, speedResult) {
     parallel([
             function(callback) {
                 console.time('getTag');
-                tagging.getTag(speedResult.velocity_kmh, positions, function (result) {
+                tagging.getTag(typeOfMotionRes, positions, function (result) {
                     console.timeEnd('getTag');
                     callback(null, result);
                 });
