@@ -43,7 +43,6 @@ function calculateTags(res, positions, speedResult) {
         return;
     }
 
-    //TODO: check if faster if long operations are put at the beginning
     parallel([
             function(callback) {
                 console.time('getTag');

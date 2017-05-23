@@ -15,25 +15,8 @@ const FIND_MIDDLE_POINT = "WITH middlePoint AS " +
 
 /*--------- geographicalSurroundings.js --------------------------------------*/
 
-const NATURAL_QUERY = 'SELECT "natural" FROM surroundings ' +
-    'WHERE "natural" IS NOT NULL AND ST_Within(' +
-    'ST_GeomFromText($1, 4326), ' +
-    'ST_GeomFromEWKB(wkb_geometry));';
-
-const BOUNDARY_QUERY = 'SELECT boundary FROM surroundings ' +
-    'WHERE boundary IS NOT NULL AND ST_Within(' +
-    'ST_GeomFromText($1, 4326), ' +
-    'ST_GeomFromEWKB(wkb_geometry));';
-
-const LEISURE_QUERY = 'SELECT leisure FROM surroundings ' +
-    'WHERE leisure IS NOT NULL AND ST_Within(' +
-    'ST_GeomFromText($1, 4326), ' +
-    'ST_GeomFromEWKB(wkb_geometry))';
-
-const LANDUSE_QUERY = 'SELECT landuse FROM surroundings ' +
-    'WHERE landuse IS NOT NULL AND ST_Within(' +
-    'ST_GeomFromText($1, 4326), ' +
-    'ST_GeomFromEWKB(wkb_geometry));';
+const GEOGRAPHICAL_QUERY = 'SELECT boundary, "natural", leisure, landuse FROM surroundings ' +
+    'WHERE ST_Within(ST_GeomFromText($1, 4326), wkb_geometry);';
 
 /*END geographicalSurroundings.js*/
 
@@ -88,10 +71,7 @@ const OSM_QUERY_DISTANCE = 'SELECT ST_Distance(ST_GeomFromText($1,4326)::geograp
 
 module.exports = {
     "FIND_MIDDLE_POINT": FIND_MIDDLE_POINT,
-    "NATURAL_QUERY": NATURAL_QUERY,
-    "BOUNDARY_QUERY": BOUNDARY_QUERY,
-    "LEISURE_QUERY": LEISURE_QUERY,
-    "LANDUSE_QUERY": LANDUSE_QUERY,
+    "GEOGRAPHICAL_QUERY": GEOGRAPHICAL_QUERY,
     "SWITZERLAND_NEAREST_BUILDING": SWITZERLAND_NEAREST_BUILDING,
     "OSM_NEAREST_WAYS": OSM_NEAREST_WAYS,
     "OSM_NEAREST_RAILWAYS": OSM_NEAREST_RAILWAYS,

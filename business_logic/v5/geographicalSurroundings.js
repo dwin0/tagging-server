@@ -1,7 +1,6 @@
 var db_access= require('../../persistence/db_access_v4');
 var parallel = require("async/parallel");
 var posHelper = require('./positionsHelper');
-var jsonHelper = require('./jsonHelper');
 var queries = require('./dbQueries');
 
 
@@ -32,126 +31,60 @@ function getGeographicalSurroundings(positions, callback) {
             results = results[0];
 
             /*DEMO-Points
-             natural: POINT(8.7048 47.3611) -> wetland
              boundary: POINT(8.55777 47.2495) -> protected_area
+             natural: POINT(8.7048 47.3611) -> wetland
              leisure: POINT(8.55777 47.2495) -> nature_reserve
              landuse: POINT(8.6875 47.2157) -> forest
+
+             multiple entries: POINT(8.73956 47.54351) -> natural: scrub / leisure: natural_reserve
              */
             var middlePoints = [
                 {longitude: results[0][0].st_x, latitude: results[0][0].st_y},
-                {longitude: 8.6875, latitude: 47.2157} ];
-
+                {longitude: results[1][0].st_x, latitude: results[1][0].st_y } ];
 
             queryPositions = posHelper.makePoints(middlePoints);
             var switzerlandDB = db_access.getDatabase(db_access.SWITZERLAND_DB);
 
-            parallel([
-                    function(callback) {
-                        db_access.queryMultipleParameterized(switzerlandDB, queries.BOUNDARY_QUERY, queryPositions, function (result) {
+            db_access.queryMultipleParameterized(switzerlandDB, queries.GEOGRAPHICAL_QUERY, queryPositions, function (result) {
 
-                            //TODO: description, ev. up/down unterschiedlich
-                            var resultObj = prepareResult(result, 'boundary', null);
-                            callback(null, resultObj);
-                        });
-                    },
-                    function(callback) {
-                        db_access.queryMultipleParameterized(switzerlandDB, queries.NATURAL_QUERY, queryPositions, function (result) {
+                var downloadResult = result[0][0];
+                var uploadResult = result[1][0];
 
-                            //TODO: description
-                            var resultObj = prepareResult(result, 'natural', null);
-                            callback(null, resultObj);
-                        });
-                    },
-                    function(callback) {
-                        db_access.queryMultipleParameterized(switzerlandDB, queries.LEISURE_QUERY, queryPositions, function (result) {
+                var resultObj = {
+                    download: prepareResult(downloadResult),
+                    upload: prepareResult(uploadResult)
+                };
 
-                            //TODO: description
-                            var resultObj = prepareResult(result, 'leisure', null);
-                            callback(null, resultObj);
-                        });
-                    },
-                    function(callback) {
-                        db_access.queryMultipleParameterized(switzerlandDB, queries.LANDUSE_QUERY, queryPositions, function (result) {
+                callback(resultObj);
+            });
 
-                            //TODO: description
-                            var resultObj = prepareResult(result, 'landuse', null);
-                            callback(null, resultObj);
-                        });
-                    }
-
-                ],
-                function (err, results) {
-
-                    var resultObj = findMostSpecific(results);
-                    callback(jsonHelper.prepareSurroundingsDownUp(resultObj));
-                }
-            );
         }
     );
 }
 
-function prepareResult(result, osmKey, description) {
 
-    //TODO: check if multiple results
-    var resultObj = {
-        down: {
-            empty: true,
-            osm_key: osmKey,
-            osm_value: null,
-            description: description
-        },
-        up: {
-            empty: true,
-            osm_key: osmKey,
-            osm_value: null,
-            description: description
-        }
+function prepareResult(dbResult) {
+
+    const DESCRIPTION = 'TODO';//TODO
+
+    var prepared = {
+        osm_key: UNKNOWN.osm_key,
+        osm_value: UNKNOWN.osm_value,
+        description: UNKNOWN.description
     };
 
-    if(result[0].length) {
-        resultObj.down.empty = false;
-        resultObj.down.osm_value = result[0][0][osmKey];
+    for (var entry in dbResult) {
+
+        if (dbResult.hasOwnProperty(entry) && dbResult[entry] !== null) {
+
+            prepared.osm_key = entry;
+            prepared.osm_value = dbResult[entry];
+            prepared.description = DESCRIPTION;
+        }
     }
 
-    if(result[1].length) {
-        resultObj.up.empty = false;
-        resultObj.up.osm_value = result[1][0][osmKey];
-    }
-
-    return resultObj;
+    return prepared;
 }
-
-function findMostSpecific(results) {
-
-    var resultObj = {
-        down: {
-            empty: true,
-            osm_key: UNKNOWN.osm_key,
-            osm_value: UNKNOWN.osm_value,
-            description: UNKNOWN.description
-        },
-        up: {
-            empty: true,
-            osm_key: UNKNOWN.osm_key,
-            osm_value: UNKNOWN.osm_value,
-            description: UNKNOWN.description
-        }
-    };
-
-    for(var i = 0; i < results.length; i++) {
-
-        if(!results[i].down.empty) {
-            resultObj.down = results[i].down;
-        }
-
-        if(!results[i].up.empty) {
-            resultObj.up = results[i].up;
-        }
-    }
-
-    return resultObj;
-}
-
 
 
 module.exports = { "getGeographicalSurroundings": getGeographicalSurroundings };
