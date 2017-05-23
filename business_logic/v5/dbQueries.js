@@ -43,31 +43,30 @@ const LANDUSE_QUERY = 'SELECT landuse FROM surroundings ' +
 /*--------- tagging.js -------------------------------------------------------*/
 
 const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
-    'SELECT * FROM public.multipolygons WHERE building IS NOT NULL ' +
+    'SELECT * FROM multipolygons WHERE building IS NOT NULL ' +
     'ORDER BY multipolygons.wkb_geometry <-> ST_GeomFromText($1, 4326) ' +
     'ASC LIMIT ' + config.nearestBuilding.numberOfClosestCandidates + ') ' +
-    'SELECT osm_way_id, name, building, ST_Distance(wkb_geometry::geography, ST_GeomFromText($1, 4326)::geography) ' +
+    'SELECT osm_way_id ' +
     'FROM closest_candidates ' +
     'WHERE ST_Distance(wkb_geometry::geography, ST_GeomFromText($1, 4326)::geography) < ' + config.nearestBuilding.st_distanceToMeasuringLocation + ' ' +
     'LIMIT 1;';
 
+
 const OSM_NEAREST_WAYS = 'WITH closest_candidates AS (' +
-    'SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
+    'SELECT id, osm_id, clazz, geom_way FROM switzerland ' +
     'ORDER BY geom_way <-> ST_GeomFromText($1, 4326) LIMIT ' + config.nearestWays.numberOfClosestCandidates + ') ' +
-    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) ' +
+    'SELECT id, osm_id, clazz ' +
     'FROM closest_candidates ' +
     'WHERE ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) < ' + config.nearestWays.st_distanceToMeasuringLocation + ' ' +
-    'ORDER BY ST_Distance(geom_way, ST_GeomFromText($1, 4326)) ' +
     'LIMIT 3;';
 
 const OSM_NEAREST_RAILWAYS = 'WITH closest_candidates AS (' +
-    'SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
-    'WHERE clazz >= 50' +
+    'SELECT id, osm_id, clazz, geom_way FROM switzerland ' +
+    'WHERE clazz >= 50 ' +
     'ORDER BY geom_way <-> ST_GeomFromText($1, 4326) LIMIT ' + config.nearestRailways.numberOfClosestCandidates + ') ' +
-    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) ' +
+    'SELECT id, osm_id, clazz ' +
     'FROM closest_candidates ' +
     'WHERE ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) < ' + config.nearestRailways.st_distanceToMeasuringLocation + ' ' +
-    'ORDER BY ST_Distance(geom_way, ST_GeomFromText($1, 4326)) ' +
     'LIMIT 1;';
 
 /*END tagging.js --------*/
