@@ -1,5 +1,6 @@
 var parallel = require("async/parallel");
-var urlHelper = require('./UrlHelper');
+var db_access= require('../../persistence/db_access_v4');
+var queries = require('./dbQueries');
 
 
 
@@ -184,46 +185,21 @@ function chooseAfterUpload(posArray) {
 
 function checkIfSwitzerland(positions, callback) {
 
-    const GEOADMIN_URL_GEMEINDEGRENZEN = 'https://api3.geo.admin.ch/rest/services/all/MapServer/identify?' +
-        'geometry={y},{x}&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1&lang=de' +
-        '&layers=all:ch.swisstopo.swissboundaries3d-kanton-flaeche.fill&mapExtent=0,0,1,1&returnGeometry=false' +
-        '&tolerance=0';
+    var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
+    var queryPositions = makePoints(positions);
 
-    var requests = prepareRequests(GEOADMIN_URL_GEMEINDEGRENZEN, positions);
-    var requestFunctions = urlHelper.getGeoAdminRequests(requests);
-
-    parallel(requestFunctions,
-
+    parallel([
+            function(callback) {
+                db_access.singleQueryParameterized(database, queries.INSIDE_SWITZERLAND, queryPositions, function (result) {
+                    callback(null, result);
+                });
+            }
+        ],
         function (err, results) {
 
-            var areAllInSwitzerland = true;
-
-            results.forEach(function (res) {
-
-                var pointIsInSwitzerland = typeof res.results[0] !== 'undefined';
-                areAllInSwitzerland  = areAllInSwitzerland && pointIsInSwitzerland;
-            });
-
-            callback(areAllInSwitzerland);
+            callback(results[0].length);
         }
     );
-}
-
-function prepareRequests(url, positions) {
-
-    var requests = [];
-
-    positions.forEach(function (pos) {
-
-        var point = {
-            st_x: pos.longitude,
-            st_y: pos.latitude
-        };
-
-        requests.push(urlHelper.getGeoAdminURL(point, url));
-    });
-
-    return requests;
 }
 
 

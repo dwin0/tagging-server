@@ -15,8 +15,13 @@ const FIND_MIDDLE_POINT = "WITH middlePoint AS " +
 
 /*--------- geographicalSurroundings.js --------------------------------------*/
 
-const GEOGRAPHICAL_QUERY = 'SELECT boundary, "natural", leisure, landuse FROM surroundings ' +
-    'WHERE ST_Within(ST_GeomFromText($1, 4326), wkb_geometry);';
+const GEOGRAPHICAL_QUERY = 'SELECT boundary, "natural", leisure, landuse ' +
+    'FROM multipolygons WHERE ST_Within(ST_GeomFromText($1, 4326), wkb_geometry) ' +
+    'AND (' +
+    '(boundary IS NOT NULL AND boundary != \'administrative\') OR ' +
+    '"natural" IS NOT NULL OR ' +
+    'leisure IS NOT NULL OR ' +
+    'landuse IS NOT NULL);';
 
 /*END geographicalSurroundings.js*/
 
@@ -68,6 +73,18 @@ const OSM_QUERY_DISTANCE = 'SELECT ST_Distance(ST_GeomFromText($1,4326)::geograp
 
 
 
+/*--------- positionsHelper.js ------------------------------------------------------*/
+
+const INSIDE_SWITZERLAND = 'SELECT osm_id FROM multipolygons ' +
+    'WHERE ST_Within(ST_GeomFromText($1, 4326), wkb_geometry) ' +
+    'AND ST_Within(ST_GeomFromText($2, 4326), wkb_geometry) ' +
+    'AND ST_Within(ST_GeomFromText($3, 4326), wkb_geometry) ' +
+    'AND osm_id = \'51701\';';
+
+/*END positionsHelper.js ------------------------------------------------------*/
+
+
+
 
 module.exports = {
     "FIND_MIDDLE_POINT": FIND_MIDDLE_POINT,
@@ -75,5 +92,6 @@ module.exports = {
     "SWITZERLAND_NEAREST_BUILDING": SWITZERLAND_NEAREST_BUILDING,
     "OSM_NEAREST_WAYS": OSM_NEAREST_WAYS,
     "OSM_NEAREST_RAILWAYS": OSM_NEAREST_RAILWAYS,
-    "OSM_QUERY_DISTANCE": OSM_QUERY_DISTANCE
+    "OSM_QUERY_DISTANCE": OSM_QUERY_DISTANCE,
+    "INSIDE_SWITZERLAND": INSIDE_SWITZERLAND
 };
