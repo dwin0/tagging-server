@@ -1,0 +1,78 @@
+{
+	"config": {
+		"target": "http://localhost:3000",
+		"phases": [
+			{ "duration": 10, "arrivalRate": 1 }
+		]		
+	},
+	"scenarios": [
+		{
+			"flow": [
+				{
+					"post": {
+						"url": "/api/v5.0/tag",
+						"json": {
+							"positions": [{
+									"longitude": 8.7095882,
+									"latitude": 47.3589998,
+									"horizontal_accuracy": 800,
+									"time": "2017-03-28 07:31:44.0",
+									"phase": "FCTStart"
+								},
+								{
+									"longitude": 8.7095882,
+									"latitude": 47.3589998,
+									"horizontal_accuracy": 800,
+									"time": "2017-03-28 07:31:44.0",
+									"phase": "FCTEnd"
+								},
+								{
+									"longitude": 8.7095882,
+									"latitude": 47.3589998,
+									"horizontal_accuracy": 800,
+									"time": "2017-03-28 07:31:44.0",
+									"phase": "DownloadStart"
+								},
+								{
+									"longitude": 8.7135701,
+									"latitude": 47.3530638,
+									"horizontal_accuracy": 98.4000015258789,
+									"time": "2017-03-28 07:31:54.0",
+									"phase": "DownloadEnd"
+								},
+								{
+									"longitude": 8.7135701,
+									"latitude": 47.3530638,
+									"horizontal_accuracy": 98.4000015258789,
+									"time": "2017-03-28 07:31:54.0",
+									"phase": "UploadStart"
+								},
+								{
+									"longitude": 8.7165203,
+									"latitude": 47.3516764,
+									"horizontal_accuracy": 82.5,
+									"time": "2017-03-28 07:32:06.0",
+									"phase": "UploadEnd"
+								},
+								{
+									"longitude": 8.7165203,
+									"latitude": 47.3516764,
+									"horizontal_accuracy": 82.5,
+									"time": "2017-03-28 07:32:06.0",
+									"phase": "RTTStart"
+								},
+								{
+									"longitude": 8.7165203,
+									"latitude": 47.3516764,
+									"horizontal_accuracy": 82.5,
+									"time": "2017-03-28 07:32:07.0",
+									"phase": "RTTEnd"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}
