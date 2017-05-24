@@ -33,8 +33,13 @@ function choosePositions(positions, res) {
         return;
     }
 
+    if(!checkValidHorizontalAccuracy([beforeDownload, beforeUpload, afterUpload], res)) {
+        return;
+    }
+
     return [beforeDownload, beforeUpload, afterUpload];
 }
+
 
 function chooseForPhase(phaseCandidates, res, phaseSelectionMethod) {
 
@@ -45,6 +50,30 @@ function chooseForPhase(phaseCandidates, res, phaseSelectionMethod) {
     return phaseSelectionMethod(validCandidates);
 }
 
+function checkValidHorizontalAccuracy(positions, res) {
+
+    var result = false;
+
+    positions.forEach(function (pos) {
+
+        if(pos.horizontal_accuracy <= 200) {
+            result = true;
+        }
+    });
+
+    if(result) {
+
+        return true;
+    } else {
+
+        res.status(400).json({
+            statusText: 'Bad Request',
+            description: 'Cannot tag positions less accurate than 200 meters.'
+        });
+
+        return false;
+    }
+}
 
 function filterValidLatLon(posArray, res) {
 

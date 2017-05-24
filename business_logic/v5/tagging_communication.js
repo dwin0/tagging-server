@@ -43,6 +43,7 @@ function calculateTags(res, positions, speedResult) {
         return;
     }
 
+    //TODO: ausprobieren, ob schneller, wenn längste funktionen weiter oben stehen
     parallel([
             function(callback) {
                 console.time('getTag');

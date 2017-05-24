@@ -48,6 +48,8 @@ const OSM_NEAREST_WAYS = 'WITH closest_candidates AS (' +
     'WHERE ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) < ' + config.nearestWays.st_distanceToMeasuringLocation + ' ' +
     'LIMIT 3;';
 
+
+//TODO: grösserer Radius wählen für ungenaue Punkte, ev. auch für Strassen
 const OSM_NEAREST_RAILWAYS = 'WITH closest_candidates AS (' +
     'SELECT id, osm_id, clazz, geom_way FROM switzerland ' +
     'WHERE clazz >= 50 ' +
