@@ -1,12 +1,32 @@
-const STATIONARY = { id: 1, name: "stationary", description: '0 km/h to 3 km/h' };
+const STATIONARY = {
+    id: 1,
+    name: 'stationary',
+    description: '0 km/h to 3 km/h'
+};
 
-const PEDESTRIAN = { id: 2, name: "pedestrian", description: '3 km/h to 15 km/h' };
+const PEDESTRIAN = {
+    id: 2,
+    name: 'pedestrian',
+    description: '3 km/h to 15 km/h'
+};
 
-const VEHICULAR = { id: 3, name: "vehicular", description: '15 km/h to 140 km/h' };
+const VEHICULAR = {
+    id: 3,
+    name: 'vehicular',
+    description: '15 km/h to 140 km/h'
+};
 
-const HIGH_SPEED_VEHICULAR = { id: 4, name: "high-speed_vehicular", description: '140 km/h to 450km/h' };
+const HIGH_SPEED_VEHICULAR = {
+    id: 4,
+    name: 'high-speed_vehicular',
+    description: '140 km/h to 450km/h'
+};
 
-const UNKNOWN = { id: -1, name: "unknown", description: "No tagging possible." };
+const UNKNOWN = {
+    id: -1,
+    name: 'unknown',
+    description: 'No tagging possible.'
+};
 
 
 function getType(speed) {
@@ -26,4 +46,6 @@ function getType(speed) {
 }
 
 
-module.exports = { "getType": getType };
+module.exports = {
+    "getType": getType
+};

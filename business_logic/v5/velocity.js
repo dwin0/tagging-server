@@ -1,7 +1,7 @@
 var db_access = require('../../persistence/db_access_v4');
 var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
-var parallel = require("async/parallel");
+var parallel = require('async/parallel');
 
 
 function getVelocity_request(req, res, callback) {
@@ -95,6 +95,6 @@ function calcAverageVelocity(positions) {
 
 module.exports = {
     "getVelocity_request": getVelocity_request,
-    "getVelocity": getVelocity,
-    "prepareJSON": prepareJSON
+    "prepareJSON": prepareJSON,
+    "getVelocity": getVelocity
 };

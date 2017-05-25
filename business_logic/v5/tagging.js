@@ -1,33 +1,33 @@
 var db = require('../../persistence/db_access_v4');
 var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
-var parallel = require("async/parallel");
+var parallel = require('async/parallel');
 
 
 const RAILWAY = {
     id: 1,
-    name: "railway",
-    description: "Includes OpenStreetMap-Key:railway, Values: rail, light_rail, narrow_gauge, tram and subway."
+    name: 'railway',
+    description: 'Includes OpenStreetMap-Key:railway, Values: rail, light_rail, narrow_gauge, tram and subway.'
 };
 
 const STREET = {
     id: 2,
-    name: "street",
-    description: "Includes OpenStreetMap-Key:highway, Values: motorway, motorway_link, trunk, trunk_link, primary, " +
-    "primary_link, secondary, secondary_link, tertiary, tertiary_link, residential, road, unclassified, service, " +
-    "living_street and track."
+    name: 'street',
+    description: 'Includes OpenStreetMap-Key:highway, Values: motorway, motorway_link, trunk, trunk_link, primary, ' +
+    'primary_link, secondary, secondary_link, tertiary, tertiary_link, residential, road, unclassified, service, ' +
+    'living_street and track.'
 };
 
 const BUILDING = {
     id: 3,
-    name: "building",
-    description: "Includes positions in or on top of a building."
+    name: 'building',
+    description: 'Includes positions in or on top of a building.'
 };
 
 const UNKNOWN = {
     id: -1,
-    name: "unknown",
-    description: "No tagging possible."
+    name: 'unknown',
+    description: 'No tagging possible.'
 };
 
 
@@ -273,11 +273,14 @@ function returnTag(tags, callback) {
             maxLocation = tag.location;
             maxProbability = tag.probability;
         }
+
+        delete tag.location;
     }
 
     callback({ tag: maxLocation, probability: maxProbability, allProbabilities: tags });
 }
 
 
-
-module.exports = { "getTag": getTag };
+module.exports = {
+    "getTag": getTag
+};

@@ -3,7 +3,7 @@ var typeOfMotion = require('./typeOfMotion');
 var velocity = require('./velocity');
 var populationSurroundings = require('./populationSurroundings');
 var geographicalSurroundings = require('./geographicalSurroundings');
-var parallel = require("async/parallel");
+var parallel = require('async/parallel');
 var jsonHelper = require('./jsonHelper');
 var positionsHelper = require('./positionsHelper');
 
@@ -15,24 +15,17 @@ function getTags(req, res) {
         return;
     }
 
-    parallel([
-            function(callback) {
-                velocity.getVelocity(positions, function (velocityJSON) {
-                    callback(null, velocityJSON);
-                });
-            }
-        ],
-        function(err, results) {
-            calculateTags(res, positions, results[0])
-        }
-    );
+    velocity.getVelocity(positions, function (velocityJSON) {
+        calculateTags(res, positions, velocityJSON)
+    });
 }
+
 
 function calculateTags(res, positions, speedResult) {
 
     var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
 
-    if(typeOfMotionRes.name === "unknown") {
+    if(typeOfMotionRes.name === 'unknown') {
 
         res.status(400).json({
             statusText: 'Bad Request',
@@ -43,33 +36,32 @@ function calculateTags(res, positions, speedResult) {
         return;
     }
 
-    //TODO: ausprobieren, ob schneller, wenn längste funktionen weiter oben stehen
     parallel([
             function(callback) {
-                console.time('getTag');
+                //console.time('getTag');
                 tagging.getTag(typeOfMotionRes, positions, function (result) {
-                    console.timeEnd('getTag');
+                    //console.timeEnd('getTag');
                     callback(null, result);
                 });
             },
             function(callback) {
-                console.time('getGeographicalSurroundings');
+                //console.time('getGeographicalSurroundings');
                 geographicalSurroundings.getGeographicalSurroundings(positions, function (result) {
-                    console.timeEnd('getGeographicalSurroundings');
+                    //console.timeEnd('getGeographicalSurroundings');
                     callback(null, result);
                 });
             },
             function(callback) {
-                console.time('getGeoAdminData');
+                //console.time('getGeoAdminData');
                 populationSurroundings.getGeoAdminData(positions, function (result) {
-                    console.timeEnd('getGeoAdminData');
+                    //console.timeEnd('getGeoAdminData');
                     callback(null, result);
                 })
             },
             function (callback) {
-                console.time('checkIfSwitzerland');
+                //console.time('checkIfSwitzerland');
                 positionsHelper.checkIfSwitzerland(positions, function (result) {
-                    console.timeEnd('checkIfSwitzerland');
+                    //console.timeEnd('checkIfSwitzerland');
                     callback(null, result);
                 })
             }
@@ -88,7 +80,6 @@ function calculateTags(res, positions, speedResult) {
                 return;
             }
 
-
             /*Parameters: tagging-result, type-of-motion, speed-result, geographicalSurroundings-result, geoAdmin-result */
             var response = jsonHelper.renderTagJson(results[0], typeOfMotionRes, speedResult, results[1], results[2]);
             res.status(200).json(response);
@@ -96,4 +87,6 @@ function calculateTags(res, positions, speedResult) {
 }
 
 
-module.exports = { "getTags": getTags };
+module.exports = {
+    "getTags": getTags
+};
