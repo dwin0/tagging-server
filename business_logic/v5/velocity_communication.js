@@ -9,4 +9,6 @@ function getSpeedCalculation(req, res) {
 }
 
 
-module.exports = { "getSpeedCalculation": getSpeedCalculation };
+module.exports = {
+    "getSpeedCalculation": getSpeedCalculation
+};

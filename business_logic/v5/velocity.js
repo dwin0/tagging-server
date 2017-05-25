@@ -7,27 +7,36 @@ var parallel = require("async/parallel");
 function getVelocity_request(req, res, callback) {
 
     var positions = req.body.positions;
-
-    var startDate = new Date(positions[0].time);
-    var endDate = new Date(positions[1].time);
     var queryPositions = posHelper.makePoints(positions);
+    var database = db_access.getDatabase(db_access.STREETS_DB);
 
-    parallel([
-            function(callback) {
+    db_access.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (result) {
 
-                var database = db_access.getDatabase(db_access.STREETS_DB);
+        var startDate = new Date(positions[0].time);
+        var endDate = new Date(positions[1].time);
 
-                db_access.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (result) {
-                    callback(null, result[0].st_distance)
-                });
-            }],
-        function(err, results) {
-            callback(res, endDate, startDate, results[0])
-        });
+        callback(res, endDate, startDate, result[0].st_distance)
+    });
 }
 
 
-function getVelocity_positionArray(positions, callback) {
+function prepareJSON(endDate, startDate, resultingDistance) {
+
+    var resultingTime = (endDate - startDate) / 1000;
+    var resultingVelocityMS = resultingDistance / resultingTime;
+    var resultingVelocityKMH = resultingVelocityMS * 3.6;
+
+    return {
+        distance_m: resultingDistance,
+        time_s: resultingTime,
+        velocity_ms: resultingVelocityMS,
+        velocity_kmh: resultingVelocityKMH,
+        probability: null
+    }
+}
+
+
+function getVelocity(positions, callback) {
 
     var dbRequests = [];
 
@@ -37,16 +46,15 @@ function getVelocity_positionArray(positions, callback) {
         var pos1 = positions[i-1];
         var pos2 = positions[i];
         var time_s = Math.abs(new Date(pos2.time).getTime() - new Date(pos1.time).getTime()) / 1000;
-
         const queryPositions = posHelper.makePoints([pos1, pos2]);
 
         dbRequests[i-1] = (function(i, time_s) {
             return function(callback) {
+
                 var database = db_access.getDatabase(db_access.STREETS_DB);
+
                 db_access.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (res) {
-                    var resultingVelocityMS = res[0].st_distance / time_s;
-                    callback(null, { startPosition: i-1, endPosition: i, time_s: time_s, distance: res[0].st_distance,
-                        resultingVelocityMS: resultingVelocityMS } );
+                    callback(null, { time_s: time_s, distance_m: res[0].st_distance });
                 });
             };
         }(i, time_s));
@@ -62,43 +70,31 @@ function getVelocity_positionArray(positions, callback) {
 
 function calcAverageVelocity(positions) {
 
-    var numerator = 0; //Zähler -> Total Distance
-    var denominator = 0; //Nenner -> Total Time
-
     //velocity = (t1 * v1 + t2 * v2) / t1 + t2
+
+    var totalDistance = 0;
+    var totalTime = 0;
+
     positions.forEach(function (pos) {
-        numerator += pos.time_s * pos.resultingVelocityMS;
-        denominator += pos.time_s;
+        totalDistance += pos.distance_m;
+        totalTime += pos.time_s;
     });
 
-    var velocity_ms = numerator / denominator;
+    var velocity_ms = totalDistance / totalTime;
+    var velocity_kmh = velocity_ms * 3.6;
 
     return {
-        title: "Calculated velocity:",
-        distance_m: numerator,
-        time_s: denominator,
+        distance_m: totalDistance,
+        time_s: totalTime,
         velocity_ms: velocity_ms,
-        velocity_kmh: velocity_ms * 3.6,
+        velocity_kmh: velocity_kmh,
         probability: null
     };
 }
 
 
-function prepareJSON(endDate, startDate, resultingDistance) {
-
-    var resultingTime = (endDate - startDate) / 1000;
-    var resultingVelocityMS = resultingDistance / resultingTime;
-    var resultingVelocityKMH = (resultingDistance / 1000) / (resultingTime / 3600);
-
-    return {
-        title: "Calculated velocity:",
-        distance_m: resultingDistance,
-        time_s: resultingTime,
-        velocity_ms: resultingVelocityMS,
-        velocity_kmh: resultingVelocityKMH,
-        probability: null
-    }
-}
-
-
-module.exports = { "getVelocity_request": getVelocity_request, "getVelocity_positionArray": getVelocity_positionArray, "prepareJSON": prepareJSON };
+module.exports = {
+    "getVelocity_request": getVelocity_request,
+    "getVelocity": getVelocity,
+    "prepareJSON": prepareJSON
+};

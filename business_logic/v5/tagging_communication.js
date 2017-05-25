@@ -17,7 +17,7 @@ function getTags(req, res) {
 
     parallel([
             function(callback) {
-                velocity.getVelocity_positionArray(positions, function (velocityJSON) {
+                velocity.getVelocity(positions, function (velocityJSON) {
                     callback(null, velocityJSON);
                 });
             }
