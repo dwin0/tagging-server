@@ -35,15 +35,15 @@ function getTag(typeOfMotion, positions, callback) {
 
     var tags = {
         railway: {
-            probability: 0.0,
+            probability: 0,
             location: RAILWAY
         },
         street: {
-            probability: 0.0,
+            probability: 0,
             location: STREET
         },
         building: {
-            probability: 0.0,
+            probability: 0,
             location: BUILDING
         }
     };
@@ -54,12 +54,12 @@ function getTag(typeOfMotion, positions, callback) {
         case 1:
         //PEDESTRIAN
         case 2:
-            calculate_RAILWAY_STREET_BUILDING(tags, positions, callback);
+            check_RAILWAY_STREET_BUILDING(tags, positions, callback);
             break;
 
         //VEHICULAR
         case 3:
-            calculate_RAILWAY_STREET(tags, positions, callback);
+            check_RAILWAY_STREET(tags, positions, callback);
             break;
 
         //HIGH_SPEED_VEHICULAR
@@ -74,20 +74,22 @@ function getTag(typeOfMotion, positions, callback) {
 
 
 
-function calculate_RAILWAY_STREET_BUILDING(tags, positions, callback) {
+
+
+function check_RAILWAY_STREET_BUILDING(tags, positions, callback) {
 
     var switzerlandDB = db.getDatabase(db.SWITZERLAND_DB);
     var streetDB = db.getDatabase(db.STREETS_DB);
     var queryPositions = posHelper.makePoints(positions);
 
     parallel([
-            //Get the nearest building within 15 meters of each of the 3 positions
+            //Get the nearest building within X meters of each of the 3 positions
             function(callback) {
                 db.queryMultipleParameterized(switzerlandDB, queries.SWITZERLAND_NEAREST_BUILDING, queryPositions, function (result) {
                         callback(null, result);
                 });
             },
-            //Get all railways or streets within 10 meters for each of the 3 positions
+            //Get all railways or streets within X meters for each of the 3 positions
             function(callback) {
                 db.queryMultipleParameterized(streetDB, queries.OSM_NEAREST_WAYS, queryPositions, function (result) {
                         callback(null, result);
@@ -96,7 +98,6 @@ function calculate_RAILWAY_STREET_BUILDING(tags, positions, callback) {
         ],
         function(err, results) {
 
-            //TODO: Check if this 3 buildings are the same
             var nearestBuildings = results[0];
             var nearestWays = results[1];
 
@@ -107,25 +108,18 @@ function calculate_RAILWAY_STREET_BUILDING(tags, positions, callback) {
         });
 }
 
-function calculate_RAILWAY_STREET(tags, positions, callback) {
+function check_RAILWAY_STREET(tags, positions, callback) {
 
     var database = db.getDatabase(db.STREETS_DB);
     var queryPositions = posHelper.makePoints(positions);
 
-    parallel([
-            //Get all railways or streets within 10 meters for each of the 3 positions
-            function(callback) {
-                db.queryMultipleParameterized(database, queries.OSM_NEAREST_WAYS, queryPositions, function (result) {
-                        callback(null, result);
-                });
-            }
-        ],
-        function(err, results) {
+    //Get all railways or streets within X meters for each of the 3 positions
+    db.queryMultipleParameterized(database, queries.OSM_NEAREST_WAYS, queryPositions, function (result) {
 
-            var nearestWays = results[0];
-            tags = getStreetAndRailwayProbability(tags, positions, nearestWays);
-            returnTag(tags, callback);
-        });
+        var nearestWays = result;
+        tags = getStreetAndRailwayProbability(tags, positions, nearestWays);
+        returnTag(tags, callback);
+    });
 }
 
 function checkIf_RAILWAY(tags, positions, callback) {
@@ -133,121 +127,101 @@ function checkIf_RAILWAY(tags, positions, callback) {
     var database = db.getDatabase(db.STREETS_DB);
     var queryPositions = posHelper.makePoints(positions);
 
-    parallel([
-            //Get all railways or streets within 10 meters for each of the 3 positions
-            function(callback) {
-                db.queryMultipleParameterized(database, queries.OSM_NEAREST_RAILWAYS, queryPositions, function (result) {
-                        callback(null, result);
-                });
-            }
-        ],
-        function(err, results) {
-
-            var nearestRailways = results[0];
-            tags = getRailwayProbability(tags, positions, nearestRailways);
-            returnTag(tags, callback);
-        });
+    //Get all railways or streets within X meters for each of the 3 positions
+    db.queryMultipleParameterized(database, queries.OSM_NEAREST_RAILWAYS, queryPositions, function (result) {
+        var nearestRailways = result;
+        tags = getRailwayProbability(tags, positions, nearestRailways);
+        returnTag(tags, callback);
+    });
 }
+
+
 
 
 
 function getBuildingProbability(tags, positions, nearestBuildings) {
 
-    const NUMBER_OF_POINTS = 3;
-    var closeBuildingCount = 0;
-    var totalAccuracy = 0;
+    //The bigger the horizontal_accuracy (not accurate values), the smaller the positionsWeight
+    var positionsWeight = getPositionWeight(positions);
 
-    positions.forEach(function (pos) {
-        totalAccuracy += pos.horizontal_accuracy;
-    });
-
-    for(var i = 0; i < NUMBER_OF_POINTS; i++) {
+    for(var i = 0; i < positions.length; i++) {
 
         //Check if building was found nearby
         if(nearestBuildings[i].length) {
-
-            //The bigger the horizontal_accuracy (not accurate values), the smaller the pointProbability
-            var pointProbability = 1 - (positions[i].horizontal_accuracy / totalAccuracy);
-            closeBuildingCount += pointProbability;
+            tags.building.probability += positionsWeight[i];
         }
     }
-
-    //NUMBER_OF_POINTS - 1: For 3 Input-Points, the maximum totalAccuracy is 2
-    tags.building.probability += closeBuildingCount / (NUMBER_OF_POINTS - 1);
 
     return tags;
 }
 
 function getStreetAndRailwayProbability(tags, positions, nearestWays) {
 
-    //each of the 3 points can have at most 3 nearest ways (street or railway)
-    const NUMBER_OF_POINTS = 3;
-    var totalAmountOfStreets = 0;
-    var totalAmountOfRailways = 0;
-    var totalAccuracy = 0;
+    //The bigger the horizontal_accuracy (not accurate values), the smaller the positionsWeight
+    var positionsWeight = getPositionWeight(positions);
 
-    positions.forEach(function (pos) {
-        totalAccuracy += pos.horizontal_accuracy;
-    });
+    //check for each point, if a street or a railway is nearby
+    for(var i = 0; i < positions.length; i++) {
 
-    //check each point, if a street or a railway is nearby
-    for (var i = 0; i < nearestWays.length; i++){
+        var streetWeight = 0;
+        var railwayWeight = 0;
 
-        var amountOfStreets = 0;
-        var amountOfRailways = 0;
+        //each of the 3 points can have at most 3 nearest ways (street or railway)
+        //a single point can only indicate 1 street and/or 1 railway (prevent double-count)
+        nearestWays[i].forEach(function (way) {
 
-        //The bigger the horizontal_accuracy (not accurate values), the smaller the pointProbability
-        var pointProbability = 1 - (positions[i].horizontal_accuracy / totalAccuracy);
+            var wayType = clazzToWayType(way.clazz);
 
-        //iterate through the nearest ways of 1 point
-        for (var j = 0; j < nearestWays[i].length; j++){
-
-            var wayType = clazzToWayType([nearestWays[i][j].clazz]);
-
-            if(wayType === STREET && amountOfStreets === 0) {
-                amountOfStreets += pointProbability;
+            if(wayType === STREET && streetWeight === 0) {
+                streetWeight += positionsWeight[i];
             }
-            else if (wayType === RAILWAY && amountOfRailways === 0) {
-                amountOfRailways += pointProbability;
+            else if (wayType === RAILWAY && railwayWeight === 0) {
+                railwayWeight += positionsWeight[i];
             }
-        }
+        });
 
-        totalAmountOfStreets += amountOfStreets;
-        totalAmountOfRailways += amountOfRailways;
+        tags.street.probability += streetWeight;
+        tags.railway.probability += railwayWeight;
     }
-
-    //NUMBER_OF_POINTS - 1: For 3 Input-Points, the maximum totalAccuracy is 2
-    tags.street.probability += totalAmountOfStreets / (NUMBER_OF_POINTS - 1);
-    tags.railway.probability += totalAmountOfRailways / (NUMBER_OF_POINTS - 1);
 
     return tags;
 }
 
 function getRailwayProbability(tags, positions, nearestWays) {
 
-    const NUMBER_OF_POINTS = 3;
-    var totalAmountOfRailways = 0;
-    var totalAccuracy = 0;
+    //The bigger the horizontal_accuracy (not accurate values), the smaller the positionsWeight
+    var positionsWeight = getPositionWeight(positions);
 
-    positions.forEach(function (pos) {
-        totalAccuracy += pos.horizontal_accuracy;
-    });
-
-    for(var i = 0; i < NUMBER_OF_POINTS; i++) {
+    for(var i = 0; i < positions.length; i++) {
 
         //Check if railway was found nearby
         if(nearestWays[i].length) {
-
-            //The bigger the horizontal_accuracy (not accurate values), the smaller the pointProbability
-            var pointProbability = 1 - (positions[i].horizontal_accuracy / totalAccuracy);
-            totalAmountOfRailways += pointProbability;
+            tags.railway.probability += positionsWeight[i];
         }
     }
 
-    //NUMBER_OF_POINTS - 1: For 3 Input-Points, the maximum totalAccuracy is 2
-    tags.railway.probability += totalAmountOfRailways / (NUMBER_OF_POINTS - 1);
-
     return tags;
+}
+
+function getPositionWeight(positions) {
+
+    var totalHorizontalAccuracy = 0;
+    var denominator = 0;
+    var weights = [];
+
+    positions.forEach(function (pos) {
+        totalHorizontalAccuracy += pos.horizontal_accuracy;
+    });
+
+    positions.forEach(function (pos) {
+        denominator += totalHorizontalAccuracy / pos.horizontal_accuracy;
+    });
+
+    for(var i = 0; i < positions.length; i++) {
+        weights[i] = totalHorizontalAccuracy / denominator / positions[i].horizontal_accuracy;
+    }
+
+    return weights;
 }
 
 
@@ -262,7 +236,7 @@ function clazzToWayType(clazz) {
 function returnTag(tags, callback) {
 
     var maxLocation = UNKNOWN;
-    var maxProbability = 0.0;
+    var maxProbability = 0;
 
     for(var key in tags) {
 
