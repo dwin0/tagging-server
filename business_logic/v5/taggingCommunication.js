@@ -11,7 +11,7 @@ var positionsHelper = require('./positionsHelper');
 function getTags(req, res) {
 
     var positions = positionsHelper.choosePositions(req.body.positions, res);
-    if(typeof positions === 'undefined') {
+    if(!positions) {
         return;
     }
 

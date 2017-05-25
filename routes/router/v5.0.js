@@ -2,7 +2,7 @@ var router = require('express').Router();
 var validate = require('express-jsonschema').validate;
 var tagging_v5 = require('../../business_logic/v5/taggingCommunication');
 var velocity_v5 = require('../../business_logic/v5/velocityCommunication');
-var surroundings_v5 = require('../../business_logic/v5/surroundings_communication');
+var surroundings_v5 = require('../../business_logic/v5/surroundingsCommunication');
 var jsonSchema = require('../jsonSchemas');
 
 

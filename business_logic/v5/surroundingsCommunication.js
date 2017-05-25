@@ -1,6 +1,6 @@
 var populationSurroundings = require('./populationSurroundings');
 var geographicalSurroundings = require('./geographicalSurroundings');
-var parallel = require("async/parallel");
+var parallel = require('async/parallel');
 var jsonHelper = require('./jsonHelper');
 var positionsHelper = require('./positionsHelper');
 
@@ -8,7 +8,7 @@ var positionsHelper = require('./positionsHelper');
 function getSurroundings(req, res) {
 
     var positions = positionsHelper.choosePositions(req.body.positions, res);
-    if(typeof positions === 'undefined') {
+    if(!positions) {
         return;
     }
 
@@ -34,4 +34,6 @@ function getSurroundings(req, res) {
 }
 
 
-module.exports = { "getSurroundings": getSurroundings };
+module.exports = {
+    "getSurroundings": getSurroundings
+};

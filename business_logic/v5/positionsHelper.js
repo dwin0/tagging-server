@@ -1,8 +1,5 @@
-var parallel = require("async/parallel");
 var db_access= require('../../persistence/db_access_v4');
 var queries = require('./dbQueries');
-
-
 
 
 /**
@@ -26,10 +23,7 @@ function choosePositions(positions, res) {
     var beforeUpload = chooseForPhase([positions[3], positions[4]], res, chooseBeforeUpload);
     var afterUpload = chooseForPhase([positions[5], positions[6], positions[7]], res, chooseAfterUpload);
 
-    if(typeof beforeDownload === 'undefined' ||
-        typeof beforeUpload === 'undefined' ||
-        typeof afterUpload === 'undefined')
-    {
+    if(!beforeDownload || !beforeUpload || !afterUpload) {
         return;
     }
 
@@ -44,7 +38,7 @@ function choosePositions(positions, res) {
 function chooseForPhase(phaseCandidates, res, phaseSelectionMethod) {
 
     var validCandidates = filterValidLatLon(phaseCandidates, res);
-    if(typeof validCandidates === 'undefined') {
+    if(!validCandidates) {
         return;
     }
     return phaseSelectionMethod(validCandidates);
@@ -62,9 +56,9 @@ function checkValidHorizontalAccuracy(positions, res) {
     });
 
     if(result) {
-
         return true;
-    } else {
+    }
+    else {
 
         res.status(400).json({
             statusText: 'Bad Request',
@@ -99,48 +93,46 @@ function filterValidLatLon(posArray, res) {
     return validPositions;
 }
 
-function findMoreAccurate(pos1, pos2) {
-    return pos1.horizontal_accuracy < pos2.horizontal_accuracy ? pos1 : pos2;
-}
 
 
-//TODO: Unit-Tests
+
 function chooseBeforeDownload(posArray) {
 
-    if(posArray.length === 1) {
+    /*
+     Choose the best of the following positions:
+     Position 1: FCTStart
+     Position 2: FCTEnd
+     Position 3: DownloadStart
 
-        /*In the worst case, only position 1 is valid and the FCT-Phase has a long duration. This could tamper the
+     In the case of a long FCT-Phase, Position 1 and 2 could be far away from each other.
+     Position 2 and 3 are always close to each other.
+     */
+
+    if(posArray.length === 1) {
+        /*
+        In the worst case, only position 1 is valid and the FCT-Phase has a long duration. This could tamper the
         download-surroundings-result.
          */
         return posArray[0];
     }
     else {
-
         /*
-        Position 1: FCTStart
-        Position 2: FCTEnd
-        Position 3: DownloadStart
-
-        In the case of a long FCT-Phase, Position 1 and 2 could be far away from each other.
-        Position 2 and 3 are always close to each other.
-
         Chose the lowest position possible (1 or 2) which is more accurate than the highest (normally 3)
         and 100ms or less time away from the highest. This guarantees in the case of a long FCT-Phase,
         that the more accurate position of 2 or 3 is chosen and position 1 cant tamper the surrounding-query.
         The surrounding-query returns the surrounding during the download and the upload-phase separately.
         */
 
-        var bestPosition = posArray[posArray.length -1];
+        var bestPosition = posArray[posArray.length - 1];
 
-        for(var i = posArray.length -2; i >= 0; i--) {
+        for(var i = posArray.length - 2; i >= 0; i--) {
 
             var pos = posArray[i];
             var posTime = new Date(pos.time).getTime();
             var bestPositionTime = new Date(bestPosition.time).getTime();
 
             if(bestPositionTime - posTime <= 100) {
-
-                bestPosition = findMoreAccurate(pos, bestPosition);
+                bestPosition = findMoreAccurate(bestPosition, pos);
             }
         }
 
@@ -151,6 +143,7 @@ function chooseBeforeDownload(posArray) {
 function chooseBeforeUpload(posArray) {
 
     /*
+     Choose the best of the following positions:
      Position 4: DownloadEnd
      Position 5: UploadStart
 
@@ -158,33 +151,34 @@ function chooseBeforeUpload(posArray) {
      */
 
     if(posArray.length === 1) {
-
         return posArray[0];
     }
     else {
-
-        return findMoreAccurate(posArray[1], posArray[0]);
+        return findMoreAccurate(posArray[0], posArray[1]);
     }
 }
 
 function chooseAfterUpload(posArray) {
 
+    /*
+     Choose the best of the following positions:
+     Position 6: UploadEnd
+     Position 7: RTTStart
+     Position 8: RTTEnd
+
+     In the case of a long RTT-Phase, Position 7 and 8 could be far away from each other.
+     Position 6 and 7 are always close to each other.
+     */
+
     if(posArray.length === 1) {
-        /*In the worst case, only position 8 is valid and the RTT-Phase has a long duration. This could tamper the
+        /*
+         In the worst case, only position 8 is valid and the RTT-Phase has a long duration. This could tamper the
          upload-surroundings-result.
          */
         return posArray[0];
     }
     else {
-
         /*
-         Position 6: UploadEnd
-         Position 7: RTTStart
-         Position 8: RTTEnd
-
-         In the case of a long RTT-Phase, Position 7 and 8 could be far away from each other.
-         Position 6 and 7 are always close to each other.
-
          Chose the highest position possible (7 or 8) which is more accurate than the lowest (normally 6)
          and 100ms or less time away from the lowest. This guarantees in the case of a long RTT-Phase,
          that the more accurate position of 6 or 7 is chosen and position 8 cant tamper the surrounding-query.
@@ -193,21 +187,25 @@ function chooseAfterUpload(posArray) {
 
         var bestPosition = posArray[0];
 
-        for(var i = 1; i <= posArray.length -1; i++) {
+        for(var i = 1; i <= posArray.length - 1; i++) {
 
             var pos = posArray[i];
             var posTime = new Date(pos.time).getTime();
             var bestPositionTime = new Date(bestPosition.time).getTime();
 
             if(posTime - bestPositionTime <= 100) {
-
-                bestPosition = findMoreAccurate(pos, bestPosition);
+                bestPosition = findMoreAccurate(bestPosition, pos);
             }
         }
 
         return bestPosition;
     }
 }
+
+function findMoreAccurate(pos1, pos2) {
+    return pos2.horizontal_accuracy < pos1.horizontal_accuracy ? pos2 : pos1;
+}
+
 
 
 
@@ -217,20 +215,10 @@ function checkIfSwitzerland(positions, callback) {
     var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
     var queryPositions = makePoints(positions);
 
-    parallel([
-            function(callback) {
-                db_access.singleQueryParameterized(database, queries.INSIDE_SWITZERLAND, queryPositions, function (result) {
-                    callback(null, result);
-                });
-            }
-        ],
-        function (err, results) {
-
-            callback(results[0].length);
-        }
-    );
+    db_access.singleQueryParameterized(database, queries.INSIDE_SWITZERLAND, queryPositions, function (result) {
+        callback(result.length);
+    });
 }
-
 
 
 
@@ -240,22 +228,30 @@ function checkIfSwitzerland(positions, callback) {
 function makePoints(positions) {
 
     var posArray = [];
+    const POINT = 'POINT({lon} {lat})';
 
     for(var i = 0; i < positions.length; i++) {
-        posArray[i] = "POINT(" + positions[i].longitude + " "  + positions[i].latitude + ")";
+
+        posArray[i] = POINT
+            .replace('{lon}', positions[i].longitude)
+            .replace('{lat}', positions[i].latitude);
     }
 
     return posArray;
 }
 
-
 function makeMultipoints(positions) {
 
+    const MULTIPOINT = 'MULTIPOINT ({lon1} {lat1}, {lon2} {lat2})';
     var posArray = [];
 
-    for(var i = 0; i < positions.length -1; i++) {
-        posArray[i] = "MULTIPOINT (" + positions[i].longitude + " " + positions[i].latitude + ", " +
-            positions[i+1].longitude + " " + positions[i+1].latitude + ")";
+    for(var i = 0; i < positions.length - 1; i++) {
+
+        posArray[i] = MULTIPOINT
+            .replace('{lon1}', positions[i].longitude)
+            .replace('{lat1}', positions[i].latitude)
+            .replace('{lon2}', positions[i + 1].longitude)
+            .replace('{lat2}', positions[i + 1].latitude);
     }
 
     return posArray;
