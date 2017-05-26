@@ -18,7 +18,30 @@
       <nav>
           <div class="nav-wrapper">
               <a href="#" class="brand-logo">Logo</a>
-              <ul id="nav-mobile" class="right hide-on-med-and-down">
+              <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+              <ul class="right hide-on-med-and-down">
+                  {{#ifSame title 'API'}}
+                      <li class="active"><a href="/api">API</a></li>
+                  {{else}}
+                      <li><a href="/api">API</a></li>
+                  {{/ifSame}}
+                  {{#ifSame title 'Tagging-Server'}}
+                      <li class="active"><a href="/api/v{{version}}/tag">Tagging</a></li>
+                  {{else}}
+                      <li><a href="/api/v{{version}}/tag">Tagging</a></li>
+                  {{/ifSame}}
+                  {{#ifSame title 'Geschwindigkeitsberechnung'}}
+                      <li class="active"><a href="/api/v{{version}}/calculateSpeed">Geschwindigkeitsberechnung</a></li>
+                  {{else}}
+                      <li><a href="/api/v{{version}}/calculateSpeed">Geschwindigkeitsberechnung</a></li>
+                  {{/ifSame}}
+                  {{#ifSame title 'Umgebungsabfrage'}}
+                      <li class="active"><a href="/api/v{{version}}/findSurroundings">Umgebungsabfrage</a></li>
+                  {{else}}
+                      <li><a href="/api/v{{version}}/findSurroundings">Umgebungsabfrage</a></li>
+                  {{/ifSame}}
+              </ul>
+              <ul id="nav-mobile" class="side-nav">
                   {{#ifSame title 'API'}}
                       <li class="active"><a href="/api">API</a></li>
                   {{else}}
