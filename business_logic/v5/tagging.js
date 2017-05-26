@@ -251,7 +251,13 @@ function returnTag(tags, callback) {
         delete tag.location;
     }
 
-    callback({ tag: maxLocation, probability: maxProbability, allProbabilities: tags });
+    callback({
+        id: maxLocation.id,
+        name: maxLocation.name,
+        description: maxLocation.description,
+        probability: maxProbability,
+        allProbabilities: tags
+    });
 }
 
 

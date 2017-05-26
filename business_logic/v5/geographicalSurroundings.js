@@ -70,7 +70,8 @@ function prepareResult(dbResult) {
     var prepared = {
         osm_key: UNKNOWN.osm_key,
         osm_value: UNKNOWN.osm_value,
-        description: UNKNOWN.description
+        description: UNKNOWN.description,
+        probability: null
     };
 
     for (var entry in dbResult) {
@@ -87,4 +88,6 @@ function prepareResult(dbResult) {
 }
 
 
-module.exports = { "getGeographicalSurroundings": getGeographicalSurroundings };
+module.exports = {
+    "getGeographicalSurroundings": getGeographicalSurroundings
+};

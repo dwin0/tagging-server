@@ -1,5 +1,5 @@
 var db_access= require('../../persistence/db_access_v4');
-var parallel = require("async/parallel");
+var parallel = require('async/parallel');
 var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
 var request = require('request');
@@ -7,77 +7,76 @@ var converter = require('./wgs84_ch1903');
 
 
 //Constants for community types:
-const LARGECENTRE = {
+const LARGE_CENTRE = {
     id: 1,
-    name: 'Grosszentrum',
+    type: 'Grosszentrum',
     description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
 };
 
-const BESIDESCENTREOFLARGECENTRE = {
+const NEIGHBORHOOD_CENTRE_OF_LARGE_CENTRE = {
     id: 2,
-    name: 'Nebenzentrum eines Grosszentrums',
+    type: 'Nebenzentrum eines Grosszentrums',
     description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
 };
 
-const BELTOFLARGECENTRE = {
+const BELT_OF_LARGE_CENTRE = {
     id: 3,
-    name: 'Gürtel eines Grosszentrums',
+    type: 'Gürtel eines Grosszentrums',
     description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
 };
 
-const MEDIUMCENTRE = {
+const MEDIUM_CENTRE = {
     id: 4,
-    name: 'Mittelzentrum',
+    type: 'Mittelzentrum',
     description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
 };
 
-const BELTOFMEDIUMCENTRE = {
+const BELT_OF_MEDIUM_CENTRE = {
     id: 5,
-    name: 'Gürtel eines Mittelzentrums',
+    type: 'Gürtel eines Mittelzentrums',
     description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
 };
 
-const SMALLCENTRE = {
+const SMALL_CENTRE = {
     id: 6,
-    name: 'Kleinzentrum',
+    type: 'Kleinzentrum',
     description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
 };
 
-const PERIURBAN = {
+const PERI_URBAN = {
     id: 7,
-    name: 'Periurbane ländliche Gemeinde',
+    type: 'Periurbane ländliche Gemeinde',
     description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
 };
 
 const AGRICULTURAL = {
     id: 8,
-    name: 'Agrargemeinde',
+    type: 'Agrargemeinde',
     description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
 };
 
 const TOURISTICAL = {
     id: 9,
-    name: 'Touristische Gemeinde',
+    type: 'Touristische Gemeinde',
     description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
 };
 
 const UNKNOWN = {
     id: -1,
-    name: "unknown",
+    type: 'unknown',
     osm_key: 'unknown',
     osm_value: 'unknown',
-    description: "No tagging possible."
+    description: 'No tagging possible.'
 };
 
 
-//TODO: in doku -> wenn gemeindetyp [], sehr wahrscheinlich see
-const GEOADMIN_URL_BEVOELKERUNGSDICHTE = 'https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry={y},{x}' +
-    '&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1&lang=de&layers=all:ch.are.bevoelkerungsdichte' +
-    '&mapExtent=0,0,1,1&returnGeometry=false&tolerance=300';
+const GEOADMIN_URL_BEVOELKERUNGSDICHTE = 'https://api3.geo.admin.ch/rest/services/all/MapServer/' +
+    'identify?geometry={y},{x}&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1' +
+    '&lang=de&layers=all:ch.are.bevoelkerungsdichte&mapExtent=0,0,1,1&returnGeometry=false&tolerance=300';
 
-const GEOADMIN_URL_GEMEINDETYP = 'https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry={y},{x}' +
-    '&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1&lang=de&layers=all:ch.are.gemeindetypen' +
-    '&mapExtent=0,0,1,1&returnGeometry=false&tolerance=0';
+const GEOADMIN_URL_GEMEINDETYP = 'https://api3.geo.admin.ch/rest/services/all/MapServer/' +
+    'identify?geometry={y},{x}&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1' +
+    '&lang=de&layers=all:ch.are.gemeindetypen&mapExtent=0,0,1,1&returnGeometry=false&tolerance=0';
 
 
 
@@ -86,56 +85,49 @@ function getGeoAdminData(positions, callback) {
     var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
     var queryPositions = posHelper.makeMultipoints(positions);
 
-    parallel([
-            function(callback) {
-                db_access.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (result) {
-                    callback(null, result);
-                });
-            }
-        ],
-        function (err, results) {
+    db_access.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (result) {
 
-            var requests = [];
+        var urls = [];
 
-            //download
-            requests[0] = getGeoAdminURL(results[0][0][0], GEOADMIN_URL_BEVOELKERUNGSDICHTE);
-            requests[1] = getGeoAdminURL(results[0][0][0], GEOADMIN_URL_GEMEINDETYP);
+        //download
+        urls[0] = getGeoAdminURL(result[0][0], GEOADMIN_URL_BEVOELKERUNGSDICHTE);
+        urls[1] = getGeoAdminURL(result[0][0], GEOADMIN_URL_GEMEINDETYP);
 
-            //upload
-            requests[2] = getGeoAdminURL(results[0][1][0], GEOADMIN_URL_BEVOELKERUNGSDICHTE);
-            requests[3] = getGeoAdminURL(results[0][1][0], GEOADMIN_URL_GEMEINDETYP);
+        //upload
+        urls[2] = getGeoAdminURL(result[1][0], GEOADMIN_URL_BEVOELKERUNGSDICHTE);
+        urls[3] = getGeoAdminURL(result[1][0], GEOADMIN_URL_GEMEINDETYP);
 
 
-            var requestFunctions = getGeoAdminRequests(requests);
+        var requestFunctions = getGeoAdminRequests(urls);
 
-            parallel(requestFunctions,
+        parallel(requestFunctions,
 
-                function (err, results) {
+            function (err, results) {
 
-                    var resultingTags = {
-                        download: {
-                            pop: {
-                                number: getPopulationDensity(results[0]),
-                                description: 'Number of people living in 1ha'
-                            },
-                            type: getCommunityType(results[1])
+                var resultingTags = {
+                    download: {
+                        population_density: {
+                            number: getPopulationDensity(results[0]),
+                            description: 'Number of people living in 1ha',
+                            probability: null
                         },
-                        upload: {
-                            pop: {
-                                number: getPopulationDensity(results[2]),
-                                description: 'Number of people living in 1ha'
-                            },
-                            type: getCommunityType(results[3])
-                        }
-                    };
+                        community_type: getCommunityTypeJSON(results[1])
+                    },
+                    upload: {
+                        population_density: {
+                            number: getPopulationDensity(results[2]),
+                            description: 'Number of people living in 1ha',
+                            probability: null
+                        },
+                        community_type: getCommunityTypeJSON(results[3])
+                    }
+                };
 
-                    callback(resultingTags);
-                }
-            );
-        }
-    );
+                callback(resultingTags);
+            }
+        );
+    });
 }
-
 
 function getGeoAdminURL(point, URL) {
 
@@ -148,21 +140,21 @@ function getGeoAdminURL(point, URL) {
     return URL.replace('{y}', chY).replace('{x}', chX);
 }
 
-function getGeoAdminRequests(requests) {
+function getGeoAdminRequests(urls) {
 
     var requestFunctions = [];
 
-    for(var i = 0; i < requests.length; i++) {
+    for(var i = 0; i < urls.length; i++) {
 
         requestFunctions[i] = (function (i) {
             return function(callback) {
                 request.get(
-                    requests[i],
+                    urls[i],
                     function (error, response) {
                         if (!error && response.statusCode === 200) {
                             callback(null, JSON.parse(response.body));
                         } else {
-                            console.error("error: " + response.statusCode);
+                            console.error('error: ' + response.statusCode);
                         }
                     }
                 );
@@ -172,8 +164,6 @@ function getGeoAdminRequests(requests) {
 
     return requestFunctions;
 }
-
-
 
 function getPopulationDensity(geoAdminResult) {
 
@@ -186,54 +176,57 @@ function getPopulationDensity(geoAdminResult) {
     return Math.round(total / geoAdminResult.results.length);
 }
 
-function getCommunityType(geoAdminResult) {
+function getCommunityTypeJSON(geoAdminResult) {
 
     if(geoAdminResult.results.length === 0) {
 
         return {
-            tag: UNKNOWN,
-            res: {
-                cantonName: 'unknown',
-                cantonId: -1,
-                communityName: 'unknown',
-                communityId: -1
-            }
+            id: UNKNOWN.id,
+            type: UNKNOWN.type,
+            description: UNKNOWN.description,
+            community_id: -1,
+            community_name: 'unknown',
+            canton_id: -1,
+            canton_name: 'unknown',
+            probability: null
         };
     }
 
     var community = geoAdminResult.results[0].properties;
+    var communityType = getTypeTag(community.typ_code);
 
     return {
-        tag: getCommunityTypeTag(community.typ_code),
-        res: {
-            cantonName: community.kt_kz,
-            cantonId: community.kt_no,
-            communityName: community.label,
-            communityId: community.bfs_no
-        }
+        id: communityType.id,
+        type: communityType.type,
+        description: communityType.description,
+        community_id: community.bfs_no,
+        community_name: community.label,
+        canton_id: community.kt_no,
+        canton_name: community.kt_kz,
+        probability: null
     };
 }
 
-function getCommunityTypeTag(number) {
+function getTypeTag(number) {
 
     switch(number) {
-        case "1":
-            return LARGECENTRE;
-        case "2":
-            return BESIDESCENTREOFLARGECENTRE;
-        case "3":
-            return BELTOFLARGECENTRE;
-        case "4":
-            return MEDIUMCENTRE;
-        case "5":
-            return BELTOFMEDIUMCENTRE;
-        case "6":
-            return SMALLCENTRE;
-        case "7":
-            return PERIURBAN;
-        case "8":
+        case '1':
+            return LARGE_CENTRE;
+        case '2':
+            return NEIGHBORHOOD_CENTRE_OF_LARGE_CENTRE;
+        case '3':
+            return BELT_OF_LARGE_CENTRE;
+        case '4':
+            return MEDIUM_CENTRE;
+        case '5':
+            return BELT_OF_MEDIUM_CENTRE;
+        case '6':
+            return SMALL_CENTRE;
+        case '7':
+            return PERI_URBAN;
+        case '8':
             return AGRICULTURAL;
-        case "9":
+        case '9':
             return TOURISTICAL;
         default:
             return UNKNOWN;
