@@ -14,17 +14,22 @@ function getSurroundings(req, res) {
 
     parallel([
             function(callback) {
-                geographicalSurroundings.getGeographicalSurroundings(positions, function (result) {
-                    callback(null, result);
+                geographicalSurroundings.getGeographicalSurroundings(positions, function (error, result) {
+                    callback(error, result);
                 });
             },
             function(callback) {
-                populationSurroundings.getGeoAdminData(positions, function (result) {
-                    callback(null, result);
+                populationSurroundings.getGeoAdminData(positions, function (error, result) {
+                    callback(error, result);
                 })
             }
         ],
         function(err, results) {
+
+            if(err) {
+                res.status(500).send('Internal Server Error');
+                return;
+            }
 
             /*Parameters: geographicalSurroundings-result, geoAdmin-result */
             var response = jsonHelper.renderSurroundingsJson(results[0], results[1]);

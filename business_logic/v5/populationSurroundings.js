@@ -1,4 +1,4 @@
-var db_access= require('../../persistence/db_access_v4');
+var db_access= require('../../persistence/dbAccess_v5');
 var parallel = require('async/parallel');
 var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
@@ -85,7 +85,12 @@ function getGeoAdminData(positions, callback) {
     var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
     var queryPositions = posHelper.makeMultipoints(positions);
 
-    db_access.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (result) {
+    db_access.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (error, result) {
+
+        if(error) {
+            callback(error);
+            return;
+        }
 
         var urls = [];
 
@@ -123,7 +128,7 @@ function getGeoAdminData(positions, callback) {
                     }
                 };
 
-                callback(resultingTags);
+                callback(null, resultingTags);
             }
         );
     });
@@ -235,4 +240,6 @@ function getTypeTag(number) {
 
 
 
-module.exports = { "getGeoAdminData": getGeoAdminData };
+module.exports = {
+    "getGeoAdminData": getGeoAdminData
+};

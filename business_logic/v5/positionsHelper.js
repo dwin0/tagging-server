@@ -1,4 +1,4 @@
-var db_access= require('../../persistence/db_access_v4');
+var db_access= require('../../persistence/dbAccess_v5');
 var queries = require('./dbQueries');
 
 
@@ -215,8 +215,13 @@ function checkIfSwitzerland(positions, callback) {
     var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
     var queryPositions = makePoints(positions);
 
-    db_access.singleQueryParameterized(database, queries.INSIDE_SWITZERLAND, queryPositions, function (result) {
-        callback(result.length);
+    db_access.singleQueryParameterized(database, queries.INSIDE_SWITZERLAND, queryPositions, function (error, result) {
+        if(error) {
+            callback(error);
+            return;
+        }
+
+        callback(null, result.length);
     });
 }
 

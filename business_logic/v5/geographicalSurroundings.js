@@ -1,4 +1,4 @@
-var db_access= require('../../persistence/db_access_v4');
+var db_access= require('../../persistence/dbAccess_v5');
 var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
 
@@ -15,7 +15,12 @@ function getGeographicalSurroundings(positions, callback) {
     var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
     var queryPositions = posHelper.makeMultipoints(positions);
 
-    db_access.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (result) {
+    db_access.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (error, result) {
+
+        if(error) {
+            callback(error);
+            return;
+        }
 
         /*DEMO-Points
          boundary: POINT(8.55777 47.2495) -> protected_area
@@ -31,7 +36,12 @@ function getGeographicalSurroundings(positions, callback) {
         queryPositions = posHelper.makePoints(middlePoints);
         var switzerlandDB = db_access.getDatabase(db_access.SWITZERLAND_DB);
 
-        db_access.queryMultipleParameterized(switzerlandDB, queries.GEOGRAPHICAL_QUERY, queryPositions, function (result) {
+        db_access.queryMultipleParameterized(switzerlandDB, queries.GEOGRAPHICAL_QUERY, queryPositions, function (error, result) {
+
+            if(error) {
+                callback(error);
+                return;
+            }
 
             var downloadResult = result[0][0];
             var uploadResult = result[1][0];
@@ -41,7 +51,7 @@ function getGeographicalSurroundings(positions, callback) {
                 upload: prepareResult(uploadResult)
             };
 
-            callback(resultObj);
+            callback(null, resultObj);
         });
     });
 }

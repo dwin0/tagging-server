@@ -15,7 +15,13 @@ function getTags(req, res) {
         return;
     }
 
-    velocity.getVelocity(positions, function (velocityJSON) {
+    velocity.getVelocity(positions, function (error, velocityJSON) {
+
+        if(error) {
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+
         calculateTags(res, positions, velocityJSON)
     });
 }
@@ -39,34 +45,39 @@ function calculateTags(res, positions, speedResult) {
     parallel([
             function(callback) {
                 //console.time('getTag');
-                tagging.getTag(typeOfMotionRes, positions, function (result) {
+                tagging.getTag(typeOfMotionRes, positions, function (error, result) {
                     //console.timeEnd('getTag');
-                    callback(null, result);
+                    callback(error, result);
                 });
             },
             function(callback) {
                 //console.time('getGeographicalSurroundings');
-                geographicalSurroundings.getGeographicalSurroundings(positions, function (result) {
+                geographicalSurroundings.getGeographicalSurroundings(positions, function (error, result) {
                     //console.timeEnd('getGeographicalSurroundings');
-                    callback(null, result);
+                    callback(error, result);
                 });
             },
             function(callback) {
                 //console.time('getGeoAdminData');
-                populationSurroundings.getGeoAdminData(positions, function (result) {
+                populationSurroundings.getGeoAdminData(positions, function (error, result) {
                     //console.timeEnd('getGeoAdminData');
-                    callback(null, result);
+                    callback(error, result);
                 })
             },
             function (callback) {
                 //console.time('checkIfSwitzerland');
-                positionsHelper.checkIfSwitzerland(positions, function (result) {
+                positionsHelper.checkIfSwitzerland(positions, function (error, result) {
                     //console.timeEnd('checkIfSwitzerland');
-                    callback(null, result);
+                    callback(error, result);
                 })
             }
         ],
         function(err, results) {
+
+            if(err) {
+                res.status(500).send('Internal Server Error');
+                return;
+            }
 
             var allPointsInSwitzerland = results[3];
 

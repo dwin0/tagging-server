@@ -1,21 +1,26 @@
-var db_access = require('../../persistence/db_access_v4');
+var db_access = require('../../persistence/dbAccess_v5');
 var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
 var parallel = require('async/parallel');
 
 
-function getVelocity_request(req, res, callback) {
+function getVelocity_request(req, callback) {
 
     var positions = req.body.positions;
     var queryPositions = posHelper.makePoints(positions);
     var database = db_access.getDatabase(db_access.STREETS_DB);
 
-    db_access.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (result) {
+    db_access.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (error, result) {
 
         var startDate = new Date(positions[0].time);
         var endDate = new Date(positions[1].time);
 
-        callback(res, endDate, startDate, result[0].st_distance)
+        if(error) {
+            callback(error);
+            return;
+        }
+
+        callback(null, endDate, startDate, result[0].st_distance)
     });
 }
 
@@ -53,7 +58,11 @@ function getVelocity(positions, callback) {
 
                 var database = db_access.getDatabase(db_access.STREETS_DB);
 
-                db_access.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (res) {
+                db_access.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (err, res) {
+                    if(err) {
+                        callback(err);
+                        return;
+                    }
                     callback(null, { time_s: time_s, distance_m: res[0].st_distance });
                 });
             };
@@ -63,7 +72,12 @@ function getVelocity(positions, callback) {
     //Request database and calculate average speed
     parallel(dbRequests,
         function(err, results) {
-            callback(calcAverageVelocity(results));
+            if(err) {
+                callback(err);
+                return;
+            }
+
+            callback(null, calcAverageVelocity(results));
         });
 }
 

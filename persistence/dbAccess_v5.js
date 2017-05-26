@@ -1,6 +1,6 @@
 var pg = require('pg');
 var options = require('../config/configReader').config;
-var parallel = require("async/parallel");
+var parallel = require('async/parallel');
 
 
 var config = {
@@ -50,8 +50,6 @@ function getDatabase(dbName) {
 
 
 
-
-
 /**
  * @param database
  * @param statement
@@ -69,7 +67,9 @@ function queryMultipleParameterized(database, statement, positions, callback) {
                 
                 database.query(statement, [positions[i]], function (err, result) {
                     if (err) {
-                        return console.error('error happened during query', err)
+                        console.error('error happened during query', err);
+                        callback(err);
+                        return;
                     }
                     callback(null, result.rows);
                 });
@@ -79,28 +79,36 @@ function queryMultipleParameterized(database, statement, positions, callback) {
 
     parallel(dbRequests,
         function(err, results) {
-            callback(results)
+            if(err) {
+                callback(err);
+                return;
+            }
+
+            callback(null, results);
         });
 }
+
 
 
 function singleQueryParameterized(database, statement, positions, callback) {
 
     database.query(statement, positions, function (err, result) {
         if (err) {
-            return console.error('error happened during query', err)
+            console.error('error happened during query', err);
+            callback(err, null);
+            return;
         }
 
-        callback(result.rows);
+        callback(null, result.rows);
     });
 }
 
 
 
 module.exports = {
-    "getDatabase": getDatabase,
     "SWITZERLAND_DB": SWITZERLAND_DB,
     "STREETS_DB": STREETS_DB,
+    "getDatabase": getDatabase,
     "singleQueryParameterized": singleQueryParameterized,
     "queryMultipleParameterized": queryMultipleParameterized
 };
