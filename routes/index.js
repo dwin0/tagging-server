@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
+var router = require('express').Router();
 var jsonSchema = require('./jsonSchemas');
+
 
 
 /*CORS-HEADER*/
@@ -11,31 +11,36 @@ router.use(function(req, res, next) {
 });
 
 
+
+
 router.get('/', function(req, res) {
     res.redirect('/api');
 });
 
-//Return api capabilities
 router.get('/api', function(req, res) {
+
     const apiData = {
         title: 'API',
         version: '5.0'
     };
 
     if(req.xhr || req.get('Content-Type') === 'application/json') {
-        res.json(apiData);
+        res.status(200).json(apiData);
+        return;
     }
 
     res.render('api', apiData);
 });
 
 router.get('/schemas', function(req, res) {
-    res.json({
+    res.status(200).json({
         taggingSchema: jsonSchema.taggingSchema_v4,
         speedCalculationSchema: jsonSchema.velocitySchema_v3,
         surroundingsSchema: jsonSchema.surroundingsSchema_v3
     });
 });
+
+
 
 
 //split up route handling
@@ -67,7 +72,6 @@ router.use('/api/v4.0', require('./router/v4.0'));
 router.use('/api', require('./router/v5.0'));
 router.use('/api/v5', require('./router/v5.0'));
 router.use('/api/v5.0', require('./router/v5.0'));
-
 
 
 router.use(jsonSchema.handleJsonSchemaValidationError);

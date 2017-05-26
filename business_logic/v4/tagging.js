@@ -151,7 +151,7 @@ function getBuildingProbability(tags, positions, nearestBuildings) {
     var totalAccuracy = 0;
 
     positions.forEach(function (pos) {
-        totalAccuracy += pos.horizontal_accuracy;
+        totalAccuracy += pos.horizontalAccuracy;
     });
 
     for(var i = 0; i < NUMBER_OF_POINTS; i++) {
@@ -159,8 +159,8 @@ function getBuildingProbability(tags, positions, nearestBuildings) {
         //Check if building was found nearby
         if(nearestBuildings[i].length) {
 
-            //The bigger the horizontal_accuracy (not accurate values), the smaller the pointProbability
-            var pointProbability = 1 - (positions[i].horizontal_accuracy / totalAccuracy);
+            //The bigger the horizontalAccuracy (not accurate values), the smaller the pointProbability
+            var pointProbability = 1 - (positions[i].horizontalAccuracy / totalAccuracy);
             closeBuildingCount += pointProbability;
         }
     }
@@ -180,7 +180,7 @@ function getStreetAndRailwayProbability(tags, positions, nearestWays) {
     var totalAccuracy = 0;
 
     positions.forEach(function (pos) {
-        totalAccuracy += pos.horizontal_accuracy;
+        totalAccuracy += pos.horizontalAccuracy;
     });
 
     //check each point, if a street or a railway is nearby
@@ -189,8 +189,8 @@ function getStreetAndRailwayProbability(tags, positions, nearestWays) {
         var amountOfStreets = 0;
         var amountOfRailways = 0;
 
-        //The bigger the horizontal_accuracy (not accurate values), the smaller the pointProbability
-        var pointProbability = 1 - (positions[i].horizontal_accuracy / totalAccuracy);
+        //The bigger the horizontalAccuracy (not accurate values), the smaller the pointProbability
+        var pointProbability = 1 - (positions[i].horizontalAccuracy / totalAccuracy);
 
         //iterate through the nearest ways of 1 point
         for (var j = 0; j < nearestWays[i].length; j++){
@@ -223,7 +223,7 @@ function getRailwayProbability(tags, positions, nearestWays) {
     var totalAccuracy = 0;
 
     positions.forEach(function (pos) {
-        totalAccuracy += pos.horizontal_accuracy;
+        totalAccuracy += pos.horizontalAccuracy;
     });
 
     for(var i = 0; i < NUMBER_OF_POINTS; i++) {
@@ -231,8 +231,8 @@ function getRailwayProbability(tags, positions, nearestWays) {
         //Check if railway was found nearby
         if(nearestWays[i].length) {
 
-            //The bigger the horizontal_accuracy (not accurate values), the smaller the pointProbability
-            var pointProbability = 1 - (positions[i].horizontal_accuracy / totalAccuracy);
+            //The bigger the horizontalAccuracy (not accurate values), the smaller the pointProbability
+            var pointProbability = 1 - (positions[i].horizontalAccuracy / totalAccuracy);
             totalAmountOfRailways += pointProbability;
         }
     }

@@ -50,7 +50,7 @@ function checkValidHorizontalAccuracy(positions, res) {
 
     positions.forEach(function (pos) {
 
-        if(pos.horizontal_accuracy <= 200) {
+        if(pos.horizontalAccuracy <= 200) {
             result = true;
         }
     });
@@ -203,7 +203,7 @@ function chooseAfterUpload(posArray) {
 }
 
 function findMoreAccurate(pos1, pos2) {
-    return pos2.horizontal_accuracy < pos1.horizontal_accuracy ? pos2 : pos1;
+    return pos2.horizontalAccuracy < pos1.horizontalAccuracy ? pos2 : pos1;
 }
 
 

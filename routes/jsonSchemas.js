@@ -1,6 +1,4 @@
-//TODO: überall auf JSON-Schreibweise (Camel-Case) prüfen
-
-const taggingSchema_v1 = {
+const TAGGING_SCHEMA_V1 = {
     type: 'object',
     properties: {
         positions: {
@@ -19,21 +17,6 @@ const taggingSchema_v1 = {
                     latitude: {
                         type: 'number',
                         required: true
-                    },
-                    altitude: {
-                        type: 'number'
-                    },
-                    horizontal_accuracy: {
-                        type: 'number'
-                    },
-                    vertical_accuracy: {
-                        type: 'number'
-                    },
-                    time: {
-                        type: 'string'
-                    },
-                    cell_id: {
-                        type: 'number'
                     }
                 }
             }
@@ -41,7 +24,7 @@ const taggingSchema_v1 = {
     }
 };
 
-const taggingSchema_v2 = {
+const TAGGING_SCHEMA_V2 = {
     type: 'object',
     properties: {
         positions: {
@@ -60,22 +43,10 @@ const taggingSchema_v2 = {
                     latitude: {
                         type: 'number',
                         required: true
-                    },
-                    altitude: {
-                        type: 'number'
-                    },
-                    horizontal_accuracy: {
-                        type: 'number'
-                    },
-                    vertical_accuracy: {
-                        type: 'number'
                     },
                     time: {
                         type: 'string',
                         required: true
-                    },
-                    cell_id: {
-                        type: 'number'
                     }
                 }
             }
@@ -83,7 +54,7 @@ const taggingSchema_v2 = {
     }
 };
 
-const taggingSchema_v3 = {
+const TAGGING_SCHEMA_V3 = {
     type: 'object',
     properties: {
         positions: {
@@ -117,7 +88,7 @@ const taggingSchema_v3 = {
     }
 };
 
-const taggingSchema_v4 = {
+const TAGGING_SCHEMA_V4 = {
     type: 'object',
     properties: {
         positions: {
@@ -137,7 +108,7 @@ const taggingSchema_v4 = {
                         type: 'number',
                         required: true
                     },
-                    horizontal_accuracy: {
+                    horizontalAccuracy: {
                         type: 'number',
                         required: true
                     },
@@ -155,7 +126,7 @@ const taggingSchema_v4 = {
     }
 };
 
-const surroundingsSchema_v3 = {
+const SURROUNDINGS_SCHEMA_V3 = {
     type: 'object',
     properties: {
         positions: {
@@ -185,37 +156,7 @@ const surroundingsSchema_v3 = {
     }
 };
 
-const velocitySchema_v1 = {
-    type: 'object',
-    properties: {
-        startTime: {
-            type: 'string',
-            required: true
-        },
-        endTime: {
-            type: 'string',
-            required: true
-        },
-        longitude1: {
-            type: 'number',
-            required: true
-        },
-        latitude1: {
-            type: 'number',
-            required: true
-        },
-        longitude2: {
-            type: 'number',
-            required: true
-        },
-        latitude2: {
-            type: 'number',
-            required: true
-        }
-    }
-};
-
-const velocitySchema_v3 = {
+const VELOCITY_SCHEMA_V3 = {
     type: 'object',
     properties: {
         positions: {
@@ -253,24 +194,14 @@ function handleJsonSchemaValidationError(err, req, res, next) {
 
         console.error(err.message);
 
-        res.status(400); //bad request
-
-        // Format the response body however you want
         var responseData = {
             statusText: 'Bad Request',
             jsonSchemaValidation: true,
-            validations: err.validations  // All of your validation information
+            validations: err.validations
         };
 
-        // Take into account the content type if your app serves various content types
-        if (req.xhr || req.get('Content-Type') === 'application/json') {
-            res.json(responseData);
-        } else {
-            // If this is an html request then you should probably have
-            // some type of Bad Request html template to respond with
-            //TODO: entfernen
-            res.render('badrequest', responseData);
-        }
+        res.status(400).json(responseData);
+
     } else {
         // pass error to next error middleware handler
         next(err);
@@ -278,12 +209,11 @@ function handleJsonSchemaValidationError(err, req, res, next) {
 }
 
 module.exports = {
-    "taggingSchema_v1": taggingSchema_v1,
-    "taggingSchema_v2": taggingSchema_v2,
-    "taggingSchema_v3": taggingSchema_v3,
-    "taggingSchema_v4": taggingSchema_v4,
-    "velocitySchema_v1": velocitySchema_v1,
-    "velocitySchema_v3": velocitySchema_v3,
-    "surroundingsSchema_v3": surroundingsSchema_v3,
+    "TAGGING_SCHEMA_V1": TAGGING_SCHEMA_V1,
+    "TAGGING_SCHEMA_V2": TAGGING_SCHEMA_V2,
+    "TAGGING_SCHEMA_V3": TAGGING_SCHEMA_V3,
+    "TAGGING_SCHEMA_V4": TAGGING_SCHEMA_V4,
+    "SURROUNDINGS_SCHEMA_V3": SURROUNDINGS_SCHEMA_V3,
+    "VELOCITY_SCHEMA_V3": VELOCITY_SCHEMA_V3,
     "handleJsonSchemaValidationError": handleJsonSchemaValidationError
 };

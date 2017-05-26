@@ -23,10 +23,10 @@ function getSpeedCalculationView(req, res) {
 
 function getVelocity(req, res, callback) {
 
-    var body = req.body;
-    var startDate = new Date(body.startTime);
-    var endDate = new Date(body.endTime);
-    var statement = getDbStatement(body);
+    var positions = req.body.positions;
+    var startDate = new Date(positions[0].time);
+    var endDate = new Date(positions[1].time);
+    var statement = getDbStatement(positions);
 
     db_access.singleQuery(statement, res, startDate, endDate, callback);
 }
@@ -35,10 +35,10 @@ function getVelocity(req, res, callback) {
 function getDbStatement(positions) {
 
     return OSM_QUERY_DISTANCE
-        .replaceAll("{lon1}", positions.longitude1)
-        .replaceAll("{lat1}", positions.latitude1)
-        .replaceAll("{lon2}", positions.longitude2)
-        .replaceAll("{lat2}", positions.latitude2);
+        .replaceAll("{lon1}", positions[0].longitude)
+        .replaceAll("{lat1}", positions[0].latitude)
+        .replaceAll("{lon2}", positions[1].longitude)
+        .replaceAll("{lat2}", positions[1].latitude);
 }
 
 function prepareJSON(endDate, startDate, resultingDistance) {

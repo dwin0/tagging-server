@@ -200,6 +200,10 @@ function getTag(typeOfMotion, positions, callback) {
                 }
             });
     }
+    else {
+
+        callback({ tag: UNKNOWN, probability: null });
+    }
 }
 
 module.exports = { "getTag": getTag };

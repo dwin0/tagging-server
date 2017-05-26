@@ -105,7 +105,7 @@ pre {
 
 
 
-/*index_v3.hbs and speedIndex.hbs*/
+/*index.hbs and speedIndex.hbs*/
 
     /*Leaflet Map*/
     .form-map {
@@ -179,5 +179,5 @@ pre {
         margin: 0;
     }
 
-/*END index_v3.hbs
+/*END index.hbs
 ----------------------------*/

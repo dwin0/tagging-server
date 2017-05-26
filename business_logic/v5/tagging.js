@@ -158,7 +158,7 @@ function checkIf_RAILWAY(tags, positions, callback) {
 
 function getBuildingProbability(tags, positions, nearestBuildings) {
 
-    //The bigger the horizontal_accuracy (not accurate values), the smaller the positionsWeight
+    //The bigger the horizontalAccuracy (not accurate values), the smaller the positionsWeight
     var positionsWeight = getPositionWeight(positions);
 
     for(var i = 0; i < positions.length; i++) {
@@ -174,7 +174,7 @@ function getBuildingProbability(tags, positions, nearestBuildings) {
 
 function getStreetAndRailwayProbability(tags, positions, nearestWays) {
 
-    //The bigger the horizontal_accuracy (not accurate values), the smaller the positionsWeight
+    //The bigger the horizontalAccuracy (not accurate values), the smaller the positionsWeight
     var positionsWeight = getPositionWeight(positions);
 
     //check for each point, if a street or a railway is nearby
@@ -206,7 +206,7 @@ function getStreetAndRailwayProbability(tags, positions, nearestWays) {
 
 function getRailwayProbability(tags, positions, nearestWays) {
 
-    //The bigger the horizontal_accuracy (not accurate values), the smaller the positionsWeight
+    //The bigger the horizontalAccuracy (not accurate values), the smaller the positionsWeight
     var positionsWeight = getPositionWeight(positions);
 
     for(var i = 0; i < positions.length; i++) {
@@ -227,15 +227,15 @@ function getPositionWeight(positions) {
     var weights = [];
 
     positions.forEach(function (pos) {
-        totalHorizontalAccuracy += pos.horizontal_accuracy;
+        totalHorizontalAccuracy += pos.horizontalAccuracy;
     });
 
     positions.forEach(function (pos) {
-        denominator += totalHorizontalAccuracy / pos.horizontal_accuracy;
+        denominator += totalHorizontalAccuracy / pos.horizontalAccuracy;
     });
 
     for(var i = 0; i < positions.length; i++) {
-        weights[i] = totalHorizontalAccuracy / denominator / positions[i].horizontal_accuracy;
+        weights[i] = totalHorizontalAccuracy / denominator / positions[i].horizontalAccuracy;
     }
 
     return weights;
