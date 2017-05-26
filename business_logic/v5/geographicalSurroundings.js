@@ -1,15 +1,12 @@
 var db_access= require('../../persistence/db_access_v4');
-var parallel = require("async/parallel");
 var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
 
 
 const UNKNOWN = {
-    id: -1,
-    name: "unknown",
     osm_key: 'unknown',
     osm_value: 'unknown',
-    description: "No tagging possible."
+    description: 'No tagging possible.'
 };
 
 
@@ -18,54 +15,40 @@ function getGeographicalSurroundings(positions, callback) {
     var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
     var queryPositions = posHelper.makeMultipoints(positions);
 
-    parallel([
-            function(callback) {
-                db_access.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (result) {
-                    callback(null, result);
-                });
-            }
-        ],
-        function (err, results) {
+    db_access.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (result) {
 
-            //Get results from first (and only) query
-            results = results[0];
+        /*DEMO-Points
+         boundary: POINT(8.55777 47.2495) -> protected_area
+         natural: POINT(8.7048 47.3611) -> wetland
+         leisure: POINT(8.55777 47.2495) -> nature_reserve
+         landuse: POINT(8.6875 47.2157) -> forest
+         multiple entries: POINT(8.73956 47.54351) -> natural: scrub / leisure: natural_reserve
+         */
+        var middlePoints = [
+            {longitude: result[0][0].st_x, latitude: result[0][0].st_y},
+            {longitude: result[1][0].st_x, latitude: result[1][0].st_y } ];
 
-            /*DEMO-Points
-             boundary: POINT(8.55777 47.2495) -> protected_area
-             natural: POINT(8.7048 47.3611) -> wetland
-             leisure: POINT(8.55777 47.2495) -> nature_reserve
-             landuse: POINT(8.6875 47.2157) -> forest
+        queryPositions = posHelper.makePoints(middlePoints);
+        var switzerlandDB = db_access.getDatabase(db_access.SWITZERLAND_DB);
 
-             multiple entries: POINT(8.73956 47.54351) -> natural: scrub / leisure: natural_reserve
-             */
-            var middlePoints = [
-                {longitude: results[0][0].st_x, latitude: results[0][0].st_y},
-                {longitude: results[1][0].st_x, latitude: results[1][0].st_y } ];
+        db_access.queryMultipleParameterized(switzerlandDB, queries.GEOGRAPHICAL_QUERY, queryPositions, function (result) {
 
-            queryPositions = posHelper.makePoints(middlePoints);
-            var switzerlandDB = db_access.getDatabase(db_access.SWITZERLAND_DB);
+            var downloadResult = result[0][0];
+            var uploadResult = result[1][0];
 
-            db_access.queryMultipleParameterized(switzerlandDB, queries.GEOGRAPHICAL_QUERY, queryPositions, function (result) {
+            var resultObj = {
+                download: prepareResult(downloadResult),
+                upload: prepareResult(uploadResult)
+            };
 
-                var downloadResult = result[0][0];
-                var uploadResult = result[1][0];
-
-                var resultObj = {
-                    download: prepareResult(downloadResult),
-                    upload: prepareResult(uploadResult)
-                };
-
-                callback(resultObj);
-            });
-
-        }
-    );
+            callback(resultObj);
+        });
+    });
 }
-
 
 function prepareResult(dbResult) {
 
-    const DESCRIPTION = 'TODO';//TODO
+    const DESCRIPTION = 'TODO';
 
     var prepared = {
         osm_key: UNKNOWN.osm_key,
