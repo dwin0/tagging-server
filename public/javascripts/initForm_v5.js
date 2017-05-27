@@ -3,7 +3,7 @@ var numberOfPositions;
 
 $(window).on('load', function () {
 
-    var title = $('#title').html();
+    var title = $(document).find("title").text();
 
     switch (title) {
         case 'Tagging-Server':

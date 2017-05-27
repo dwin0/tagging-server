@@ -1,6 +1,6 @@
 $(document).on('ready', function () {
 
-    var title = $('#title').html();
+    var title = $(document).find("title").text();
     var submitButton = $('#submitButton');
 
     switch (title) {

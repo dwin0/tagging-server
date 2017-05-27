@@ -3,21 +3,21 @@ $(document).on('ready', function () {
     $.ajax({
         type: "GET",
         url: "/schemas",
-        success: function(data, text){
+        success: function(data) {
 
             //Insert schemas, possible input-values and possible output-values
             //Schema is loaded from server, possible values are static values
             insertJSON(data.taggingSchema, '#tagging-schema > p');
             insertJSON(data.speedCalculationSchema, '#speedCalculation-schema > p');
             insertJSON(data.surroundingsSchema, '#surroundings-schema > p');
-            insertJSON(possibleTaggingInput, '#possible-tagging-input > p');
-            insertJSON(possibleSpeedCalculationInput, '#possible-speedCalculation-input > p');
-            insertJSON(possibleSurroundingsInput, '#possible-surroundings-input > p');
-            insertJSON(possibleTaggingOutput, '#possible-tagging-output > p');
-            insertJSON(possibleSpeedCalculationOutput, '#possible-speedCalculation-output > p');
-            insertJSON(possibleSurroundingsOutput, '#possible-surroundings-output > p');
+            insertJSON(POSSIBLE_TAGGING_INPUT, '#possible-tagging-input > p');
+            insertJSON(POSSIBLE_SPEED_CALCULATION_INPUT, '#possible-speedCalculation-input > p');
+            insertJSON(POSSIBLE_SURROUNDINGS_INPUT, '#possible-surroundings-input > p');
+            insertJSON(POSSIBLE_TAGGING_OUTPUT, '#possible-tagging-output > p');
+            insertJSON(POSSIBLE_SPEED_CALCULATION_OUTPUT, '#possible-speedCalculation-output > p');
+            insertJSON(POSSIBLE_SURROUNDINGS_OUTPUT, '#possible-surroundings-output > p');
         },
-        error: function (request, status, error) {
+        error: function (request) {
             console.error(request.responseText);
         }
     });
@@ -49,7 +49,7 @@ function syntaxHighlight(json) {
 }
 
 
-const possibleTaggingInput = {
+const POSSIBLE_TAGGING_INPUT = {
     "positions": [
         {
             "longitude": 8.7095882,
@@ -109,7 +109,8 @@ const possibleTaggingInput = {
         }
     ]
 };
-const possibleTaggingOutput = {
+
+const POSSIBLE_TAGGING_OUTPUT = {
     "title": "Calculated Tagging",
     "location": {
         "id": 1,
@@ -197,7 +198,9 @@ const possibleTaggingOutput = {
     }
 };
 
-const possibleSpeedCalculationInput = {
+
+
+const POSSIBLE_SPEED_CALCULATION_INPUT = {
     "positions": [
         {
             "longitude": 8.7135701,
@@ -212,8 +215,7 @@ const possibleSpeedCalculationInput = {
     ]
 };
 
-
-const possibleSpeedCalculationOutput = {
+const POSSIBLE_SPEED_CALCULATION_OUTPUT = {
     "title": "Calculated velocity:",
     "distance_m": 271.06690764,
     "time_s": 13,
@@ -222,7 +224,9 @@ const possibleSpeedCalculationOutput = {
     "probability": null
 };
 
-const possibleSurroundingsInput = {
+
+
+const POSSIBLE_SURROUNDINGS_INPUT = {
     "positions": [
         {
             "longitude": 8.7095882,
@@ -266,7 +270,8 @@ const possibleSurroundingsInput = {
         }
     ]
 };
-const possibleSurroundingsOutput = {
+
+const POSSIBLE_SURROUNDINGS_OUTPUT = {
     "title": "Calculated Surroundings",
     "surroundings": {
         "download": {

@@ -1,5 +1,10 @@
-//Collapsing Elements
 $(document).ready(function(){
+
+    //Highlight current page in nav-bar
+    var title = $(document).find("title").text();
+    $('.' + title.toLowerCase()).addClass('active');
+
+
     $('.collapsible').collapsible();
 
 
