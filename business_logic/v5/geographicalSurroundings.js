@@ -1,4 +1,4 @@
-var db_access= require('../../persistence/dbAccess_v5');
+var dbAccess= require('../../persistence/dbAccess_v5');
 var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
 
@@ -12,10 +12,10 @@ const UNKNOWN = {
 
 function getGeographicalSurroundings(positions, callback) {
 
-    var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
+    var database = dbAccess.getDatabase(dbAccess.SWITZERLAND_DB);
     var queryPositions = posHelper.makeMultipoints(positions);
 
-    db_access.queryMultiple(database, queries.FIND_MIDDLE_POINT, queryPositions, function (error, result) {
+    dbAccess.queryMultiple(database, queries.FIND_MIDDLE_POINT, queryPositions, function (error, result) {
 
         if(error) {
             callback(error);
@@ -31,9 +31,9 @@ function getGeographicalSurroundings(positions, callback) {
          */
 
         queryPositions = [result[0][0].st_astext, result[1][0].st_astext];
-        var switzerlandDB = db_access.getDatabase(db_access.SWITZERLAND_DB);
+        var switzerlandDB = dbAccess.getDatabase(dbAccess.SWITZERLAND_DB);
 
-        db_access.queryMultiple(switzerlandDB, queries.GEOGRAPHICAL_QUERY, queryPositions, function (error, result) {
+        dbAccess.queryMultiple(switzerlandDB, queries.GEOGRAPHICAL_QUERY, queryPositions, function (error, result) {
 
             if(error) {
                 callback(error);

@@ -1,4 +1,4 @@
-var db = require('../../persistence/dbAccess_v5');
+var dbAccess = require('../../persistence/dbAccess_v5');
 var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
 var parallel = require('async/parallel');
@@ -7,13 +7,13 @@ var parallel = require('async/parallel');
 const RAILWAY = {
     id: 1,
     name: 'railway',
-    description: 'Includes OpenStreetMap-Key:railway, Values: rail, light_rail, narrow_gauge, tram and subway.'
+    description: 'Includes OpenStreetMap-Key: railway, Values: rail, light_rail, narrow_gauge, tram and subway.'
 };
 
 const STREET = {
     id: 2,
     name: 'street',
-    description: 'Includes OpenStreetMap-Key:highway, Values: motorway, motorway_link, trunk, trunk_link, primary, ' +
+    description: 'Includes OpenStreetMap-Key: highway, Values: motorway, motorway_link, trunk, trunk_link, primary, ' +
     'primary_link, secondary, secondary_link, tertiary, tertiary_link, residential, road, unclassified, service, ' +
     'living_street and track.'
 };
@@ -64,7 +64,7 @@ function getTag(typeOfMotion, positions, callback) {
 
         //HIGH_SPEED_VEHICULAR
         case 4:
-            checkIf_RAILWAY(tags, positions, callback);
+            check_RAILWAY(tags, positions, callback);
             break;
 
         default:
@@ -76,23 +76,22 @@ function getTag(typeOfMotion, positions, callback) {
 
 
 
-
 function check_RAILWAY_STREET_BUILDING(tags, positions, callback) {
 
-    var switzerlandDB = db.getDatabase(db.SWITZERLAND_DB);
-    var streetDB = db.getDatabase(db.STREETS_DB);
+    var switzerlandDB = dbAccess.getDatabase(dbAccess.SWITZERLAND_DB);
+    var streetDB = dbAccess.getDatabase(dbAccess.STREETS_DB);
     var queryPositions = posHelper.makePoints(positions);
 
     parallel([
             //Get the nearest building within X meters of each of the 3 positions
             function(callback) {
-                db.queryMultiple(switzerlandDB, queries.SWITZERLAND_NEAREST_BUILDING, queryPositions, function (error, result) {
+                dbAccess.queryMultiple(switzerlandDB, queries.SWITZERLAND_NEAREST_BUILDING, queryPositions, function (error, result) {
                         callback(error, result);
                 });
             },
             //Get all railways or streets within X meters for each of the 3 positions
             function(callback) {
-                db.queryMultiple(streetDB, queries.OSM_NEAREST_WAYS, queryPositions, function (error, result) {
+                dbAccess.queryMultiple(streetDB, queries.OSM_NEAREST_WAYS, queryPositions, function (error, result) {
                         callback(error, result);
                 });
             }
@@ -107,7 +106,7 @@ function check_RAILWAY_STREET_BUILDING(tags, positions, callback) {
             var nearestBuildings = results[0];
             var nearestWays = results[1];
 
-            tags = getBuildingProbability(tags, positions, nearestBuildings);
+            tags = getEntryProbability(tags, positions, nearestBuildings, 'building');
             tags = getStreetAndRailwayProbability(tags, positions, nearestWays);
 
             returnTag(tags, callback);
@@ -116,61 +115,42 @@ function check_RAILWAY_STREET_BUILDING(tags, positions, callback) {
 
 function check_RAILWAY_STREET(tags, positions, callback) {
 
-    var database = db.getDatabase(db.STREETS_DB);
+    var database = dbAccess.getDatabase(dbAccess.STREETS_DB);
     var queryPositions = posHelper.makePoints(positions);
 
     //Get all railways or streets within X meters for each of the 3 positions
-    db.queryMultiple(database, queries.OSM_NEAREST_WAYS, queryPositions, function (error, result) {
+    dbAccess.queryMultiple(database, queries.OSM_NEAREST_WAYS, queryPositions, function (error, nearestWays) {
 
         if(error) {
             callback(error);
             return;
         }
 
-        var nearestWays = result;
         tags = getStreetAndRailwayProbability(tags, positions, nearestWays);
         returnTag(tags, callback);
     });
 }
 
-function checkIf_RAILWAY(tags, positions, callback) {
+function check_RAILWAY(tags, positions, callback) {
 
-    var database = db.getDatabase(db.STREETS_DB);
+    var database = dbAccess.getDatabase(dbAccess.STREETS_DB);
     var queryPositions = posHelper.makePoints(positions);
 
-    //Get all railways or streets within X meters for each of the 3 positions
-    db.queryMultiple(database, queries.OSM_NEAREST_RAILWAYS, queryPositions, function (error, result) {
+    //Get all railways within X meters for each of the 3 positions
+    dbAccess.queryMultiple(database, queries.OSM_NEAREST_RAILWAYS, queryPositions, function (error, nearestRailways) {
 
         if(error) {
             callback(error);
             return;
         }
 
-        var nearestRailways = result;
-        tags = getRailwayProbability(tags, positions, nearestRailways);
+        tags = getEntryProbability(tags, positions, nearestRailways, 'railway');
         returnTag(tags, callback);
     });
 }
 
 
 
-
-
-function getBuildingProbability(tags, positions, nearestBuildings) {
-
-    //The bigger the horizontalAccuracy (not accurate values), the smaller the positionsWeight
-    var positionsWeight = getPositionWeight(positions);
-
-    for(var i = 0; i < positions.length; i++) {
-
-        //Check if building was found nearby
-        if(nearestBuildings[i].length) {
-            tags.building.probability += positionsWeight[i];
-        }
-    }
-
-    return tags;
-}
 
 function getStreetAndRailwayProbability(tags, positions, nearestWays) {
 
@@ -204,16 +184,16 @@ function getStreetAndRailwayProbability(tags, positions, nearestWays) {
     return tags;
 }
 
-function getRailwayProbability(tags, positions, nearestWays) {
+function getEntryProbability(tags, positions, nearestEntries, tagName) {
 
     //The bigger the horizontalAccuracy (not accurate values), the smaller the positionsWeight
     var positionsWeight = getPositionWeight(positions);
 
     for(var i = 0; i < positions.length; i++) {
 
-        //Check if railway was found nearby
-        if(nearestWays[i].length) {
-            tags.railway.probability += positionsWeight[i];
+        //Check if db-entry was found nearby
+        if(nearestEntries[i].length) {
+            tags[tagName].probability += positionsWeight[i];
         }
     }
 
@@ -235,7 +215,7 @@ function getPositionWeight(positions) {
     });
 
     for(var i = 0; i < positions.length; i++) {
-        weights[i] = totalHorizontalAccuracy / denominator / positions[i].horizontalAccuracy;
+        weights[i] = totalHorizontalAccuracy / positions[i].horizontalAccuracy / denominator;
     }
 
     return weights;
@@ -244,10 +224,9 @@ function getPositionWeight(positions) {
 
 
 
-
 function clazzToWayType(clazz) {
 
-    return (clazz > 0 && clazz < 17) ?  STREET : RAILWAY;
+    return clazz < 50 ?  STREET : RAILWAY;
 }
 
 function returnTag(tags, callback) {

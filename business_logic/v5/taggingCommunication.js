@@ -12,7 +12,7 @@ function getTags(req, res) {
 
     positionsHelper.choosePositions(req.body.positions, res, function (positions) {
 
-        //error occurred
+        //error occurred, but already handled
         if(!positions) {
             return;
         }
@@ -44,16 +44,16 @@ function calculateVelocity(positions, res, callback) {
 }
 
 
-function calculateTags(res, positions, speedResult) {
+function calculateTags(res, positions, velocityJSON) {
 
-    var typeOfMotionRes = typeOfMotion.getTypeOfMotion(speedResult.velocityKilometersPerHour);
+    var typeOfMotionRes = typeOfMotion.getTypeOfMotion(velocityJSON.velocityKilometersPerHour);
 
     if(typeOfMotionRes.name === 'unknown') {
 
         res.status(400).json({
             statusText: 'Bad Request',
             description: 'The input-positions are too far away from each other.',
-            velocityKilometersPerHour: speedResult.velocityKilometersPerHour
+            velocityKilometersPerHour: velocityJSON.velocityKilometersPerHour
         });
 
         return;
@@ -90,7 +90,7 @@ function calculateTags(res, positions, speedResult) {
             }
 
             /*Parameters: tagging-result, type-of-motion, speed-result, geographicalSurroundings-result, geoAdmin-result */
-            var response = jsonHelper.renderTagJson(results[0], typeOfMotionRes, speedResult, results[1], results[2]);
+            var response = jsonHelper.renderTagJson(results[0], typeOfMotionRes, velocityJSON, results[1], results[2]);
             res.status(200).json(response);
         });
 }

@@ -1,4 +1,4 @@
-var db_access= require('../../persistence/dbAccess_v5');
+var dbAccess= require('../../persistence/dbAccess_v5');
 var parallel = require('async/parallel');
 var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
@@ -77,10 +77,10 @@ const POPULATION_DENSITY_DESCRIPTION = 'Average of persons living in 1ha based o
 
 function getGeoAdminData(positions, callback) {
 
-    var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
+    var database = dbAccess.getDatabase(dbAccess.SWITZERLAND_DB);
     var queryPositions = posHelper.makeMultipoints(positions);
 
-    db_access.queryMultiple(database, queries.FIND_MIDDLE_POINT, queryPositions, function (error, result) {
+    dbAccess.queryMultiple(database, queries.FIND_MIDDLE_POINT, queryPositions, function (error, result) {
 
         if(error) {
             callback(error);

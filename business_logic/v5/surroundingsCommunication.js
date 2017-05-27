@@ -9,7 +9,7 @@ function getSurroundings(req, res) {
 
     positionsHelper.choosePositions(req.body.positions, res, function (positions) {
 
-        //error occurred
+        //error occurred, but already handled
         if(!positions) {
             return;
         }

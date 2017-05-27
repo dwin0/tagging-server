@@ -59,7 +59,7 @@ const GEOGRAPHICAL_QUERY = 'SELECT boundary, "natural", leisure, landuse ' +
      SELECT * FROM multipolygons
      WHERE building IS NOT NULL
      ORDER BY multipolygons.wkb_geometry <-> ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)
-     ASC LIMIT 10)
+     LIMIT 10)
  SELECT osm_way_id
  FROM closest_candidates
  WHERE ST_Distance(wkb_geometry::geography, ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)::geography) < 15
@@ -70,7 +70,7 @@ const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
         'SELECT * FROM multipolygons ' +
         'WHERE building IS NOT NULL ' +
         'ORDER BY multipolygons.wkb_geometry <-> ST_GeomFromText($1, 4326) ' +
-        'ASC LIMIT ' + config.nearestBuilding.numberOfClosestCandidates + ') ' +
+        'LIMIT ' + config.nearestBuilding.numberOfClosestCandidates + ') ' +
     'SELECT osm_way_id ' +
     'FROM closest_candidates ' +
     'WHERE ST_Distance(wkb_geometry::geography, ST_GeomFromText($1, 4326)::geography) < ' +

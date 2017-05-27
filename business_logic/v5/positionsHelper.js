@@ -1,4 +1,4 @@
-var db_access= require('../../persistence/dbAccess_v5');
+var dbAccess= require('../../persistence/dbAccess_v5');
 var queries = require('./dbQueries');
 
 
@@ -96,10 +96,10 @@ function filterValidLatLon(posArray) {
 
 function checkIfSwitzerland(positions, callback) {
 
-    var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
+    var database = dbAccess.getDatabase(dbAccess.SWITZERLAND_DB);
     var queryPositions = makePoints(positions);
 
-    db_access.singleQuery(database, queries.INSIDE_SWITZERLAND, queryPositions, function (error, result) {
+    dbAccess.singleQuery(database, queries.INSIDE_SWITZERLAND, queryPositions, function (error, result) {
         if(error) {
             callback(error);
             return;
