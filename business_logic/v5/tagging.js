@@ -86,13 +86,13 @@ function check_RAILWAY_STREET_BUILDING(tags, positions, callback) {
     parallel([
             //Get the nearest building within X meters of each of the 3 positions
             function(callback) {
-                db.queryMultipleParameterized(switzerlandDB, queries.SWITZERLAND_NEAREST_BUILDING, queryPositions, function (error, result) {
+                db.queryMultiple(switzerlandDB, queries.SWITZERLAND_NEAREST_BUILDING, queryPositions, function (error, result) {
                         callback(error, result);
                 });
             },
             //Get all railways or streets within X meters for each of the 3 positions
             function(callback) {
-                db.queryMultipleParameterized(streetDB, queries.OSM_NEAREST_WAYS, queryPositions, function (error, result) {
+                db.queryMultiple(streetDB, queries.OSM_NEAREST_WAYS, queryPositions, function (error, result) {
                         callback(error, result);
                 });
             }
@@ -120,7 +120,7 @@ function check_RAILWAY_STREET(tags, positions, callback) {
     var queryPositions = posHelper.makePoints(positions);
 
     //Get all railways or streets within X meters for each of the 3 positions
-    db.queryMultipleParameterized(database, queries.OSM_NEAREST_WAYS, queryPositions, function (error, result) {
+    db.queryMultiple(database, queries.OSM_NEAREST_WAYS, queryPositions, function (error, result) {
 
         if(error) {
             callback(error);
@@ -139,7 +139,7 @@ function checkIf_RAILWAY(tags, positions, callback) {
     var queryPositions = posHelper.makePoints(positions);
 
     //Get all railways or streets within X meters for each of the 3 positions
-    db.queryMultipleParameterized(database, queries.OSM_NEAREST_RAILWAYS, queryPositions, function (error, result) {
+    db.queryMultiple(database, queries.OSM_NEAREST_RAILWAYS, queryPositions, function (error, result) {
 
         if(error) {
             callback(error);

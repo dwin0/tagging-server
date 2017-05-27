@@ -16,7 +16,7 @@ var config = {
 const STREETS_DB = 'streets';
 const SWITZERLAND_DB = 'switzerland';
 
-var osmdb_pool, switzerland_osm_pool;
+var streetDB_pool, switzerlandDB_pool;
 
 /**
  * Connect only at the first request to the database
@@ -28,23 +28,23 @@ function getDatabase(dbName) {
 
     switch(dbName) {
         case STREETS_DB:
-            if(osmdb_pool) {
-                return osmdb_pool;
+            if(streetDB_pool) {
+                return streetDB_pool;
             }
 
-            osmdb_pool = new pg.Pool(config);
-            return osmdb_pool;
+            streetDB_pool = new pg.Pool(config);
+            return streetDB_pool;
 
         case SWITZERLAND_DB:
-            if(switzerland_osm_pool) {
-                return switzerland_osm_pool;
+            if(switzerlandDB_pool) {
+                return switzerlandDB_pool;
             }
 
             //copy config
             var newConfig = JSON.parse(JSON.stringify(config));
             newConfig.database = options.database_switzerland;
-            switzerland_osm_pool = new pg.Pool(newConfig);
-            return switzerland_osm_pool;
+            switzerlandDB_pool = new pg.Pool(newConfig);
+            return switzerlandDB_pool;
     }
 }
 
@@ -53,19 +53,19 @@ function getDatabase(dbName) {
 /**
  * @param database
  * @param statement
- * @param positions: Use formatPositions to fit the required form
+ * @param variables: Use formatPositions to fit the required form
  * @param callback
  */
-function queryMultipleParameterized(database, statement, positions, callback) {
+function queryMultiple(database, statement, variables, callback) {
 
     var dbRequests = [];
 
-    for(var i = 0; i < positions.length; i++) {
+    for(var i = 0; i < variables.length; i++) {
 
         dbRequests[i] = (function (i) {
             return function(callback) {
                 
-                database.query(statement, [positions[i]], function (err, result) {
+                database.query(statement, [variables[i]], function (err, result) {
                     if (err) {
                         console.error('error happened during query', err);
                         callback(err);
@@ -90,12 +90,12 @@ function queryMultipleParameterized(database, statement, positions, callback) {
 
 
 
-function singleQueryParameterized(database, statement, positions, callback) {
+function singleQuery(database, statement, variables, callback) {
 
-    database.query(statement, positions, function (err, result) {
+    database.query(statement, variables, function (err, result) {
         if (err) {
             console.error('error happened during query', err);
-            callback(err, null);
+            callback(err);
             return;
         }
 
@@ -109,6 +109,6 @@ module.exports = {
     "SWITZERLAND_DB": SWITZERLAND_DB,
     "STREETS_DB": STREETS_DB,
     "getDatabase": getDatabase,
-    "singleQueryParameterized": singleQueryParameterized,
-    "queryMultipleParameterized": queryMultipleParameterized
+    "singleQuery": singleQuery,
+    "queryMultiple": queryMultiple
 };

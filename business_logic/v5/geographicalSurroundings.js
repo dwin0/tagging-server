@@ -15,7 +15,7 @@ function getGeographicalSurroundings(positions, callback) {
     var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
     var queryPositions = posHelper.makeMultipoints(positions);
 
-    db_access.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (error, result) {
+    db_access.queryMultiple(database, queries.FIND_MIDDLE_POINT, queryPositions, function (error, result) {
 
         if(error) {
             callback(error);
@@ -36,7 +36,7 @@ function getGeographicalSurroundings(positions, callback) {
         queryPositions = posHelper.makePoints(middlePoints);
         var switzerlandDB = db_access.getDatabase(db_access.SWITZERLAND_DB);
 
-        db_access.queryMultipleParameterized(switzerlandDB, queries.GEOGRAPHICAL_QUERY, queryPositions, function (error, result) {
+        db_access.queryMultiple(switzerlandDB, queries.GEOGRAPHICAL_QUERY, queryPositions, function (error, result) {
 
             if(error) {
                 callback(error);

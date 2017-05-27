@@ -69,44 +69,14 @@
   {{#ifAny title 'Tagging-Server' 'Geschwindigkeitsberechnung' 'Umgebungsabfrage' }}
 
       <div id="loading-icon" class="preloader-wrapper big active">
-          <div class="spinner-layer spinner-blue">
+          <div class="spinner-layer spinner-red-only">
               <div class="circle-clipper left">
                   <div class="circle"></div>
               </div><div class="gap-patch">
               <div class="circle"></div>
-          </div><div class="circle-clipper right">
-              <div class="circle"></div>
-          </div>
-          </div>
-
-          <div class="spinner-layer spinner-red">
-              <div class="circle-clipper left">
+              </div><div class="circle-clipper right">
                   <div class="circle"></div>
-              </div><div class="gap-patch">
-              <div class="circle"></div>
-          </div><div class="circle-clipper right">
-              <div class="circle"></div>
-          </div>
-          </div>
-
-          <div class="spinner-layer spinner-yellow">
-              <div class="circle-clipper left">
-                  <div class="circle"></div>
-              </div><div class="gap-patch">
-              <div class="circle"></div>
-          </div><div class="circle-clipper right">
-              <div class="circle"></div>
-          </div>
-          </div>
-
-          <div class="spinner-layer spinner-green">
-              <div class="circle-clipper left">
-                  <div class="circle"></div>
-              </div><div class="gap-patch">
-              <div class="circle"></div>
-          </div><div class="circle-clipper right">
-              <div class="circle"></div>
-          </div>
+              </div>
           </div>
       </div>
       <div id="darkLayer"></div>
@@ -115,7 +85,6 @@
       <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
       <script type="text/javascript" src="/javascripts/initMap.js"></script>
       <script type="text/javascript" src="/javascripts/setInputAsMarker.js"></script>
-  {{else}}
 
   {{/ifAny}}
 

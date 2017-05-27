@@ -1,15 +1,22 @@
 var velocity = require('./velocity');
 
 function getSpeedCalculation(req, res) {
-    velocity.getVelocity_request(req, function (error, endDate, startDate, resultingDistance) {
+    velocity.getVelocity(req.body.positions, function (error, result) {
 
         if(error) {
             res.status(500).send('Internal Server Error');
             return;
         }
 
-        var response = velocity.prepareJSON(endDate, startDate, resultingDistance);
-        res.status(200).json(response);
+        if(result.time_s === 0) {
+            res.status(400).json({
+                statusText: 'Bad Request',
+                description: 'All positions have the same time.'
+            });
+            return;
+        }
+
+        res.status(200).json(result);
     })
 }
 

@@ -4,80 +4,31 @@ var queries = require('./dbQueries');
 var parallel = require('async/parallel');
 
 
-function getVelocity_request(req, callback) {
-
-    var positions = req.body.positions;
-    var startDate = new Date(positions[0].time);
-    var endDate = new Date(positions[1].time);
-
-    var queryPositions = posHelper.makePoints(positions);
-    var database = db_access.getDatabase(db_access.STREETS_DB);
-
-    db_access.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (error, result) {
-
-        if(error) {
-            callback(error);
-            return;
-        }
-
-        callback(null, endDate, startDate, result[0].st_distance)
-    });
-}
-
-
-function prepareJSON(endDate, startDate, resultingDistance) {
-
-    resultingDistance = Math.round(resultingDistance);
-    var resultingTime = (endDate - startDate) / 1000;
-    var resultingVelocityMS;
-    var resultingVelocityKMH;
-
-    if(resultingTime === 0) {
-
-        resultingVelocityMS = '-';
-        resultingVelocityKMH = '-';
-    }
-    else {
-        resultingVelocityMS = resultingDistance / resultingTime;
-        resultingVelocityKMH = resultingVelocityMS * 3.6;
-    }
-
-    return {
-        distance_m: resultingDistance,
-        time_s: resultingTime,
-        velocity_ms: resultingVelocityMS,
-        velocity_kmh: resultingVelocityKMH,
-        probability: null
-    }
-}
-
-
 function getVelocity(positions, callback) {
 
     var dbRequests = [];
+    var database = db_access.getDatabase(db_access.STREETS_DB);
 
-    //prepare dbRequests
+    //prepare dbRequests to get all distances between the input-points
     for(var i = 1; i < positions.length; i++) {
 
         var pos1 = positions[i-1];
         var pos2 = positions[i];
-        var time_s = Math.abs(new Date(pos2.time).getTime() - new Date(pos1.time).getTime()) / 1000;
+        var timeSeconds = Math.abs(new Date(pos2.time).getTime() - new Date(pos1.time).getTime()) / 1000;
         const queryPositions = posHelper.makePoints([pos1, pos2]);
 
-        dbRequests[i-1] = (function(i, time_s) {
-            return function(callback) {
+        dbRequests[i-1] = (function(timeSeconds) {
+            return function(parallelCallback) {
 
-                var database = db_access.getDatabase(db_access.STREETS_DB);
-
-                db_access.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (err, res) {
+                db_access.singleQuery(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (err, res) {
                     if(err) {
-                        callback(err);
+                        parallelCallback(err);
                         return;
                     }
-                    callback(null, { time_s: time_s, distance_m: res[0].st_distance });
+                    parallelCallback(null, { timeSeconds: timeSeconds, distanceMeters: res[0].st_distance });
                 });
             };
-        }(i, time_s));
+        }(timeSeconds));
     }
 
     //Request database and calculate average speed
@@ -89,37 +40,35 @@ function getVelocity(positions, callback) {
             }
 
             callback(null, calcAverageVelocity(results));
-        });
+        }
+    );
 }
 
 
-function calcAverageVelocity(positions) {
+function calcAverageVelocity(dbResults) {
 
-    //velocity = (t1 * v1 + t2 * v2) / t1 + t2
+    //velocity = (s1 + s2) / (t1 + t2)
 
     var totalDistance = 0;
     var totalTime = 0;
 
-    positions.forEach(function (pos) {
-        totalDistance += pos.distance_m;
-        totalTime += pos.time_s;
+    dbResults.forEach(function (pos) {
+        totalDistance += pos.distanceMeters;
+        totalTime += pos.timeSeconds;
     });
 
-    var velocity_ms = totalDistance / totalTime;
-    var velocity_kmh = velocity_ms * 3.6;
+    var velocityMeterPerSecond = totalDistance / totalTime;
+    var velocityKilometersPerHour = velocityMeterPerSecond * 3.6;
 
     return {
-        distance_m: totalDistance,
-        time_s: totalTime,
-        velocity_ms: velocity_ms,
-        velocity_kmh: velocity_kmh,
-        probability: null
+        distanceMeters: totalDistance,
+        timeSeconds: totalTime,
+        velocityMeterPerSecond: velocityMeterPerSecond,
+        velocityKilometersPerHour: velocityKilometersPerHour
     };
 }
 
 
 module.exports = {
-    "getVelocity_request": getVelocity_request,
-    "prepareJSON": prepareJSON,
     "getVelocity": getVelocity
 };
