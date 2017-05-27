@@ -3,9 +3,9 @@
   <head>
     <title>{{title}}</title>
 
-      <link rel='stylesheet' href='/stylesheets/style.css' />
-      <link type="text/css" rel="stylesheet" href="/stylesheets/materialize.css"/>
-      <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <link rel="stylesheet" type="text/css" href="/stylesheets/style.css"/>
+      <link rel="stylesheet" type="text/css" href="/stylesheets/materialize.css"/>
+      <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/icon?family=Material+Icons"/>
 
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
@@ -16,7 +16,7 @@
 
       <nav>
           <div class="nav-wrapper">
-              <a href="#" class="brand-logo">Logo</a>
+              <img id="logo" class="brand-logo" src="/images/logo.png" />
               <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
               <ul class="right hide-on-med-and-down">
                   <li class="api"><a href="/api">API</a></li>
@@ -45,28 +45,27 @@
   </body>
 
 
-  {{#ifSame version '1.0'}}
-      <script type="text/javascript" src="/javascripts/initForm_v1.js"></script>
-      <script type="text/javascript" src="/javascripts/sendRequest_v1.js"></script>
-  {{else ifSame version '2.0'}}
-      <script type="text/javascript" src="/javascripts/initForm_v2.js"></script>
-      <script type="text/javascript" src="/javascripts/sendRequest_v2.js"></script>
-  {{else ifSame version '2.1'}}
-      <script type="text/javascript" src="/javascripts/initForm_v2.js"></script>
-      <script type="text/javascript" src="/javascripts/sendRequest_v2_1.js"></script>
-  {{else ifSame version '3.0'}}
-      <script type="text/javascript" src="/javascripts/initForm_v3.js"></script>
-      <script type="text/javascript" src="/javascripts/sendRequest_v3.js"></script>
-  {{else ifSame version '4.0'}}
-      <script type="text/javascript" src="/javascripts/initForm_v4.js"></script>
-      <script type="text/javascript" src="/javascripts/sendRequest_v4.js"></script>
-  {{else ifSame version '5.0'}}
-      <script type="text/javascript" src="/javascripts/initForm_v5.js"></script>
-      <script type="text/javascript" src="/javascripts/sendRequest_v5.js"></script>
-  {{/ifSame}}
-
-
   {{#ifAny title 'Tagging-Server' 'Geschwindigkeitsberechnung' 'Umgebungsabfrage' }}
+
+      {{#ifSame version '1.0'}}
+          <script type="text/javascript" src="/javascripts/initForm_v1.js"></script>
+          <script type="text/javascript" src="/javascripts/sendRequest_v1.js"></script>
+      {{else ifSame version '2.0'}}
+          <script type="text/javascript" src="/javascripts/initForm_v2.js"></script>
+          <script type="text/javascript" src="/javascripts/sendRequest_v2.js"></script>
+      {{else ifSame version '2.1'}}
+          <script type="text/javascript" src="/javascripts/initForm_v2.js"></script>
+          <script type="text/javascript" src="/javascripts/sendRequest_v2_1.js"></script>
+      {{else ifSame version '3.0'}}
+          <script type="text/javascript" src="/javascripts/initForm_v3.js"></script>
+          <script type="text/javascript" src="/javascripts/sendRequest_v3.js"></script>
+      {{else ifSame version '4.0'}}
+          <script type="text/javascript" src="/javascripts/initForm_v4.js"></script>
+          <script type="text/javascript" src="/javascripts/sendRequest_v4.js"></script>
+      {{else ifSame version '5.0'}}
+          <script type="text/javascript" src="/javascripts/initForm_v5.js"></script>
+          <script type="text/javascript" src="/javascripts/sendRequest_v5.js"></script>
+      {{/ifSame}}
 
       <div id="loading-icon" class="preloader-wrapper big active">
           <div class="spinner-layer spinner-red-only">
@@ -79,10 +78,10 @@
               </div>
           </div>
       </div>
-      <div id="darkLayer"></div>
+      <div id="loading-layer"></div>
 
-      <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
-      <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+      <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
       <script type="text/javascript" src="/javascripts/initMap.js"></script>
       <script type="text/javascript" src="/javascripts/setInputAsMarker.js"></script>
 

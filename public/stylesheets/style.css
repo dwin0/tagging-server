@@ -2,10 +2,14 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-#border-div{
+#border-div {
   padding: 50px;
 }
 
+#logo {
+    max-width: 100%;
+    max-height: 100%;
+}
 
 
 
@@ -101,7 +105,7 @@ pre {
 
 
 
-/*index.hbs and speedIndex.hbs*/
+/*taggingIndex.hbs, speedIndex.hbs and surroundingsIndex.hbs */
 
     /*Leaflet Map*/
     .form-map {
@@ -137,7 +141,7 @@ pre {
         z-index: 10;
     }
 
-    #darkLayer {
+    #loading-layer {
         display: none;
         filter: alpha(opacity=60); /* IE */
         opacity: 0.6; /* Safari, Opera */
@@ -175,5 +179,5 @@ pre {
         margin: 0;
     }
 
-/*END index.hbs
+/*END taggingIndex.hbs
 ----------------------------*/

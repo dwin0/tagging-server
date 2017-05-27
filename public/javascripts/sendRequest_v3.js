@@ -184,7 +184,7 @@ function renderResult(appendArray) {
 
 function showLoadingView() {
     $('#loading-icon').css('display', 'inline');
-    $('#darkLayer').css('display', 'inherit');
+    $('#loading-layer').css('display', 'inherit');
 }
 
 function addResultViewListener() {
@@ -196,7 +196,7 @@ function addResultViewListener() {
         // if the target of the click isn't the container nor a descendant of the container
         if (!container.is(e.target) && container.has(e.target).length === 0) {
             container.css('visibility', 'hidden');
-            $('#darkLayer').css('display', 'none');
+            $('#loading-layer').css('display', 'none');
         }
     });
 }

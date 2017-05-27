@@ -1,6 +1,6 @@
 var map;
 
-function setupMap() {
+(function setupMap() {
 
     map = new L.Map('map');
 
@@ -11,6 +11,4 @@ function setupMap() {
 
     map.setView(new L.LatLng(47.3, 8.55),9);
     map.addLayer(osm);
-}
-
-setupMap();
+})();

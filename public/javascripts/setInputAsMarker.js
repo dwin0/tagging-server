@@ -1,4 +1,4 @@
-$(window).on('load', function () {
+$(window).load(function () {
     setMarkers();
 
     addClearListener();
@@ -8,8 +8,8 @@ $(window).on('load', function () {
 
 });
 
-var markers = new L.FeatureGroup();
 
+var markers = new L.FeatureGroup();
 
 function setMarkers() {
 
@@ -20,6 +20,7 @@ function setMarkers() {
     for(var i = 1; i <= numberOfPositions; i++) {
         var longitude = $('#longitude' + i).val();
         var latitude = $('#latitude' + i).val();
+        var horizontalAccuracy = $('#horizontalAccuracy' + i).val();
 
         if(longitude === '' || latitude === '') {
             continue;
@@ -30,6 +31,17 @@ function setMarkers() {
             showOnMouseOver: true
         });
         markers.addLayer(marker);
+
+        if(horizontalAccuracy) {
+
+            var circle = L.circle([parseFloat(latitude), parseFloat(longitude)], {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.1,
+                radius: parseFloat(horizontalAccuracy)
+            });
+            markers.addLayer(circle);
+        }
     }
 
     map.addLayer(markers);
@@ -43,7 +55,6 @@ function addClearListener() {
 }
 
 
-//TODO: Duplicate, also used in sendRequest
 function getNumberOfPositions() {
 
     var numberOfPositions = 0;

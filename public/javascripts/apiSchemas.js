@@ -1,4 +1,4 @@
-$(document).on('ready', function () {
+$(document).ready(function () {
 
     $.ajax({
         type: "GET",
@@ -25,7 +25,7 @@ $(document).on('ready', function () {
 });
 
 function insertJSON(json, id) {
-    var jsonString = JSON.stringify(json, undefined, 4);
+    var jsonString = JSON.stringify(json, null, 4);
     $('<pre></pre>').insertAfter(id).html(syntaxHighlight(jsonString));
 }
 

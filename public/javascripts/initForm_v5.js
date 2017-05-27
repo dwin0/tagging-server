@@ -88,25 +88,28 @@ function createSurroundingsForm() {
 
 
 function createInputElement(forString, labelText) {
-    return $('<div><label for="' + forString + '">' + labelText + ' : ' +
-        '<input type="text" name="' + forString + '" id="' + forString + '"/>' +
-        '</label></div>');
+    return $('<div>' +
+                '<label for="' + forString + '">' + labelText + ' : ' +
+                    '<input type="text" name="' + forString + '" id="' + forString + '"/>' +
+                '</label>' +
+            '</div>');
 }
 
 function createSelectElement(forString, labelText, disabledValue) {
     return $(
         '<div><label for="' + forString + '">' + labelText + ':</label>' +
-        '<select name="' + forString + '" id="' + forString + '">' +
-            '<option value="" disabled selected>' + disabledValue + '</option>' +
-            '<option value="FCTStart">FCTStart</option>' +
-            '<option value="FCTEnd">FCTEnd</option>' +
-            '<option value="DownloadStart">DownloadStart</option>' +
-            '<option value="DownloadEnd">DownloadEnd</option>' +
-            '<option value="UploadStart">UploadStart</option>' +
-            '<option value="UploadEnd">UploadEnd</option>' +
-            '<option value="RTTStart">RTTStart</option>' +
-            '<option value="RTTEnd">RTTEnd</option>' +
-        '</select></div>')
+            '<select name="' + forString + '" id="' + forString + '">' +
+                '<option value="" disabled selected>' + disabledValue + '</option>' +
+                '<option value="FCTStart">FCTStart</option>' +
+                '<option value="FCTEnd">FCTEnd</option>' +
+                '<option value="DownloadStart">DownloadStart</option>' +
+                '<option value="DownloadEnd">DownloadEnd</option>' +
+                '<option value="UploadStart">UploadStart</option>' +
+                '<option value="UploadEnd">UploadEnd</option>' +
+                '<option value="RTTStart">RTTStart</option>' +
+                '<option value="RTTEnd">RTTEnd</option>' +
+            '</select>' +
+        '</div>')
 }
 
 const taggingDefaultValues = [
