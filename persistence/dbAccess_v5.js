@@ -53,7 +53,7 @@ function getDatabase(dbName) {
 /**
  * @param database
  * @param statement
- * @param variables: Use formatPositions to fit the required form
+ * @param variables: Use makePoints or makeMultipoints to fit the required form
  * @param callback
  */
 function queryMultiple(database, statement, variables, callback) {
@@ -85,7 +85,8 @@ function queryMultiple(database, statement, variables, callback) {
             }
 
             callback(null, results);
-        });
+        }
+    );
 }
 
 

@@ -61,10 +61,10 @@ function calcAverageVelocity(dbResults) {
     var velocityKilometersPerHour = velocityMeterPerSecond * 3.6;
 
     return {
-        distanceMeters: totalDistance,
+        distanceMeters: Math.round(totalDistance),
         timeSeconds: totalTime,
-        velocityMeterPerSecond: velocityMeterPerSecond,
-        velocityKilometersPerHour: velocityKilometersPerHour
+        velocityMeterPerSecond: Math.round(velocityMeterPerSecond),
+        velocityKilometersPerHour: Math.round(velocityKilometersPerHour)
     };
 }
 

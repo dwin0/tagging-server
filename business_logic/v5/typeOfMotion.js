@@ -18,7 +18,7 @@ const VEHICULAR = {
 
 const HIGH_SPEED_VEHICULAR = {
     id: 4,
-    name: 'high-speed_vehicular',
+    name: 'high-speed-vehicular',
     description: '140 km/h to 450km/h'
 };
 

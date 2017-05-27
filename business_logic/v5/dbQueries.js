@@ -8,12 +8,12 @@ var config = require('../../config/configReader').queryConfig;
 
  WITH middlePoint AS
  (SELECT ST_Centroid(ST_GeomFromText('MULTIPOINT (8.7095882 47.3589998, 8.7135701 47.3530638)', 4326)))
- SELECT ST_X(st_centroid), ST_Y(st_centroid) FROM middlePoint;
+ SELECT ST_AsText(st_centroid), ST_X(st_centroid), ST_Y(st_centroid) FROM middlePoint;
  */
 
 const FIND_MIDDLE_POINT = 'WITH middlePoint AS ' +
     '(SELECT ST_Centroid(ST_GeomFromText($1, 4326))) ' +
-    'SELECT ST_X(st_centroid), ST_Y(st_centroid) FROM middlePoint;';
+    'SELECT ST_AsText(st_centroid), ST_X(st_centroid), ST_Y(st_centroid) FROM middlePoint;';
 
 /*END populationSurroundings.js, geographicalSurroundings.js*/
 

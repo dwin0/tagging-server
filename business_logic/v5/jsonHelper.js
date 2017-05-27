@@ -5,7 +5,7 @@ function renderTagJson(taggingRes, typeOfMotion, speedResult, geographicalSurrou
     return {
         title: 'Calculated Tagging',
         location: taggingRes,
-        type_of_motion: typeOfMotion,
+        typeOfMotion: typeOfMotion,
         velocity: speedResult,
         surroundings: surroundingsJson.surroundings
     }
@@ -17,14 +17,14 @@ function renderSurroundingsJson(geographicalSurroundingsResult, geoAdminResults)
         title: 'Calculated Surroundings',
         surroundings: {
             download: {
-                population_density: geoAdminResults.download.population_density,
-                community_type: geoAdminResults.download.community_type,
-                geographical_surroundings: geographicalSurroundingsResult.download
+                populationDensity: geoAdminResults.download.populationDensity,
+                communityType: geoAdminResults.download.communityType,
+                geographicalSurroundings: geographicalSurroundingsResult.download
             },
             upload: {
-                population_density: geoAdminResults.upload.population_density,
-                community_type: geoAdminResults.upload.community_type,
-                geographical_surroundings: geographicalSurroundingsResult.upload
+                populationDensity: geoAdminResults.upload.populationDensity,
+                communityType: geoAdminResults.upload.communityType,
+                geographicalSurroundings: geographicalSurroundingsResult.upload
             }
         }
     }

@@ -4,8 +4,8 @@ var queries = require('./dbQueries');
 
 
 const UNKNOWN = {
-    osm_key: 'unknown',
-    osm_value: 'unknown',
+    osmKey: 'unknown',
+    osmValue: 'unknown',
     description: 'No tagging possible.'
 };
 
@@ -29,11 +29,8 @@ function getGeographicalSurroundings(positions, callback) {
          landuse: POINT(8.6875 47.2157) -> forest
          multiple entries: POINT(8.73956 47.54351) -> natural: scrub / leisure: natural_reserve
          */
-        var middlePoints = [
-            {longitude: result[0][0].st_x, latitude: result[0][0].st_y},
-            {longitude: result[1][0].st_x, latitude: result[1][0].st_y } ];
 
-        queryPositions = posHelper.makePoints(middlePoints);
+        queryPositions = [result[0][0].st_astext, result[1][0].st_astext];
         var switzerlandDB = db_access.getDatabase(db_access.SWITZERLAND_DB);
 
         db_access.queryMultiple(switzerlandDB, queries.GEOGRAPHICAL_QUERY, queryPositions, function (error, result) {
@@ -43,8 +40,16 @@ function getGeographicalSurroundings(positions, callback) {
                 return;
             }
 
-            var downloadResult = result[0][0];
-            var uploadResult = result[1][0];
+            var downloadResult = [];
+            var uploadResult = [];
+
+            if(result[0].length) {
+                downloadResult = result[0][0];
+            }
+
+            if(result[1].length) {
+                uploadResult = result[1][0];
+            }
 
             var resultObj = {
                 download: prepareResult(downloadResult),
@@ -58,21 +63,20 @@ function getGeographicalSurroundings(positions, callback) {
 
 function prepareResult(dbResult) {
 
-    const DESCRIPTION = 'TODO';
+    const DESCRIPTION = 'Tag comes from: OpenStreetMap';
 
     var prepared = {
-        osm_key: UNKNOWN.osm_key,
-        osm_value: UNKNOWN.osm_value,
-        description: UNKNOWN.description,
-        probability: null
+        osmKey: UNKNOWN.osmKey,
+        osmValue: UNKNOWN.osmValue,
+        description: UNKNOWN.description
     };
 
     for (var entry in dbResult) {
 
         if (dbResult.hasOwnProperty(entry) && dbResult[entry] !== null) {
 
-            prepared.osm_key = entry;
-            prepared.osm_value = dbResult[entry];
+            prepared.osmKey = entry;
+            prepared.osmValue = dbResult[entry];
             prepared.description = DESCRIPTION;
         }
     }

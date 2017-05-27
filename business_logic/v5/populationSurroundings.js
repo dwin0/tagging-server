@@ -9,74 +9,69 @@ var converter = require('./wgs84_ch1903');
 //Constants for community types:
 const LARGE_CENTRE = {
     id: 1,
-    type: 'Grosszentrum',
-    description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
+    type: 'Grosszentrum'
 };
 
 const NEIGHBORHOOD_CENTRE_OF_LARGE_CENTRE = {
     id: 2,
-    type: 'Nebenzentrum eines Grosszentrums',
-    description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
+    type: 'Nebenzentrum eines Grosszentrums'
 };
 
 const BELT_OF_LARGE_CENTRE = {
     id: 3,
-    type: 'Gürtel eines Grosszentrums',
-    description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
+    type: 'Gürtel eines Grosszentrums'
 };
 
 const MEDIUM_CENTRE = {
     id: 4,
-    type: 'Mittelzentrum',
-    description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
+    type: 'Mittelzentrum'
 };
 
 const BELT_OF_MEDIUM_CENTRE = {
     id: 5,
-    type: 'Gürtel eines Mittelzentrums',
-    description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
+    type: 'Gürtel eines Mittelzentrums'
 };
 
 const SMALL_CENTRE = {
     id: 6,
-    type: 'Kleinzentrum',
-    description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
+    type: 'Kleinzentrum'
 };
 
 const PERI_URBAN = {
     id: 7,
-    type: 'Periurbane ländliche Gemeinde',
-    description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
+    type: 'Periurbane ländliche Gemeinde'
 };
 
 const AGRICULTURAL = {
     id: 8,
-    type: 'Agrargemeinde',
-    description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
+    type: 'Agrargemeinde'
 };
 
 const TOURISTICAL = {
     id: 9,
-    type: 'Touristische Gemeinde',
-    description: 'Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)'
+    type: 'Touristische Gemeinde'
 };
 
 const UNKNOWN = {
     id: -1,
     type: 'unknown',
-    osm_key: 'unknown',
-    osm_value: 'unknown',
-    description: 'No tagging possible.'
+    description: 'No tagging possible.',
+    communityId: -1,
+    communityName: 'unknown',
+    cantonId: -1,
+    cantonName: 'unknown'
 };
 
 
-const GEOADMIN_URL_BEVOELKERUNGSDICHTE = 'https://api3.geo.admin.ch/rest/services/all/MapServer/' +
+const GEOADMIN_URL_POPULATION_DENSITY = 'https://api3.geo.admin.ch/rest/services/all/MapServer/' +
     'identify?geometry={y},{x}&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1' +
     '&lang=de&layers=all:ch.are.bevoelkerungsdichte&mapExtent=0,0,1,1&returnGeometry=false&tolerance=300';
 
-const GEOADMIN_URL_GEMEINDETYP = 'https://api3.geo.admin.ch/rest/services/all/MapServer/' +
+const GEOADMIN_URL_COMMUNITY_TYPE = 'https://api3.geo.admin.ch/rest/services/all/MapServer/' +
     'identify?geometry={y},{x}&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1' +
     '&lang=de&layers=all:ch.are.gemeindetypen&mapExtent=0,0,1,1&returnGeometry=false&tolerance=0';
+
+const POPULATION_DENSITY_DESCRIPTION = 'Average of persons living in 1ha based on a radius-search of 300 meters.';
 
 
 
@@ -95,12 +90,12 @@ function getGeoAdminData(positions, callback) {
         var urls = [];
 
         //download
-        urls[0] = getGeoAdminURL(result[0][0], GEOADMIN_URL_BEVOELKERUNGSDICHTE);
-        urls[1] = getGeoAdminURL(result[0][0], GEOADMIN_URL_GEMEINDETYP);
+        urls[0] = getGeoAdminURL(result[0][0], GEOADMIN_URL_POPULATION_DENSITY);
+        urls[1] = getGeoAdminURL(result[0][0], GEOADMIN_URL_COMMUNITY_TYPE);
 
         //upload
-        urls[2] = getGeoAdminURL(result[1][0], GEOADMIN_URL_BEVOELKERUNGSDICHTE);
-        urls[3] = getGeoAdminURL(result[1][0], GEOADMIN_URL_GEMEINDETYP);
+        urls[2] = getGeoAdminURL(result[1][0], GEOADMIN_URL_POPULATION_DENSITY);
+        urls[3] = getGeoAdminURL(result[1][0], GEOADMIN_URL_COMMUNITY_TYPE);
 
 
         var requestFunctions = getGeoAdminRequests(urls);
@@ -109,22 +104,25 @@ function getGeoAdminData(positions, callback) {
 
             function (err, results) {
 
+                if(err) {
+                    callback(err);
+                    return;
+                }
+
                 var resultingTags = {
                     download: {
-                        population_density: {
+                        populationDensity: {
                             number: getPopulationDensity(results[0]),
-                            description: 'Number of people living in 1ha',
-                            probability: null
+                            description: POPULATION_DENSITY_DESCRIPTION
                         },
-                        community_type: getCommunityTypeJSON(results[1])
+                        communityType: getCommunityTypeJSON(results[1])
                     },
                     upload: {
-                        population_density: {
+                        populationDensity: {
                             number: getPopulationDensity(results[2]),
-                            description: 'Number of people living in 1ha',
-                            probability: null
+                            description: POPULATION_DENSITY_DESCRIPTION
                         },
-                        community_type: getCommunityTypeJSON(results[3])
+                        communityType: getCommunityTypeJSON(results[3])
                     }
                 };
 
@@ -157,9 +155,12 @@ function getGeoAdminRequests(urls) {
                     urls[i],
                     function (error, response) {
                         if (!error && response.statusCode === 200) {
+
                             callback(null, JSON.parse(response.body));
-                        } else {
-                            console.error('error: ' + response.statusCode);
+                        }
+                        else {
+                            console.error('GeoAdmin-API-Error: ' + error);
+                            callback(error);
                         }
                     }
                 );
@@ -185,16 +186,7 @@ function getCommunityTypeJSON(geoAdminResult) {
 
     if(geoAdminResult.results.length === 0) {
 
-        return {
-            id: UNKNOWN.id,
-            type: UNKNOWN.type,
-            description: UNKNOWN.description,
-            community_id: -1,
-            community_name: 'unknown',
-            canton_id: -1,
-            canton_name: 'unknown',
-            probability: null
-        };
+        return UNKNOWN;
     }
 
     var community = geoAdminResult.results[0].properties;
@@ -203,12 +195,11 @@ function getCommunityTypeJSON(geoAdminResult) {
     return {
         id: communityType.id,
         type: communityType.type,
-        description: communityType.description,
-        community_id: community.bfs_no,
-        community_name: community.label,
-        canton_id: community.kt_no,
-        canton_name: community.kt_kz,
-        probability: null
+        description: 'Tag comes from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)',
+        communityId: community.bfs_no,
+        communityName: community.label,
+        cantonId: community.kt_no,
+        cantonName: community.kt_kz
     };
 }
 
