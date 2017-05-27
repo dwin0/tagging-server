@@ -7,10 +7,18 @@ var positionsHelper = require('./positionsHelper');
 
 function getSurroundings(req, res) {
 
-    var positions = positionsHelper.choosePositions(req.body.positions, res);
-    if(!positions) {
-        return;
-    }
+    positionsHelper.choosePositions(req.body.positions, res, function (positions) {
+
+        //error occurred
+        if(!positions) {
+            return;
+        }
+
+        calculateSurroundings(positions, res);
+    });
+}
+
+function calculateSurroundings(positions, res) {
 
     parallel([
             function(callback) {

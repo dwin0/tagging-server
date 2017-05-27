@@ -8,8 +8,9 @@ var queries = require('./dbQueries');
  *
  * @param positions
  * @param res
+ * @param callback
  */
-function choosePositions(positions, res) {
+function choosePositions(positions, res, callback) {
 
     if(typeof positions === 'string') {
         positions = JSON.parse(positions);
@@ -19,57 +20,65 @@ function choosePositions(positions, res) {
         return new Date(p1.time).getTime() - new Date(p2.time).getTime();
     });
 
-    var beforeDownload = chooseForPhase([positions[0], positions[1], positions[2]], res, chooseBeforeDownload);
-    var beforeUpload = chooseForPhase([positions[3], positions[4]], res, chooseBeforeUpload);
-    var afterUpload = chooseForPhase([positions[5], positions[6], positions[7]], res, chooseAfterUpload);
+    var beforeDownload = chooseForPhase([positions[0], positions[1], positions[2]], chooseBeforeDownload);
+    var beforeUpload = chooseForPhase([positions[3], positions[4]], chooseBeforeUpload);
+    var afterUpload = chooseForPhase([positions[5], positions[6], positions[7]], chooseAfterUpload);
 
     if(!beforeDownload || !beforeUpload || !afterUpload) {
+
+        res.status(400).json({
+            statusText: 'Bad Request',
+            description: 'Cannot tag positions with multiple occurrences of longitude or latitude 0.'
+        });
+
+        callback();
         return;
     }
 
-    if(!checkValidHorizontalAccuracy([beforeDownload, beforeUpload, afterUpload], res)) {
-        return;
-    }
+    checkIfSwitzerland([beforeDownload, beforeUpload, afterUpload], function (error, allPointsInSwitzerland) {
 
-    return [beforeDownload, beforeUpload, afterUpload];
+        if(error) {
+            res.status(500).send('Internal Server Error');
+            callback();
+            return;
+        }
+
+        if(!allPointsInSwitzerland) {
+
+            res.status(400).json({
+                statusText: 'Bad Request',
+                description: 'Not all positions are located within switzerland.'
+            });
+
+            callback();
+            return;
+        }
+
+        if(!checkValidHorizontalAccuracy([beforeDownload, beforeUpload, afterUpload])) {
+
+            res.status(400).json({
+                statusText: 'Bad Request',
+                description: 'Cannot tag positions less accurate than 200 meters.'
+            });
+
+            callback();
+            return;
+        }
+
+        callback([beforeDownload, beforeUpload, afterUpload]);
+    });
 }
 
+function chooseForPhase(phaseCandidates, phaseSelectionMethod) {
 
-function chooseForPhase(phaseCandidates, res, phaseSelectionMethod) {
-
-    var validCandidates = filterValidLatLon(phaseCandidates, res);
+    var validCandidates = filterValidLatLon(phaseCandidates);
     if(!validCandidates) {
         return;
     }
     return phaseSelectionMethod(validCandidates);
 }
 
-function checkValidHorizontalAccuracy(positions, res) {
-
-    var result = false;
-
-    positions.forEach(function (pos) {
-
-        if(pos.horizontalAccuracy <= 200) {
-            result = true;
-        }
-    });
-
-    if(result) {
-        return true;
-    }
-    else {
-
-        res.status(400).json({
-            statusText: 'Bad Request',
-            description: 'Cannot tag positions less accurate than 200 meters.'
-        });
-
-        return false;
-    }
-}
-
-function filterValidLatLon(posArray, res) {
+function filterValidLatLon(posArray) {
 
     var validPositions = [];
 
@@ -80,19 +89,39 @@ function filterValidLatLon(posArray, res) {
         }
     });
 
-    if(validPositions.length === 0) {
-
-        res.status(400).json({
-            statusText: 'Bad Request',
-            description: 'Cannot tag positions with multiple occurrences of longitude or latitude 0.'
-        });
-
-        return;
+    if(validPositions.length) {
+        return validPositions;
     }
-
-    return validPositions;
 }
 
+function checkIfSwitzerland(positions, callback) {
+
+    var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
+    var queryPositions = makePoints(positions);
+
+    db_access.singleQuery(database, queries.INSIDE_SWITZERLAND, queryPositions, function (error, result) {
+        if(error) {
+            callback(error);
+            return;
+        }
+
+        callback(null, result.length);
+    });
+}
+
+function checkValidHorizontalAccuracy(positions) {
+
+    var result = false;
+
+    positions.forEach(function (pos) {
+
+        if(pos.horizontalAccuracy <= 200) {
+            result = true;
+        }
+    });
+
+    return result;
+}
 
 
 
@@ -117,10 +146,9 @@ function chooseBeforeDownload(posArray) {
     }
     else {
         /*
-        Chose the lowest position possible (1 or 2) which is more accurate than the highest (normally 3)
+        Chose the lowest position possible (1 or 2) which is more accurate than the highest position (normally 3)
         and 100ms or less time away from the highest. This guarantees in the case of a long FCT-Phase,
         that the more accurate position of 2 or 3 is chosen and position 1 cant tamper the surrounding-query.
-        The surrounding-query returns the surrounding during the download and the upload-phase separately.
         */
 
         var bestPosition = posArray[posArray.length - 1];
@@ -179,10 +207,9 @@ function chooseAfterUpload(posArray) {
     }
     else {
         /*
-         Chose the highest position possible (7 or 8) which is more accurate than the lowest (normally 6)
+         Chose the highest position possible (7 or 8) which is more accurate than the lowest position (normally 6)
          and 100ms or less time away from the lowest. This guarantees in the case of a long RTT-Phase,
          that the more accurate position of 6 or 7 is chosen and position 8 cant tamper the surrounding-query.
-         The surrounding-query returns the surrounding during the download and the upload-phase separately.
          */
 
         var bestPosition = posArray[0];
@@ -205,27 +232,6 @@ function chooseAfterUpload(posArray) {
 function findMoreAccurate(pos1, pos2) {
     return pos2.horizontalAccuracy < pos1.horizontalAccuracy ? pos2 : pos1;
 }
-
-
-
-
-
-function checkIfSwitzerland(positions, callback) {
-
-    var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
-    var queryPositions = makePoints(positions);
-
-    db_access.singleQuery(database, queries.INSIDE_SWITZERLAND, queryPositions, function (error, result) {
-        if(error) {
-            callback(error);
-            return;
-        }
-
-        callback(null, result.length);
-    });
-}
-
-
 
 
 
@@ -266,7 +272,6 @@ function makeMultipoints(positions) {
 
 module.exports = {
     "choosePositions": choosePositions,
-    "checkIfSwitzerland": checkIfSwitzerland,
     "makePoints": makePoints,
     "makeMultipoints": makeMultipoints
 };

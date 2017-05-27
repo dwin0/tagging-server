@@ -29,7 +29,7 @@ const UNKNOWN = {
 };
 
 
-function getType(speed) {
+function getTypeOfMotion(speed) {
 
     switch(true) {
         case (speed >= 0 && speed < 3):
@@ -47,5 +47,5 @@ function getType(speed) {
 
 
 module.exports = {
-    "getType": getType
+    "getTypeOfMotion": getTypeOfMotion
 };

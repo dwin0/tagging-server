@@ -10,19 +10,28 @@ var positionsHelper = require('./positionsHelper');
 
 function getTags(req, res) {
 
-    var positions = positionsHelper.choosePositions(req.body.positions, res);
-    if(!positions) {
-        return;
-    }
+    positionsHelper.choosePositions(req.body.positions, res, function (positions) {
+
+        //error occurred
+        if(!positions) {
+            return;
+        }
+
+        calculateVelocity(positions, res, calculateTags);
+    });
+}
+
+
+function calculateVelocity(positions, res, callback) {
 
     velocity.getVelocity(positions, function (error, velocityJSON) {
 
-        if(error) {
+        if(error || velocityJSON.velocityKilometersPerHour < 0) {
             res.status(500).send('Internal Server Error');
             return;
         }
 
-        if(velocityJSON.time_s === 0) {
+        if(velocityJSON.timeSeconds === 0) {
             res.status(400).json({
                 statusText: 'Bad Request',
                 description: 'All positions have the same time.'
@@ -30,21 +39,21 @@ function getTags(req, res) {
             return;
         }
 
-        calculateTags(res, positions, velocityJSON)
+        callback(res, positions, velocityJSON)
     });
 }
 
 
 function calculateTags(res, positions, speedResult) {
 
-    var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
+    var typeOfMotionRes = typeOfMotion.getTypeOfMotion(speedResult.velocityKilometersPerHour);
 
     if(typeOfMotionRes.name === 'unknown') {
 
         res.status(400).json({
             statusText: 'Bad Request',
             description: 'The input-positions are too far away from each other.',
-            velocity_kmh: speedResult.velocity_kmh
+            velocityKilometersPerHour: speedResult.velocityKilometersPerHour
         });
 
         return;
@@ -71,31 +80,12 @@ function calculateTags(res, positions, speedResult) {
                     //console.timeEnd('getGeoAdminData');
                     callback(error, result);
                 })
-            },
-            function (callback) {
-                //console.time('checkIfSwitzerland');
-                positionsHelper.checkIfSwitzerland(positions, function (error, result) {
-                    //console.timeEnd('checkIfSwitzerland');
-                    callback(error, result);
-                })
             }
         ],
         function(err, results) {
 
             if(err) {
                 res.status(500).send('Internal Server Error');
-                return;
-            }
-
-            var allPointsInSwitzerland = results[3];
-
-            if(!allPointsInSwitzerland) {
-
-                res.status(400).json({
-                    statusText: 'Bad Request',
-                    description: 'Not all positions are located within switzerland.'
-                });
-
                 return;
             }
 
