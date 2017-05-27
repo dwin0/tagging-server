@@ -25,7 +25,7 @@ router.get('/findSurroundings', function (req, res) {
     res.render('surroundingsIndex', { title: 'Umgebungsabfrage', version: '5.0' });
 });
 
-router.post('/findSurroundings', validate({body: jsonSchema.SURROUNDINGS_SCHEMA_V3}), function (req, res) {
+router.post('/findSurroundings', validate({body: jsonSchema.SURROUNDINGS_SCHEMA}), function (req, res) {
     surroundings_v5.getSurroundings(req, res);
 });
 
@@ -35,7 +35,7 @@ router.get('/calculateSpeed', function (req, res) {
     res.render('speedIndex', { title: 'Geschwindigkeitsberechnung', version: '5.0' });
 });
 
-router.post('/calculateSpeed', validate({body: jsonSchema.VELOCITY_SCHEMA_V3}), function (req, res) {
+router.post('/calculateSpeed', validate({body: jsonSchema.VELOCITY_SCHEMA}), function (req, res) {
     velocity_v5.getSpeedCalculation(req, res);
 });
 

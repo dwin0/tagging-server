@@ -23,7 +23,7 @@ router.get('/calculateSpeed', function (req, res) {
     res.render('speedIndex', { title: 'Geschwindigkeitsberechnung', version: '1.0' });
 });
 
-router.post('/calculateSpeed', validate({body: jsonSchema.VELOCITY_SCHEMA_V3}), function (req, res) {
+router.post('/calculateSpeed', validate({body: jsonSchema.VELOCITY_SCHEMA}), function (req, res) {
     velocity_v1.getSpeedCalculationJSON(req, res);
 });
 

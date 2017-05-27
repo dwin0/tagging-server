@@ -126,7 +126,7 @@ const TAGGING_SCHEMA_V4 = {
     }
 };
 
-const SURROUNDINGS_SCHEMA_V3 = {
+const SURROUNDINGS_SCHEMA = {
     type: 'object',
     properties: {
         positions: {
@@ -156,7 +156,7 @@ const SURROUNDINGS_SCHEMA_V3 = {
     }
 };
 
-const VELOCITY_SCHEMA_V3 = {
+const VELOCITY_SCHEMA = {
     type: 'object',
     properties: {
         positions: {
@@ -213,7 +213,7 @@ module.exports = {
     "TAGGING_SCHEMA_V2": TAGGING_SCHEMA_V2,
     "TAGGING_SCHEMA_V3": TAGGING_SCHEMA_V3,
     "TAGGING_SCHEMA_V4": TAGGING_SCHEMA_V4,
-    "SURROUNDINGS_SCHEMA_V3": SURROUNDINGS_SCHEMA_V3,
-    "VELOCITY_SCHEMA_V3": VELOCITY_SCHEMA_V3,
+    "SURROUNDINGS_SCHEMA": SURROUNDINGS_SCHEMA,
+    "VELOCITY_SCHEMA": VELOCITY_SCHEMA,
     "handleJsonSchemaValidationError": handleJsonSchemaValidationError
 };

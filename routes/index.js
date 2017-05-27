@@ -35,8 +35,8 @@ router.get('/api', function(req, res) {
 router.get('/schemas', function(req, res) {
     res.status(200).json({
         taggingSchema: jsonSchema.TAGGING_SCHEMA_V4,
-        speedCalculationSchema: jsonSchema.VELOCITY_SCHEMA_V3,
-        surroundingsSchema: jsonSchema.SURROUNDINGS_SCHEMA_V3
+        speedCalculationSchema: jsonSchema.VELOCITY_SCHEMA,
+        surroundingsSchema: jsonSchema.SURROUNDINGS_SCHEMA
     });
 });
 
