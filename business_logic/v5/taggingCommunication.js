@@ -22,6 +22,14 @@ function getTags(req, res) {
             return;
         }
 
+        if(velocityJSON.time_s === 0) {
+            res.status(400).json({
+                statusText: 'Bad Request',
+                description: 'All positions have the same time.'
+            });
+            return;
+        }
+
         calculateTags(res, positions, velocityJSON)
     });
 }

@@ -7,13 +7,13 @@ var parallel = require('async/parallel');
 function getVelocity_request(req, callback) {
 
     var positions = req.body.positions;
+    var startDate = new Date(positions[0].time);
+    var endDate = new Date(positions[1].time);
+
     var queryPositions = posHelper.makePoints(positions);
     var database = db_access.getDatabase(db_access.STREETS_DB);
 
     db_access.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (error, result) {
-
-        var startDate = new Date(positions[0].time);
-        var endDate = new Date(positions[1].time);
 
         if(error) {
             callback(error);
@@ -27,9 +27,20 @@ function getVelocity_request(req, callback) {
 
 function prepareJSON(endDate, startDate, resultingDistance) {
 
+    resultingDistance = Math.round(resultingDistance);
     var resultingTime = (endDate - startDate) / 1000;
-    var resultingVelocityMS = resultingDistance / resultingTime;
-    var resultingVelocityKMH = resultingVelocityMS * 3.6;
+    var resultingVelocityMS;
+    var resultingVelocityKMH;
+
+    if(resultingTime === 0) {
+
+        resultingVelocityMS = '-';
+        resultingVelocityKMH = '-';
+    }
+    else {
+        resultingVelocityMS = resultingDistance / resultingTime;
+        resultingVelocityKMH = resultingVelocityMS * 3.6;
+    }
 
     return {
         distance_m: resultingDistance,
