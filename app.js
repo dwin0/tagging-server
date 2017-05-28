@@ -3,6 +3,9 @@ var path = require('path');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var index = require('./routes/index');
+//var fs = require('fs');
+//var rfs = require('rotating-file-stream');
+
 
 var app = express();
 
@@ -30,6 +33,24 @@ hbs.registerHelper('ifAny', function() {
         }
     }
 });
+
+/* Uncomment to enable request-logging
+
+var logDirectory = path.join(__dirname, 'log');
+
+// ensure log directory exists
+fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+
+// create a rotating write stream
+var accessLogStream = rfs('access.log', {
+    interval: '1d',
+    path: logDirectory
+});
+
+// setup the logger
+app.use(logger('combined', {stream: accessLogStream}));
+*/
+
 
 app.use(logger('dev'));
 app.use(bodyParser.json());

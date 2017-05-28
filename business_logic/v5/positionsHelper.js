@@ -1,16 +1,19 @@
 var dbAccess= require('../../persistence/dbAccess_v5');
 var queries = require('./dbQueries');
+var logError = require('./errorLogger').logError;
 
 
 /**
  * Filters the 8 input-positions for the 3 bests.
  * Positions 1-3, 4-5 and 6-8 are close to each other. This methods chooses the best position out of each group.
  *
- * @param positions
+ * @param body
  * @param res
  * @param callback
  */
-function choosePositions(positions, res, callback) {
+function choosePositions(body, res, callback) {
+
+    var positions = body.positions;
 
     if(typeof positions === 'string') {
         positions = JSON.parse(positions);
@@ -35,6 +38,7 @@ function choosePositions(positions, res, callback) {
 
         if(error) {
             res.status(500).send('Internal Server Error');
+            logError(500, 'Internal Server Error', error, 'checkIfSwitzerland', 'positionsHelper', body);
             callback();
             return;
         }

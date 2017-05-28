@@ -1,4 +1,6 @@
 var velocity = require('./velocity');
+var logError = require('./errorLogger').logError;
+
 
 function getSpeedCalculation(req, res) {
 
@@ -11,6 +13,8 @@ function getSpeedCalculation(req, res) {
 
         if(error || result.velocityKilometersPerHour < 0) {
             res.status(500).send('Internal Server Error');
+            logError(500, 'Internal Server Error', error || 'Speed: ' + result.velocityKilometersPerHour + 'km/h',
+                'velocity.getVelocity', 'velocityCommunication', req.body);
             return;
         }
 

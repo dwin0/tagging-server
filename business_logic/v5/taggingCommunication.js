@@ -6,28 +6,31 @@ var geographicalSurroundings = require('./geographicalSurroundings');
 var parallel = require('async/parallel');
 var jsonHelper = require('./jsonHelper');
 var positionsHelper = require('./positionsHelper');
+var logError = require('./errorLogger').logError;
 
 
 function getTags(req, res) {
 
-    positionsHelper.choosePositions(req.body.positions, res, function (positions) {
+    positionsHelper.choosePositions(req.body, res, function (positions) {
 
         //error occurred, but already handled
         if(!positions) {
             return;
         }
 
-        calculateVelocity(positions, res, calculateTags);
+        calculateVelocity(positions, req.body, res, calculateTags);
     });
 }
 
 
-function calculateVelocity(positions, res, callback) {
+function calculateVelocity(positions, body, res, callback) {
 
     velocity.getVelocity(positions, function (error, velocityJSON) {
 
         if(error || velocityJSON.velocityKilometersPerHour < 0) {
             res.status(500).send('Internal Server Error');
+            logError(500, 'Internal Server Error', error || 'Speed: ' + velocityJSON.velocityKilometersPerHour + 'km/h',
+                'velocity.getVelocity', 'taggingCommunication', body);
             return;
         }
 
@@ -36,12 +39,12 @@ function calculateVelocity(positions, res, callback) {
             return;
         }
 
-        callback(res, positions, velocityJSON)
+        callback(positions, body, res, velocityJSON)
     });
 }
 
 
-function calculateTags(res, positions, velocityJSON) {
+function calculateTags(positions, body, res, velocityJSON) {
 
     var typeOfMotionRes = typeOfMotion.getTypeOfMotion(velocityJSON.velocityKilometersPerHour);
 
@@ -77,6 +80,7 @@ function calculateTags(res, positions, velocityJSON) {
 
             if(err) {
                 res.status(500).send('Internal Server Error');
+                logError(500, 'Internal Server Error', err, 'parallel', 'taggingCommunication', body);
                 return;
             }
 

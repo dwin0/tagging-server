@@ -3,22 +3,23 @@ var geographicalSurroundings = require('./geographicalSurroundings');
 var parallel = require('async/parallel');
 var jsonHelper = require('./jsonHelper');
 var positionsHelper = require('./positionsHelper');
+var logError = require('./errorLogger').logError;
 
 
 function getSurroundings(req, res) {
 
-    positionsHelper.choosePositions(req.body.positions, res, function (positions) {
+    positionsHelper.choosePositions(req.body, res, function (positions) {
 
         //error occurred, but already handled
         if(!positions) {
             return;
         }
 
-        calculateSurroundings(positions, res);
+        calculateSurroundings(positions, req.body, res);
     });
 }
 
-function calculateSurroundings(positions, res) {
+function calculateSurroundings(positions, body, res) {
 
     parallel([
             function(callback) {
@@ -36,6 +37,7 @@ function calculateSurroundings(positions, res) {
 
             if(err) {
                 res.status(500).send('Internal Server Error');
+                logError(500, 'Internal Server Error', err, 'parallel', 'surroundingsCommunication', body);
                 return;
             }
 
