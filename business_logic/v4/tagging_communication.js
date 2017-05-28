@@ -17,6 +17,20 @@ function getTagsJSON(req, res) {
     }
 
     var surroundingsPositions = positionsHelper.filterSurroundingsPositions(positions);
+
+    if(surroundingsPositions.length < 3) {
+
+        res.writeHead(400, {"Content-Type": "application/json"});
+        var json = JSON.stringify({
+            statusText: 'Bad Request',
+            description: 'Phases DownloadStart, DownloadEnd and UploadEnd where expected. At least one phase is missing.',
+            receivedElements: positions
+        });
+        res.end(json);
+        return;
+    }
+
+
     positions = positionsHelper.filterPositions(positions);
 
     parallel([
@@ -36,30 +50,30 @@ function renderTagJSON(res, positions, surroundingsPositions, speedResult) {
 
     parallel([
             function(callback) {
-                console.time('getTag');
-                tagging.getTag(speedResult.velocity_kmh, positions, function (result) {
-                    console.timeEnd('getTag');
+                //console.time('getTag');
+                tagging.getTag(speedResult.velocityKilometersPerHour, positions, function (result) {
+                    //console.timeEnd('getTag');
                     callback(null, result);
                 });
             },
             function(callback) {
-                console.time('getGeographicalSurroundings');
+                //console.time('getGeographicalSurroundings');
                 geographicalSurroundings.getGeographicalSurroundings(surroundingsPositions, function (result) {
-                    console.timeEnd('getGeographicalSurroundings');
+                    //console.timeEnd('getGeographicalSurroundings');
                     callback(null, result);
                 });
             },
             function(callback) {
-                console.time('getGeoAdminData');
+                //console.time('getGeoAdminData');
                 populationSurroundings.getGeoAdminData(surroundingsPositions, function (result) {
-                    console.timeEnd('getGeoAdminData');
+                    //console.timeEnd('getGeoAdminData');
                     callback(null, result);
                 })
             }
         ],
         function(err, results) {
 
-            var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
+            var typeOfMotionRes = typeOfMotion.getType(speedResult.velocityKilometersPerHour);
 
             /*Parameters: tagging-result, type-of-motion, speed-result, geographicalSurroundings-result, geoAdmin-result */
             var json = jsonHelper.renderTagJson(results[0], typeOfMotionRes, speedResult, results[1], results[2]);

@@ -1,4 +1,4 @@
-var db_access = require('../../persistence/db_access_v4');
+var dbAccess = require('../../persistence/db_access_v4');
 var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
 var parallel = require("async/parallel");
@@ -15,9 +15,9 @@ function getVelocity_request(req, res, callback) {
     parallel([
             function(callback) {
 
-                var database = db_access.getDatabase(db_access.STREETS_DB);
+                var database = dbAccess.getDatabase(dbAccess.STREETS_DB);
 
-                db_access.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (result) {
+                dbAccess.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (result) {
                     callback(null, result[0].st_distance)
                 });
             }],
@@ -42,8 +42,8 @@ function getVelocity_positionArray(positions, callback) {
 
         dbRequests[i-1] = (function(i, time_s) {
             return function(callback) {
-                var database = db_access.getDatabase(db_access.STREETS_DB);
-                db_access.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (res) {
+                var database = dbAccess.getDatabase(dbAccess.STREETS_DB);
+                dbAccess.singleQueryParameterized(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (res) {
                     var resultingVelocityMS = res[0].st_distance / time_s;
                     callback(null, { startPosition: i-1, endPosition: i, time_s: time_s, distance: res[0].st_distance,
                         resultingVelocityMS: resultingVelocityMS } );
@@ -71,15 +71,14 @@ function calcAverageVelocity(positions) {
         denominator += pos.time_s;
     });
 
-    var velocity_ms = numerator / denominator;
+    var velocityMeterPerSecond = numerator / denominator;
 
     return {
         title: "Calculated velocity:",
-        distance_m: numerator,
-        time_s: denominator,
-        velocity_ms: velocity_ms,
-        velocity_kmh: velocity_ms * 3.6,
-        probability: null
+        distanceMeters: Math.round(numerator),
+        timeSeconds: denominator,
+        velocityMeterPerSecond: Math.round(velocityMeterPerSecond),
+        velocityKilometersPerHour: Math.round(velocityMeterPerSecond * 3.6)
     };
 }
 
@@ -92,11 +91,10 @@ function prepareJSON(endDate, startDate, resultingDistance) {
 
     return {
         title: "Calculated velocity:",
-        distance_m: resultingDistance,
-        time_s: resultingTime,
-        velocity_ms: resultingVelocityMS,
-        velocity_kmh: resultingVelocityKMH,
-        probability: null
+        distanceMeters: Math.round(resultingDistance),
+        timeSeconds: resultingTime,
+        velocityMeterPerSecond: Math.round(resultingVelocityMS),
+        velocityKilometersPerHour: Math.round(resultingVelocityKMH)
     }
 }
 

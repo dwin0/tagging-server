@@ -23,11 +23,11 @@ function getTagsJSON(req, res) {
 
 function renderTagJSON(res, positions, speedResult) {
 
-    var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
+    var typeOfMotionRes = typeOfMotion.getType(speedResult.velocityKilometersPerHour);
 
     parallel([
             function(callback) {
-                tagging.getTag(speedResult.velocity_kmh, positions, function (result) {
+                tagging.getTag(speedResult.velocityKilometersPerHour, positions, function (result) {
                     callback(null, result);
                 });
             }
@@ -46,31 +46,27 @@ function renderTagJSON(res, positions, speedResult) {
                     probability: taggingRes.probability,
                     allProbabilities: taggingRes.allProbabilities
                 },
-                type_of_motion: {
+                typeOfMotion: {
                     id: typeOfMotionRes.id,
                     name: typeOfMotionRes.name,
-                    description: typeOfMotionRes.description,
-                    probability: null
+                    description: typeOfMotionRes.description
                 },
                 velocity: {
-                    distance_m: speedResult.distance,
-                    time_s: speedResult.time_s,
-                    velocity_ms: speedResult.velocity_ms,
-                    velocity_kmh: speedResult.velocity_kmh,
-                    probability: speedResult.probability
+                    distanceMeters: speedResult.distanceMeters,
+                    timeSeconds: speedResult.timeSeconds,
+                    velocityMeterPerSecond: speedResult.velocityMeterPerSecond,
+                    velocityKilometersPerHour: speedResult.velocityKilometersPerHour
                 },
                 surroundings: {
-                    geographical_surroundings: {
+                    geographicalSurroundings: {
                         id: null,
                         name: null,
-                        description: null,
-                        probability: null
+                        description: null
                     },
-                    population_density: {
+                    populationDensity: {
                         id: null,
                         name: null,
-                        description: null,
-                        probability: null
+                        description: null
                     }
                 }
             });
@@ -104,11 +100,11 @@ function getTagsView(req, res) {
 
 function renderTagView(res, speedResult, coordinates, positions) {
 
-    var typeOfMotionRes = typeOfMotion.getType(speedResult.velocity_kmh);
+    var typeOfMotionRes = typeOfMotion.getType(speedResult.velocityKilometersPerHour);
 
     parallel([
             function (callback) {
-                tagging.getTag(speedResult.velocity_kmh, positions, function (result) {
+                tagging.getTag(speedResult.velocityKilometersPerHour, positions, function (result) {
                     callback(null, result);
                 });
             }

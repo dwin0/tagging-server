@@ -1,4 +1,4 @@
-var db = require('../../persistence/db_access_v4');
+var dbAccess = require('../../persistence/db_access_v4');
 var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
 var parallel = require("async/parallel");
@@ -69,27 +69,26 @@ function getTag(velocity_kmh, positions, callback) {
 
 function calculate_RAILWAY_STREET_BUILDING(tags, positions, callback) {
 
-    var switzerlandDB = db.getDatabase(db.SWITZERLAND_DB);
-    var streetDB = db.getDatabase(db.STREETS_DB);
+    var switzerlandDB = dbAccess.getDatabase(dbAccess.SWITZERLAND_DB);
+    var streetDB = dbAccess.getDatabase(dbAccess.STREETS_DB);
     var queryPositions = posHelper.makePoints(positions);
 
     parallel([
             //Get the nearest building within 15 meters of each of the 3 positions
             function(callback) {
-                db.queryMultipleParameterized(switzerlandDB, queries.SWITZERLAND_NEAREST_BUILDING, queryPositions, function (result) {
+                dbAccess.queryMultipleParameterized(switzerlandDB, queries.SWITZERLAND_NEAREST_BUILDING, queryPositions, function (result) {
                         callback(null, result);
                 });
             },
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultipleParameterized(streetDB, queries.OSM_NEAREST_WAYS, queryPositions, function (result) {
+                dbAccess.queryMultipleParameterized(streetDB, queries.OSM_NEAREST_WAYS, queryPositions, function (result) {
                         callback(null, result);
                 });
             }
         ],
         function(err, results) {
 
-            //TODO: Check if this 3 buildings are the same
             var nearestBuildings = results[0];
             var nearestWays = results[1];
 
@@ -102,13 +101,13 @@ function calculate_RAILWAY_STREET_BUILDING(tags, positions, callback) {
 
 function calculate_RAILWAY_STREET(tags, positions, callback) {
 
-    var database = db.getDatabase(db.STREETS_DB);
+    var database = dbAccess.getDatabase(dbAccess.STREETS_DB);
     var queryPositions = posHelper.makePoints(positions);
 
     parallel([
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultipleParameterized(database, queries.OSM_NEAREST_WAYS, queryPositions, function (result) {
+                dbAccess.queryMultipleParameterized(database, queries.OSM_NEAREST_WAYS, queryPositions, function (result) {
                         callback(null, result);
                 });
             }
@@ -123,13 +122,13 @@ function calculate_RAILWAY_STREET(tags, positions, callback) {
 
 function checkIf_RAILWAY(tags, positions, callback) {
 
-    var database = db.getDatabase(db.STREETS_DB);
+    var database = dbAccess.getDatabase(dbAccess.STREETS_DB);
     var queryPositions = posHelper.makePoints(positions);
 
     parallel([
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultipleParameterized(database, queries.OSM_NEAREST_RAILWAYS, queryPositions, function (result) {
+                dbAccess.queryMultipleParameterized(database, queries.OSM_NEAREST_RAILWAYS, queryPositions, function (result) {
                         callback(null, result);
                 });
             }

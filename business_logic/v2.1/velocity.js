@@ -70,15 +70,14 @@ function calcAverageVelocity(positions) {
         denominator += pos.time_s;
     });
 
-    var velocity_ms = numerator / denominator;
+    var velocityMeterPerSecond = numerator / denominator;
 
     return {
         title: "Calculated velocity:",
-        distance_m: numerator,
-        time_s: denominator,
-        velocity_ms: velocity_ms,
-        velocity_kmh: velocity_ms * 3.6,
-        probability: null
+        distanceMeters: Math.round(numerator),
+        timeSeconds: denominator,
+        velocityMeterPerSecond: Math.round(velocityMeterPerSecond),
+        velocityKilometersPerHour: Math.round(velocityMeterPerSecond * 3.6)
     };
 }
 
@@ -106,11 +105,10 @@ function prepareJSON(endDate, startDate, resultingDistance) {
 
     return {
         title: "Calculated velocity:",
-        distance_m: resultingDistance,
-        time_s: resultingTime,
-        velocity_ms: resultingVelocityMS,
-        velocity_kmh: resultingVelocityKMH,
-        probability: null
+        distanceMeters: Math.round(resultingDistance),
+        timeSeconds: resultingTime,
+        velocityMeterPerSecond: Math.round(resultingVelocityMS),
+        velocityKilometersPerHour: Math.round(resultingVelocityKMH)
     }
 }
 

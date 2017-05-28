@@ -1,4 +1,4 @@
-var db_access= require('../../persistence/db_access_v3');
+var dbAccess= require('../../persistence/db_access_v3');
 var helper = require('./helper');
 var parallel = require("async/parallel");
 var converter = require('./wgs84_ch1903');
@@ -8,7 +8,7 @@ var request = require('request');
 const GRASSLAND = {
     id: 1,
     name: "grassland",
-    osm_tag: '',
+    osmValue: '',
     description: "Includes OpenStreetMap-Key: landuse with the values: meadow, farmland, grass, farmyard, allotments, greenhouse_horticulture, " +
     "plant_nursery, recreation_ground, village_green, greenfield and conservation. Includes OpenStreetMap-Key: natural with the values: scrub, " +
     "grassland, wetland, fell, heath, meadow and grass. Includes OpenStreetMap-Key: protected_area, national_park and nature_reserve. Includes " +
@@ -18,7 +18,7 @@ const GRASSLAND = {
 const TREES = {
     id: 2,
     name: "trees",
-    osm_tag: '',
+    osmValue: '',
     description: "Includes OpenStreetMap-Key: landuse with the values: forest, vineyard and orchard. Includes OpenStreetMap-Key: natural with the " +
     "values: wood, tree and tree_row."
 };
@@ -26,7 +26,7 @@ const TREES = {
 const CONSTRUCTEDAREA = {
     id: 3,
     name: "constructedArea",
-    osm_tag: '',
+    osmValue: '',
     description: "Includes OpenStreetMap-Key: landuse with the values: residential, industrial, construction, commercial, quarry, railway, military, " +
     "retail, landfill, brownfield and garages. Includes OpenStreetMap-Key: leisure with the values: sports_centre and stadium."
 };
@@ -34,7 +34,7 @@ const CONSTRUCTEDAREA = {
 const WATER = {
     id: 4,
     name: "water",
-    osm_tag: '',
+    osmValue: '',
     description: "Includes OpenStreetMap-Key: landuse with the values: basin and reservoir. Includes OpenStreetMap-Key: natural with the value: water. " +
     "Includes OpenStreetMap-Key: leisure with the values: swimming_pool, marina, water_park and slipway."
 };
@@ -42,21 +42,21 @@ const WATER = {
 const ROCKS = {
     id: 5,
     name: "rocks",
-    osm_tag: '',
+    osmValue: '',
     description: "Includes OpenStreetMap-Key: natural with the values: scree, bare_rock, shingle, cliff, rock and stone."
 };
 
 const OTHER = {
     id: 100,
     name:"other",
-    osm_tag: '',
+    osmValue: '',
     description: "OSM-tag is defined, but not supported."
 };
 
 const UNKNOWN = {
     id: -1,
     name: "unknown",
-    osm_tag: 'unknown',
+    osmValue: 'unknown',
     description: "No tagging possible."
 };
 
@@ -120,7 +120,6 @@ const TOURISTICAL = {
 const FIND_MIDDLE_POINT = "SELECT ST_AsText(ST_Centroid(ST_GeomFromText(('MULTIPOINT ( {lon1} {lat1}, {lon2} {lat2})'), 4326)));";
 
 
-//TODO: create Table where the not null part is precalculated
 const NATURAL_QUERY = 'SELECT "natural" FROM multipolygons ' +
                     'WHERE "natural" IS NOT NULL AND ST_Within(' +
                     'ST_GeomFromText((\'{point}\'), 4326), ' +
@@ -145,12 +144,14 @@ const GEOADMIN_URL = 'https://api3.geo.admin.ch/rest/services/all/MapServer/iden
     '&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1&lang=de&layers=all:ch.are.bevoelkerungsdichte,' +
     'ch.are.gemeindetypen&mapExtent=0,0,1,1&returnGeometry=false&tolerance=5';
 
+
+
 function getGeographicalSurroundings(positions, callback) {
     var middlePointQueries = prepareMiddlePointDbStatements(FIND_MIDDLE_POINT, positions);
 
     parallel([
             function(callback) {
-                db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), middlePointQueries, function (result) {
+                dbAccess.queryMultiple(dbAccess.getDatabase(dbAccess.SWITZERLAND_DB), middlePointQueries, function (result) {
                     callback(null, result);
                 });
             }
@@ -167,22 +168,22 @@ function getGeographicalSurroundings(positions, callback) {
 
             parallel([
                     function(callback) {
-                        db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), boundaryQueries, function (result) {
+                        dbAccess.queryMultiple(dbAccess.getDatabase(dbAccess.SWITZERLAND_DB), boundaryQueries, function (result) {
                             callback(null, result);
                         });
                     },
                     function(callback) {
-                        db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), leisureQueries, function (result) {
+                        dbAccess.queryMultiple(dbAccess.getDatabase(dbAccess.SWITZERLAND_DB), leisureQueries, function (result) {
                             callback(null, result);
                         });
                     },
                     function(callback) {
-                        db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), landuseQueries, function (result) {
+                        dbAccess.queryMultiple(dbAccess.getDatabase(dbAccess.SWITZERLAND_DB), landuseQueries, function (result) {
                            callback(null, result);
                         });
                     },
                     function(callback) {
-                        db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), naturalQueries, function (result) {
+                        dbAccess.queryMultiple(dbAccess.getDatabase(dbAccess.SWITZERLAND_DB), naturalQueries, function (result) {
                             callback(null, result);
                         });
                     }
@@ -254,7 +255,7 @@ function getGeoAdminData(positions, callback) {
 
     parallel([
             function(callback) {
-                db_access.queryMultiple(db_access.getDatabase(db_access.SWITZERLAND_DB), middlePointQueries, function (result) {
+                dbAccess.queryMultiple(dbAccess.getDatabase(dbAccess.SWITZERLAND_DB), middlePointQueries, function (result) {
                     callback(null, result);
                 });
             }
@@ -348,12 +349,24 @@ function getGeoAdminData(positions, callback) {
 
                     var resultingTags = { download: {
                         pop:
-                            { number: populationDensityDownload, description: 'Number of people living in 1ha' },
-                        type: { tag: communityTagDownload, res: communityTypeDownload }
+                            {
+                                number: Math.round(populationDensityDownload),
+                                description: 'Number of people living in 1ha'
+                            },
+                        type: {
+                            tag: communityTagDownload,
+                            res: communityTypeDownload
+                        }
                     }, upload: {
                         pop:
-                            { number: populationDensityUpload, description: 'Number of people living in 1ha' },
-                        type: { tag: communityTagUpload, res: communityTypeUpload }
+                            {
+                                number: Math.round(populationDensityUpload),
+                                description: 'Number of people living in 1ha'
+                            },
+                        type: {
+                            tag: communityTagUpload,
+                            res: communityTypeUpload
+                        }
                     }};
                     callback(resultingTags);
                 }
@@ -395,10 +408,10 @@ function getBoundaryTag(designation) {
         case 'protected_area':
         case 'national_park':
         case 'nature_reserve':
-            tagGrassland.osm_tag = designation;
+            tagGrassland.osmValue = designation;
             return tagGrassland;
         default:
-            tagOther.osm_tag = designation;
+            tagOther.osmValue = designation;
             return tagOther;
     }
 }
@@ -417,20 +430,20 @@ function getLeisureTag(designation) {
         case 'miniature_golf':
         case 'recreation_ground':
         case 'dog_park':
-            tagGrassland.osm_tag = designation;
+            tagGrassland.osmValue = designation;
             return tagGrassland;
         case 'sports_centre':
         case 'stadium':
-            tagConstArea.osm_tag = designation;
+            tagConstArea.osmValue = designation;
             return tagConstArea;
         case 'swimming_pool':
         case 'marina':
         case 'water_park':
         case 'slipway':
-            tagWater.osm_tag = designation;
+            tagWater.osmValue = designation;
             return tagWater;
         default:
-            tagOther.osm_tag = designation;
+            tagOther.osmValue = designation;
             return tagOther;
     }
 }
@@ -454,12 +467,12 @@ function getLanduseTag(designation) {
         case 'village_green':
         case 'greenfield':
         case 'conservation':
-            tagGrassland.osm_tag = designation;
+            tagGrassland.osmValue = designation;
             return tagGrassland;
         case 'forest':
         case 'vineyard':
         case 'orchard':
-            tagTrees.osm_tag = designation;
+            tagTrees.osmValue = designation;
             return tagTrees;
         case 'residential':
         case 'industrial':
@@ -472,14 +485,14 @@ function getLanduseTag(designation) {
         case 'landfill':
         case 'brownfield':
         case 'garages':
-            tagConstArea.osm_tag = designation;
+            tagConstArea.osmValue = designation;
             return tagConstArea;
         case 'basin':
         case 'reservoir':
-            tagWater.osm_tag = designation;
+            tagWater.osmValue = designation;
             return tagWater;
         default:
-            tagOther.osm_tag = designation;
+            tagOther.osmValue = designation;
             return tagOther;
     }
 }
@@ -499,15 +512,15 @@ function getNaturalTag(designation) {
         case 'heath':
         case 'meadow':
         case 'grass':
-            tagGrassland.osm_tag = designation;
+            tagGrassland.osmValue = designation;
             return tagGrassland;
         case 'wood':
         case 'tree':
         case 'tree_row':
-            tagTrees.osm_tag = designation;
+            tagTrees.osmValue = designation;
             return tagTrees;
         case 'water':
-            tagWater.osm_tag = designation;
+            tagWater.osmValue = designation;
             return tagWater;
         case 'scree':
         case 'bare_rock':
@@ -515,10 +528,10 @@ function getNaturalTag(designation) {
         case 'cliff':
         case 'rock':
         case 'stone':
-            tagRocks.osm_tag = designation;
+            tagRocks.osmValue = designation;
             return tagRocks;
         default:
-            tagOther.osm_tag = designation;
+            tagOther.osmValue = designation;
             return tagOther;
     }
 }
@@ -542,7 +555,6 @@ function prepareMiddlePointDbStatements(statement, positions) {
     return statements;
 }
 
-//TODO: make one dbStatement --> multiple queries are now used to test whether query is working right with default values
 function prepareNaturalDbStatements(statement, points) {
     var queries = [];
 
@@ -575,7 +587,7 @@ function prepareBoundaryAndLeisureDbStatements(statement, points) {
 
 
 function returnSurroundingsTag(downloadTag, uploadTag, callback) {
-    var result = { download: { geo: downloadTag, osm_tag: downloadTag.osm_tag }, upload: { geo: uploadTag, osm_tag: uploadTag.osm_tag } };
+    var result = { download: { geo: downloadTag, osmValue: downloadTag.osmValue }, upload: { geo: uploadTag, osmValue: uploadTag.osmValue } };
     callback(result);
 }
 

@@ -1,4 +1,4 @@
-var db = require('../../persistence/db_access_v2');
+var dbAccess = require('../../persistence/db_access_v2');
 var helper = require('./helper');
 var parallel = require("async/parallel");
 
@@ -38,7 +38,6 @@ const UNKNOWN = {
 
 
 
-//TODO: Make Limits in meters variable
 const SWITZERLAND_NEAREST_BUILDING_IN_15M = 'WITH closest_candidates AS (' +
     'SELECT * FROM public.multipolygons WHERE building IS NOT NULL ' +
     'ORDER BY multipolygons.wkb_geometry <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) ' +
@@ -116,20 +115,19 @@ function calculate_RAILWAY_STREET_BUILDING(positions, callback) {
     parallel([
             //Get the nearest building within 15 meters of each of the 3 positions
             function(callback) {
-                db.queryMultiple(db.getDatabase(db.SWITZERLAND_DB), nearestBuildingStatements, function (result) {
+                dbAccess.queryMultiple(dbAccess.getDatabase(dbAccess.SWITZERLAND_DB), nearestBuildingStatements, function (result) {
                     callback(null, result);
                 });
             },
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultiple(db.getDatabase(db.STREETS_DB), nearestWaysStatements, function (result) {
+                dbAccess.queryMultiple(dbAccess.getDatabase(dbAccess.STREETS_DB), nearestWaysStatements, function (result) {
                     callback(null, result);
                 });
             }
         ],
         function(err, results) {
 
-            //TODO: Check if this 3 buildings are the same
             var nearestBuildings = results[0];
             var nearestWays = results[1];
 
@@ -158,7 +156,7 @@ function calculate_RAILWAY_STREET(positions, callback) {
     parallel([
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultiple(db.getDatabase(db.STREETS_DB), nearestWaysStatements, function (result) {
+                dbAccess.queryMultiple(dbAccess.getDatabase(dbAccess.STREETS_DB), nearestWaysStatements, function (result) {
                     callback(null, result);
                 });
             }
@@ -185,7 +183,7 @@ function checkIf_RAILWAY(positions, callback) {
     parallel([
             //Get all railways or streets within 10 meters for each of the 3 positions
             function(callback) {
-                db.queryMultiple(db.getDatabase(db.STREETS_DB), nearestRailwaysStatements, function (result) {
+                dbAccess.queryMultiple(dbAccess.getDatabase(dbAccess.STREETS_DB), nearestRailwaysStatements, function (result) {
                     callback(null, result);
                 });
             }

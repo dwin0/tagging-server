@@ -1,4 +1,4 @@
-var db_access= require('../../persistence/db_access_v4');
+var dbAccess= require('../../persistence/db_access_v4');
 var parallel = require("async/parallel");
 var converter = require('./wgs84_ch1903');
 var posHelper = require('./positionsHelper');
@@ -64,13 +64,12 @@ const TOURISTICAL = {
 const UNKNOWN = {
     id: -1,
     name: "unknown",
-    osm_key: 'unknown',
-    osm_value: 'unknown',
+    osmKey: 'unknown',
+    osmValue: 'unknown',
     description: "No tagging possible."
 };
 
 
-//TODO: in doku -> wenn gemeindetyp [], sehr wahrscheinlich see
 const GEOADMIN_URL_BEVOELKERUNGSDICHTE = 'https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry={y},{x}' +
     '&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1&lang=de&layers=all:ch.are.bevoelkerungsdichte' +
     '&mapExtent=0,0,1,1&returnGeometry=false&tolerance=300';
@@ -83,12 +82,12 @@ const GEOADMIN_URL_GEMEINDETYP = 'https://api3.geo.admin.ch/rest/services/all/Ma
 
 function getGeoAdminData(positions, callback) {
 
-    var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
+    var database = dbAccess.getDatabase(dbAccess.SWITZERLAND_DB);
     var queryPositions = posHelper.makeMultipoints(positions);
 
     parallel([
             function(callback) {
-                db_access.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (result) {
+                dbAccess.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (result) {
                     callback(null, result);
                 });
             }

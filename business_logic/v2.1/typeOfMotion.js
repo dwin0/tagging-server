@@ -8,7 +8,7 @@ const PEDESTRIAN = { id: 2, name: "pedestrian", description: '3 km/h to 10 km/h'
 const VEHICULAR = { id: 3, name: "vehicular", description: '10 km/h to 120 km/h' };
 
 //Sehr schnell fahrend: Hochgeschwindigkeitsfahrzeuge: 120 km/h … < 350km/h
-const HIGH_SPEED_VEHICULAR = { id: 4, name: "high-speed_vehicular", description: '120 km/h to 350km/h' };
+const HIGH_SPEED_VEHICULAR = { id: 4, name: "high-speed-vehicular", description: '120 km/h to 350km/h' };
 
 const UNKNOWN = { id: -1, name: "unknown", description: "No tagging possible." };
 

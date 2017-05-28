@@ -1,4 +1,4 @@
-var db_access = require('../../persistence/db_access_v1');
+var dbAccess = require('../../persistence/db_access_v1');
 
 const OSM_QUERY_DISTANCE = 'SELECT ST_Distance(ST_GeomFromText(\'POINT({lon1} {lat1})\',4326)::geography, ' +
     'ST_GeomFromText(\'POINT({lon2} {lat2})\', 4326)::geography);';
@@ -28,7 +28,7 @@ function getVelocity(req, res, callback) {
     var endDate = new Date(positions[1].time);
     var statement = getDbStatement(positions);
 
-    db_access.singleQuery(statement, res, startDate, endDate, callback);
+    dbAccess.singleQuery(statement, res, startDate, endDate, callback);
 }
 
 
@@ -49,11 +49,10 @@ function prepareJSON(endDate, startDate, resultingDistance) {
 
     return {
         title: "Calculated velocity:",
-        distance_m: resultingDistance,
-        time_s: resultingTime,
-        velocity_ms: resultingVelocityMS,
-        velocity_kmh: resultingVelocityKMH,
-        probability: null
+        distanceMeters: Math.round(resultingDistance),
+        timeSeconds: resultingTime,
+        velocityMeterPerSecond: Math.round(resultingVelocityMS),
+        velocityKilometersPerHour: Math.round(resultingVelocityKMH)
     }
 }
 

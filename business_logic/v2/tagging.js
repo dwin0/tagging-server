@@ -1,4 +1,4 @@
-var db = require('../../persistence/db_access_v2');
+var dbAccess = require('../../persistence/db_access_v2');
 var helper = require('./helper');
 var parallel = require("async/parallel");
 
@@ -38,7 +38,6 @@ const UNKNOWN = {
 
 
 
-//TODO: Put restriction ( x < 10 meters ) within sql-statement and not in js-code
 const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
     'SELECT * FROM public.multipolygons WHERE building IS NOT NULL ' +
     'ORDER BY multipolygons.wkb_geometry <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) ' +
@@ -73,13 +72,12 @@ function getTag(typeOfMotion, positions, callback) {
     //VEHICULAR or HIGH_SPEED_VEHICULAR
     //Result is CAR or TRAIN
     if(typeOfMotion.id > 2) {
-        //TODO: Check if speed > max. speed allowed on street
 
         var nearestObjectsStatements = helper.getDBStatements(OSM_NEAREST_OBJECTS, positions);
 
         parallel([
                 function(callback) {
-                    db.queryMultiple(db.getDatabase(db.STREETS_DB), nearestObjectsStatements, function (nearestWayResults) {
+                    dbAccess.queryMultiple(dbAccess.getDatabase(dbAccess.STREETS_DB), nearestObjectsStatements, function (nearestWayResults) {
                         callback(null, nearestWayResults);
                     });
                 }
@@ -121,21 +119,20 @@ function getTag(typeOfMotion, positions, callback) {
         //Get the nearest building of each position (3 positions)
         parallel([
                 function(callback) {
-                    db.queryMultiple(db.getDatabase(db.SWITZERLAND_DB), nearestBuildingStatements, function (result) {
+                    dbAccess.queryMultiple(dbAccess.getDatabase(dbAccess.SWITZERLAND_DB), nearestBuildingStatements, function (result) {
                         callback(null, result);
                     });
                 },
-                //TODO: query later
+
                 //Get all railways or streets within 10 meters for each of the 3 points
                 function(callback) {
-                    db.queryMultiple(db.getDatabase(db.STREETS_DB), nearestWaysStatements, function (result) {
+                    dbAccess.queryMultiple(dbAccess.getDatabase(dbAccess.STREETS_DB), nearestWaysStatements, function (result) {
                         callback(null, result);
                     });
                 }
             ],
             function(err, results) {
 
-                //TODO: Check if this 3 buildings are the same
                 var nearestBuildings = results[0];
 
                 const numberOfBuildings = 3;

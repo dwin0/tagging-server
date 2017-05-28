@@ -1,5 +1,5 @@
 var tagging = require('./tagging');
-var db_access = require('../../persistence/db_access_v1');
+var dbAccess = require('../../persistence/db_access_v1');
 
 const OSM_NEAREST_OBJECTS = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
     'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
@@ -14,7 +14,6 @@ String.prototype.replaceAll = function(target, replacement) {
 
 function getDbStatements(positions) {
 
-    //TODO: Prepared Statements
     var statement1 = OSM_NEAREST_OBJECTS.replaceAll("{lon}", positions[0].longitude).replaceAll("{lat}", positions[0].latitude);
     var statement2 = OSM_NEAREST_OBJECTS.replaceAll("{lon}", positions[1].longitude).replaceAll("{lat}", positions[1].latitude);
     var statement3 = OSM_NEAREST_OBJECTS.replaceAll("{lon}", positions[2].longitude).replaceAll("{lat}", positions[2].latitude);
@@ -32,7 +31,7 @@ function getTagsJSON(req, res) {
 
     var positions = filterPositions(req.body.positions);
     var statements = getDbStatements(positions);
-    db_access.queryMultiple(statements[0], statements[1], statements[2], res, null, renderTagJSON);
+    dbAccess.queryMultiple(statements[0], statements[1], statements[2], res, null, renderTagJSON);
 }
 
 function renderTagJSON(res, results) {
@@ -49,31 +48,27 @@ function renderTagJSON(res, results) {
             description: tag.description,
             probability: tag.probability
         },
-        type_of_motion: {
+        typeOfMotion: {
             id: null,
             name: null,
-            description: null,
-            probability: null
+            description: null
         },
         velocity: {
-            distance_m: null,
-            time_s: null,
-            velocity_ms: null,
-            velocity_kmh: null,
-            probability: null
+            distanceMeters: null,
+            timeSeconds: null,
+            velocityMeterPerSecond: null,
+            velocityKilometersPerHour: null
         },
         surroundings: {
-            geographical_surroundings: {
+            geographicalSurroundings: {
                 id: null,
                 name: null,
-                description: null,
-                probability: null
+                description: null
             },
-            population_density: {
+            populationDensity: {
                 id: null,
                 name: null,
-                description: null,
-                probability: null
+                description: null
             }
         }
     });
@@ -93,7 +88,7 @@ function getTagsView(req, res) {
         {lat: positions[1].latitude, lon: positions[1].longitude},
         {lat: positions[2].latitude, lon: positions[2].longitude}];
 
-    db_access.queryMultiple(statements[0], statements[1], statements[2], res, coordinates, renderTagView);
+    dbAccess.queryMultiple(statements[0], statements[1], statements[2], res, coordinates, renderTagView);
 }
 
 function renderTagView(res, results, coordinates) {

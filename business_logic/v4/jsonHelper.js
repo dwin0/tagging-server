@@ -11,18 +11,16 @@ function renderTagJson(taggingRes, typeOfMotion, speedResult, geographicalSurrou
             probability: taggingRes.probability,
             allProbabilities: taggingRes.allProbabilities
         },
-        type_of_motion: {
+        typeOfMotion: {
             id: typeOfMotion.id,
             name: typeOfMotion.name,
-            description: typeOfMotion.description,
-            probability: null
+            description: typeOfMotion.description
         },
         velocity: {
-            distance_m: speedResult.distance,
-            time_s: speedResult.time_s,
-            velocity_ms: speedResult.velocity_ms,
-            velocity_kmh: speedResult.velocity_kmh,
-            probability: speedResult.probability
+            distanceMeters: speedResult.distanceMeters,
+            timeSeconds: speedResult.timeSeconds,
+            velocityMeterPerSecond: speedResult.velocityMeterPerSecond,
+            velocityKilometersPerHour: speedResult.velocityKilometersPerHour
         },
         surroundings: jsonSurrounding.surroundings
     }
@@ -35,49 +33,44 @@ function renderSurroundingsJson(geographicalSurroundingsResult, geoAdminResults)
         title: "Calculated Surroundings",
         surroundings: {
             download: {
-                population_density: {
+                populationDensity: {
                     number: geoAdminResults.download.pop.number,
-                    description: geoAdminResults.download.pop.description,
-                    probability: null
+                    description: geoAdminResults.download.pop.description
                 },
-                community_type: {
+                communityType: {
                     id: geoAdminResults.download.type.tag.id,
                     type: geoAdminResults.download.type.tag.name,
-                    community_id: geoAdminResults.download.type.res.communityId,
-                    community_name: geoAdminResults.download.type.res.communityName,
-                    canton_id: geoAdminResults.download.type.res.cantonId,
-                    canton_name: geoAdminResults.download.type.res.cantonName,
                     description: geoAdminResults.download.type.tag.description,
-                    probability: null
+                    communityId: geoAdminResults.download.type.res.communityId,
+                    communityName: geoAdminResults.download.type.res.communityName,
+                    cantonId: geoAdminResults.download.type.res.cantonId,
+                    cantonName: geoAdminResults.download.type.res.cantonName
+
                 },
-                geographical_surroundings: {
-                    osm_key: geographicalSurroundingsResult.download.osm_key,
-                    osm_value: geographicalSurroundingsResult.download.osm_value,
-                    description: geographicalSurroundingsResult.download.description,
-                    probability: null
+                geographicalSurroundings: {
+                    osmKey: geographicalSurroundingsResult.download.osmKey,
+                    osmValue: geographicalSurroundingsResult.download.osmValue,
+                    description: geographicalSurroundingsResult.download.description
                 }
             },
             upload: {
-                population_density: {
+                populationDensity: {
                     number: geoAdminResults.upload.pop.number,
-                    description: geoAdminResults.upload.pop.description,
-                    probability: null
+                    description: geoAdminResults.upload.pop.description
                 },
-                community_type: {
+                communityType: {
                     id: geoAdminResults.upload.type.tag.id,
                     type: geoAdminResults.upload.type.tag.name,
-                    community_id: geoAdminResults.upload.type.res.communityId,
-                    community_name: geoAdminResults.upload.type.res.communityName,
-                    canton_id: geoAdminResults.upload.type.res.cantonId,
-                    canton_name: geoAdminResults.upload.type.res.cantonName,
                     description: geoAdminResults.upload.type.tag.description,
-                    probability: null
+                    communityId: geoAdminResults.upload.type.res.communityId,
+                    communityName: geoAdminResults.upload.type.res.communityName,
+                    cantonId: geoAdminResults.upload.type.res.cantonId,
+                    cantonName: geoAdminResults.upload.type.res.cantonName
                 },
-                geographical_surroundings: {
-                    osm_key: geographicalSurroundingsResult.upload.osm_key,
-                    osm_value: geographicalSurroundingsResult.upload.osm_value,
-                    description: geographicalSurroundingsResult.upload.description,
-                    probability: null
+                geographicalSurroundings: {
+                    osmKey: geographicalSurroundingsResult.upload.osmKey,
+                    osmValue: geographicalSurroundingsResult.upload.osmValue,
+                    description: geographicalSurroundingsResult.upload.description
                 }
             }
         }
@@ -89,13 +82,13 @@ function prepareSurroundingsDownUp(resultObj) {
 
     return {
         download: {
-            osm_key: resultObj.down.osm_key,
-            osm_value: resultObj.down.osm_value,
+            osmKey: resultObj.down.osmKey,
+            osmValue: resultObj.down.osmValue,
             description: resultObj.down.description
         },
         upload: {
-            osm_key: resultObj.up.osm_key,
-            osm_value: resultObj.up.osm_value,
+            osmKey: resultObj.up.osmKey,
+            osmValue: resultObj.up.osmValue,
             description: resultObj.up.description
         }
     };

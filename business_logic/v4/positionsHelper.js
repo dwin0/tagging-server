@@ -9,8 +9,6 @@ function filterPositions(positions) {
 }
 
 
-//TODO: newPositions has always 3 Elements -> correct this
-//TODO: handle double entries of 1 phase
 //Get measurement-points (DownloadStart), (DownloadEnd) and (UploadEnd)
 function filterSurroundingsPositions(positions) {
     var newPositions = [];
@@ -25,6 +23,8 @@ function filterSurroundingsPositions(positions) {
             newPositions[2] = element;
         }
     });
+
+    newPositions = newPositions.filter(function(pos){ return pos !== undefined });
 
     return newPositions;
 }

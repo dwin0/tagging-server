@@ -1,4 +1,4 @@
-var db_access= require('../../persistence/db_access_v4');
+var dbAccess= require('../../persistence/db_access_v4');
 var parallel = require("async/parallel");
 var posHelper = require('./positionsHelper');
 var jsonHelper = require('./jsonHelper');
@@ -8,20 +8,20 @@ var queries = require('./dbQueries');
 const UNKNOWN = {
     id: -1,
     name: "unknown",
-    osm_key: 'unknown',
-    osm_value: 'unknown',
+    osmKey: 'unknown',
+    osmValue: 'unknown',
     description: "No tagging possible."
 };
 
 
 function getGeographicalSurroundings(positions, callback) {
 
-    var database = db_access.getDatabase(db_access.SWITZERLAND_DB);
+    var database = dbAccess.getDatabase(dbAccess.SWITZERLAND_DB);
     var queryPositions = posHelper.makeMultipoints(positions);
 
     parallel([
             function(callback) {
-                db_access.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (result) {
+                dbAccess.queryMultipleParameterized(database, queries.FIND_MIDDLE_POINT, queryPositions, function (result) {
                     callback(null, result);
                 });
             }
@@ -43,37 +43,33 @@ function getGeographicalSurroundings(positions, callback) {
 
 
             queryPositions = posHelper.makePoints(middlePoints);
-            var switzerlandDB = db_access.getDatabase(db_access.SWITZERLAND_DB);
+            var switzerlandDB = dbAccess.getDatabase(dbAccess.SWITZERLAND_DB);
 
             parallel([
                     function(callback) {
-                        db_access.queryMultipleParameterized(switzerlandDB, queries.BOUNDARY_QUERY, queryPositions, function (result) {
+                        dbAccess.queryMultipleParameterized(switzerlandDB, queries.BOUNDARY_QUERY, queryPositions, function (result) {
 
-                            //TODO: description, ev. up/down unterschiedlich
                             var resultObj = prepareResult(result, 'boundary', null);
                             callback(null, resultObj);
                         });
                     },
                     function(callback) {
-                        db_access.queryMultipleParameterized(switzerlandDB, queries.NATURAL_QUERY, queryPositions, function (result) {
+                        dbAccess.queryMultipleParameterized(switzerlandDB, queries.NATURAL_QUERY, queryPositions, function (result) {
 
-                            //TODO: description
                             var resultObj = prepareResult(result, 'natural', null);
                             callback(null, resultObj);
                         });
                     },
                     function(callback) {
-                        db_access.queryMultipleParameterized(switzerlandDB, queries.LEISURE_QUERY, queryPositions, function (result) {
+                        dbAccess.queryMultipleParameterized(switzerlandDB, queries.LEISURE_QUERY, queryPositions, function (result) {
 
-                            //TODO: description
                             var resultObj = prepareResult(result, 'leisure', null);
                             callback(null, resultObj);
                         });
                     },
                     function(callback) {
-                        db_access.queryMultipleParameterized(switzerlandDB, queries.LANDUSE_QUERY, queryPositions, function (result) {
+                        dbAccess.queryMultipleParameterized(switzerlandDB, queries.LANDUSE_QUERY, queryPositions, function (result) {
 
-                            //TODO: description
                             var resultObj = prepareResult(result, 'landuse', null);
                             callback(null, resultObj);
                         });
@@ -92,30 +88,29 @@ function getGeographicalSurroundings(positions, callback) {
 
 function prepareResult(result, osmKey, description) {
 
-    //TODO: check if multiple results
     var resultObj = {
         down: {
             empty: true,
-            osm_key: osmKey,
-            osm_value: null,
+            osmKey: osmKey,
+            osmValue: null,
             description: description
         },
         up: {
             empty: true,
-            osm_key: osmKey,
-            osm_value: null,
+            osmKey: osmKey,
+            osmValue: null,
             description: description
         }
     };
 
     if(result[0].length) {
         resultObj.down.empty = false;
-        resultObj.down.osm_value = result[0][0][osmKey];
+        resultObj.down.osmValue = result[0][0][osmKey];
     }
 
     if(result[1].length) {
         resultObj.up.empty = false;
-        resultObj.up.osm_value = result[1][0][osmKey];
+        resultObj.up.osmValue = result[1][0][osmKey];
     }
 
     return resultObj;
@@ -126,14 +121,14 @@ function findMostSpecific(results) {
     var resultObj = {
         down: {
             empty: true,
-            osm_key: UNKNOWN.osm_key,
-            osm_value: UNKNOWN.osm_value,
+            osmKey: UNKNOWN.osmKey,
+            osmValue: UNKNOWN.osmValue,
             description: UNKNOWN.description
         },
         up: {
             empty: true,
-            osm_key: UNKNOWN.osm_key,
-            osm_value: UNKNOWN.osm_value,
+            osmKey: UNKNOWN.osmKey,
+            osmValue: UNKNOWN.osmValue,
             description: UNKNOWN.description
         }
     };
