@@ -126,6 +126,40 @@ const TAGGING_SCHEMA_V4 = {
     }
 };
 
+const TAGGING_SCHEMA_V5 = {
+    type: 'object',
+    properties: {
+        positions: {
+            type: 'array',
+            minItems: 8,
+            maxItems: 8,
+            required: true,
+            items: {
+                type: 'object',
+                required: true,
+                properties: {
+                    longitude: {
+                        type: 'number',
+                        required: true
+                    },
+                    latitude: {
+                        type: 'number',
+                        required: true
+                    },
+                    horizontalAccuracy: {
+                        type: 'number',
+                        required: true
+                    },
+                    time: {
+                        type: 'string',
+                        required: true
+                    }
+                }
+            }
+        }
+    }
+};
+
 const SURROUNDINGS_SCHEMA = {
     type: 'object',
     properties: {
@@ -213,6 +247,7 @@ module.exports = {
     "TAGGING_SCHEMA_V2": TAGGING_SCHEMA_V2,
     "TAGGING_SCHEMA_V3": TAGGING_SCHEMA_V3,
     "TAGGING_SCHEMA_V4": TAGGING_SCHEMA_V4,
+    "TAGGING_SCHEMA_V5": TAGGING_SCHEMA_V5,
     "SURROUNDINGS_SCHEMA": SURROUNDINGS_SCHEMA,
     "VELOCITY_SCHEMA": VELOCITY_SCHEMA,
     "handleJsonSchemaValidationError": handleJsonSchemaValidationError

@@ -88,10 +88,10 @@ function renderTaggingResult(data) {
         'Wahrscheinlichkeit: ' + data.location.probability + '</div></li>');
 
     var typeOfMotion = $('<li class="collection-item"><div>Fortbewegungs-Typ: ' +
-        data.type_of_motion.name + '</div></li>');
+        data.typeOfMotion.name + '</div></li>');
 
     var velocity = $('<li class="collection-item"><div>Geschwindigkeit: ' +
-        data.velocity.velocity_kmh + ' km/h</div></li>');
+        data.velocity.velocityKilometersPerHour + ' km/h</div></li>');
 
     renderResult([header, location, typeOfMotion, velocity]);
 }
@@ -100,12 +100,16 @@ function renderSpeedCalculationResult(data) {
 
     var header = $('<li class="collection-header"><h4>Geschwindigkeits-Resultat:</h4></li>');
 
-    var distance_m = $('<li class="collection-item"><div>Distanz: ' + data.distance_m + ' m</div></li>');
-    var time_s = $('<li class="collection-item"><div>Zeit: ' + data.time_s + ' s</div></li>');
-    var velocity_ms = $('<li class="collection-item"><div>Geschwindigkeit: ' + data.velocity_ms + ' m/s</div></li>');
-    var velocity_kmh = $('<li class="collection-item"><div>Geschwindigkeit: ' + data.velocity_kmh + ' km/h</div></li>');
+    var distanceMeters =
+        $('<li class="collection-item"><div>Distanz: ' + data.distanceMeters + ' m</div></li>');
+    var timeSeconds =
+        $('<li class="collection-item"><div>Zeit: ' + data.timeSeconds + ' s</div></li>');
+    var velocityMeterPerSecond =
+        $('<li class="collection-item"><div>Geschwindigkeit: ' + data.velocityMeterPerSecond + ' m/s</div></li>');
+    var velocityKilometersPerHour =
+        $('<li class="collection-item"><div>Geschwindigkeit: ' + data.velocityKilometersPerHour + ' km/h</div></li>');
 
-    renderResult([distance_m, time_s, velocity_ms, velocity_kmh]);
+    renderResult([header, distanceMeters, timeSeconds, velocityMeterPerSecond, velocityKilometersPerHour]);
 }
 
 function renderResult(appendArray) {

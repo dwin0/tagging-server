@@ -33,14 +33,12 @@ function sendTaggingRequest(event) {
         var latitude = Number($('#latitude' + i).val());
         var horizontalAccuracy = Number($('#horizontalAccuracy' + i).val());
         var time = $('#time' + i).val();
-        var phase = $('#phase' + i).val();
 
         positions[i-1] = {
             longitude: longitude,
             latitude: latitude,
             horizontalAccuracy: horizontalAccuracy,
-            time: time,
-            phase: phase };
+            time: time };
     }
 
     sendRequest("/api/v5.0/tag", { positions: positions }, renderTaggingResult);
@@ -151,10 +149,14 @@ function renderSpeedCalculationResult(data) {
 
     var header = $('<li class="collection-header"><h4>Geschwindigkeits-Resultat:</h4></li>');
 
-    var distanceMeters = $('<li class="collection-item"><div>Distanz: ' + data.distanceMeters + ' m</div></li>');
-    var timeSeconds = $('<li class="collection-item"><div>Zeit: ' + data.timeSeconds + ' s</div></li>');
-    var velocityMeterPerSecond = $('<li class="collection-item"><div>Geschwindigkeit: ' + data.velocityMeterPerSecond + ' m/s</div></li>');
-    var velocityKilometersPerHour = $('<li class="collection-item"><div>Geschwindigkeit: ' + data.velocityKilometersPerHour + ' km/h</div></li>');
+    var distanceMeters =
+        $('<li class="collection-item"><div>Distanz: ' + data.distanceMeters + ' m</div></li>');
+    var timeSeconds =
+        $('<li class="collection-item"><div>Zeit: ' + data.timeSeconds + ' s</div></li>');
+    var velocityMeterPerSecond =
+        $('<li class="collection-item"><div>Geschwindigkeit: ' + data.velocityMeterPerSecond + ' m/s</div></li>');
+    var velocityKilometersPerHour =
+        $('<li class="collection-item"><div>Geschwindigkeit: ' + data.velocityKilometersPerHour + ' km/h</div></li>');
 
     renderResult([header, distanceMeters, timeSeconds, velocityMeterPerSecond, velocityKilometersPerHour]);
 }

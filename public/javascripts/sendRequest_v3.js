@@ -110,60 +110,76 @@ function renderTaggingResult(data) {
         'Wahrscheinlichkeit: ' + data.location.probability + '</div></li>');
 
     var geographicalSurroundings = $('<li class="collection-item"><div>Geografische Umgebung: ' +
-        data.surroundings.download.geographical_surroundings.name + '</div></li>');
+        data.surroundings.download.geographicalSurroundings.name + ':' +
+        data.surroundings.download.geographicalSurroundings.osmValue + '</div></li>');
 
     var populationDensity = $('<li class="collection-item"><div>Bevölkerungsdichte: ' +
-        data.surroundings.download.population_density.number + '</div></li>');
+        data.surroundings.download.populationDensity.number + '</div></li>');
+
+    var communityName = $('<li class="collection-item"><div>Gemeinde: ' +
+        data.surroundings.download.communityType.communityName + '</div></li>');
 
     var communityType = $('<li class="collection-item"><div>Gemeinde-Typ: ' +
-        data.surroundings.download.community_type.type + '</div></li>');
+        data.surroundings.download.communityType.type + '</div></li>');
 
     var typeOfMotion = $('<li class="collection-item"><div>Fortbewegungs-Typ: ' +
-        data.type_of_motion.name + '</div></li>');
+        data.typeOfMotion.name + '</div></li>');
 
     var velocity = $('<li class="collection-item"><div>Geschwindigkeit: ' +
-        data.velocity.velocity_kmh + ' km/h</div></li>');
+        data.velocity.velocityKilometersPerHour + ' km/h</div></li>');
 
-    renderResult([header, location, geographicalSurroundings, populationDensity, communityType, typeOfMotion, velocity]);
+    renderResult([header, location, geographicalSurroundings, populationDensity, communityName, communityType,
+        typeOfMotion, velocity]);
 }
 
 function renderSpeedCalculationResult(data) {
 
     var header = $('<li class="collection-header"><h4>Geschwindigkeits-Resultat:</h4></li>');
 
-    var distance_m = $('<li class="collection-item"><div>Distanz: ' + data.distance_m + ' m</div></li>');
-    var time_s = $('<li class="collection-item"><div>Zeit: ' + data.time_s + ' s</div></li>');
-    var velocity_ms = $('<li class="collection-item"><div>Geschwindigkeit: ' + data.velocity_ms + ' m/s</div></li>');
-    var velocity_kmh = $('<li class="collection-item"><div>Geschwindigkeit: ' + data.velocity_kmh + ' km/h</div></li>');
+    var distanceMeters =
+        $('<li class="collection-item"><div>Distanz: ' + data.distanceMeters + ' m</div></li>');
+    var timeSeconds =
+        $('<li class="collection-item"><div>Zeit: ' + data.timeSeconds + ' s</div></li>');
+    var velocityMeterPerSecond =
+        $('<li class="collection-item"><div>Geschwindigkeit: ' + data.velocityMeterPerSecond + ' m/s</div></li>');
+    var velocityKilometersPerHour =
+        $('<li class="collection-item"><div>Geschwindigkeit: ' + data.velocityKilometersPerHour + ' km/h</div></li>');
 
-    renderResult([distance_m, time_s, velocity_ms, velocity_kmh]);
+    renderResult([header, distanceMeters, timeSeconds, velocityMeterPerSecond, velocityKilometersPerHour]);
 }
 
 function renderSurroundingsResult(data) {
 
     var header = $('<li class="collection-header"><h4>Surroundings-Resultat:</h4></li>');
 
-    var download_geographic = $('<li class="collection-item"><div>Download - Geografische Umgebung: ' +
-        data.surroundings.download.geographical_surroundings.name + '</div></li>');
+    var downloadGeographic = $('<li class="collection-item"><div>Download - Geografische Umgebung: ' +
+        data.surroundings.download.geographicalSurroundings.name + ':' +
+        data.surroundings.download.geographicalSurroundings.osmValue + '</div></li>');
 
-    var download_population = $('<li class="collection-item"><div>Download - Bevölkerungsdichte: ' +
-        data.surroundings.download.population_density.number + '</div></li>');
+    var downloadPopulation = $('<li class="collection-item"><div>Download - Bevölkerungsdichte: ' +
+        data.surroundings.download.populationDensity.number + '</div></li>');
 
-    var download_community = $('<li class="collection-item"><div>Download - Gemeindetyp: ' +
-        data.surroundings.download.community_type.type + '</div></li>');
+    var downloadCommunityName = $('<li class="collection-item"><div>Download - Gemeinde: ' +
+        data.surroundings.download.communityType.communityName + '</div></li>');
 
-    var upload_geographic = $('<li class="collection-item"><div>Upload - Geografische Umgebung: ' +
-        data.surroundings.upload.geographical_surroundings.name + '</div></li>');
+    var downloadCommunityType = $('<li class="collection-item"><div>Download - Gemeindetyp: ' +
+        data.surroundings.download.communityType.type + '</div></li>');
 
-    var upload_population = $('<li class="collection-item"><div>Upload - Bevölkerungsdichte: ' +
-        data.surroundings.upload.population_density.number + '</div></li>');
+    var uploadGeographic = $('<li class="collection-item"><div>Upload - Geografische Umgebung: ' +
+        data.surroundings.upload.geographicalSurroundings.name + ':' +
+        data.surroundings.upload.geographicalSurroundings.osmValue + '</div></li>');
 
-    var upload_community = $('<li class="collection-item"><div>Upload - Gemeindetyp: ' +
-        data.surroundings.upload.community_type.type + '</div></li>');
+    var uploadPopulation = $('<li class="collection-item"><div>Upload - Bevölkerungsdichte: ' +
+        data.surroundings.upload.populationDensity.number + '</div></li>');
 
-    renderResult([header,
-        download_geographic, download_population, download_community,
-        upload_geographic, upload_population, upload_community]);
+    var uploadCommunityName = $('<li class="collection-item"><div>Upload - Gemeinde: ' +
+        data.surroundings.upload.communityType.communityName + '</div></li>');
+
+    var uploadCommunityType = $('<li class="collection-item"><div>Upload - Gemeindetyp: ' +
+        data.surroundings.upload.communityType.type + '</div></li>');
+
+    renderResult([header, downloadGeographic, downloadPopulation, downloadCommunityName, downloadCommunityType,
+        uploadGeographic, uploadPopulation, uploadCommunityName, uploadCommunityType]);
 }
 
 function renderResult(appendArray) {

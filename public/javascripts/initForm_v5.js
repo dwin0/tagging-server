@@ -31,9 +31,8 @@ function createTaggingForm() {
         var latitude = createInputElement('latitude' + i, 'Breitengrad ' + i).addClass('small-input');
         var horizontalAccuracy = createInputElement('horizontalAccuracy' + i, 'Horizontale Genauigkeit ' + i).addClass('small-input');
         var time = createInputElement('time' + i, 'Zeit ' + i).addClass('small-input');
-        var phase = createSelectElement('phase' + i, 'Phase ' + i, 'Wähle eine Phase').addClass('small-input');
 
-        card.find('.card-panel').append(longitude).append(latitude).append(horizontalAccuracy).append(time).append(phase);
+        card.find('.card-panel').append(longitude).append(latitude).append(horizontalAccuracy).append(time);
 
         $('#input-form-elements').append(card);
     }

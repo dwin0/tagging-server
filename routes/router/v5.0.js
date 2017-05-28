@@ -13,7 +13,7 @@ router.get('/tag', function (req, res) {
 });
 
 // This route validates req.body against the taggingSchema
-router.post('/tag', validate({body: jsonSchema.TAGGING_SCHEMA_V4}), function (req, res) {
+router.post('/tag', validate({body: jsonSchema.TAGGING_SCHEMA_V5}), function (req, res) {
     // At this point req.body has been validated
     tagging_v5.getTags(req, res);
 });
