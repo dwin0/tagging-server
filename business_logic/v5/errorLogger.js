@@ -1,6 +1,9 @@
 var fs = require('fs');
 var Log = require('log');
-var logger = new Log('error', fs.createWriteStream('./log/error.log', {'flags': 'a'}));
+
+const LOG_DIRECTORY = './log/';
+fs.existsSync(LOG_DIRECTORY) || fs.mkdirSync(LOG_DIRECTORY);
+var logger = new Log('error', fs.createWriteStream(LOG_DIRECTORY + 'error.log', {'flags': 'a'}));
 
 
 function logError(statusCode, statusText, error, functionCall, fileName, body) {
