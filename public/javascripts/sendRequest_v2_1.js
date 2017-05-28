@@ -71,7 +71,12 @@ function sendRequest(url, sendData, successCallback) {
             successCallback(data);
         },
         error: function (request) {
-            console.error(request.responseText);
+
+            var message = JSON.parse(request.responseText);
+            console.error(message);
+
+            $('#loading-icon').css('display', 'none');
+            renderError(request.status, message.description);
         }
     });
 }
@@ -110,6 +115,15 @@ function renderSpeedCalculationResult(data) {
         $('<li class="collection-item"><div>Geschwindigkeit: ' + data.velocityKilometersPerHour + ' km/h</div></li>');
 
     renderResult([header, distanceMeters, timeSeconds, velocityMeterPerSecond, velocityKilometersPerHour]);
+}
+
+function renderError(errorCode, message) {
+
+    var header = $('<li class="collection-header error"><h4>Error:</h4></li>');
+
+    var error = $('<li class="collection-item error"><div>Statuscode: ' + errorCode + '<br />' + message + '</div></li>');
+
+    renderResult([header, error]);
 }
 
 function renderResult(appendArray) {
