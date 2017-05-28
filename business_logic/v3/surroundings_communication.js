@@ -12,13 +12,10 @@ function getSurroundingsJSON(req, res) {
     positions = filterSurroundingsPositions(positions);
 
     if(positions.length < 3) {
-        res.writeHead(400, {"Content-Type": "application/json"});
-        var json = JSON.stringify({
-            statusText: 'Bad Request',
-            description: 'Phases DownloadStart, DownloadEnd and UploadEnd where expected. At least one phase is missing.',
-            receivedElements: positions
-        });
-        res.end(json);
+
+        res.status(400).send('Phases DownloadStart, DownloadEnd and UploadEnd where expected. ' +
+            'At least one phase is missing.');
+
     } else {
         parallel([
                 function(callback) {

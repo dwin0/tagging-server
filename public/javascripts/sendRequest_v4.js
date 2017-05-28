@@ -96,11 +96,10 @@ function sendRequest(url, sendData, successCallback) {
         },
         error: function (request) {
 
-            var message = JSON.parse(request.responseText);
-            console.error(message);
+            console.error(request.responseText);
 
             $('#loading-icon').css('display', 'none');
-            renderError(request.status, message.description);
+            renderError(request.status, request.statusText, request.responseText);
         }
     });
 }
@@ -188,11 +187,12 @@ function renderSurroundingsResult(data) {
         uploadGeographic, uploadPopulation, uploadCommunityName, uploadCommunityType]);
 }
 
-function renderError(errorCode, message) {
+function renderError(statusCode, statusText, responseText) {
 
     var header = $('<li class="collection-header error"><h4>Error:</h4></li>');
 
-    var error = $('<li class="collection-item error"><div>Statuscode: ' + errorCode + '<br />' + message + '</div></li>');
+    var error = $('<li class="collection-item error"><div>Statuscode: ' + statusCode + ' - ' + statusText + '<br />'
+        + responseText + '</div></li>');
 
     renderResult([header, error]);
 }

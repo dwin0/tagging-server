@@ -26,11 +26,7 @@ function choosePositions(positions, res, callback) {
 
     if(!beforeDownload || !beforeUpload || !afterUpload) {
 
-        res.status(400).json({
-            statusText: 'Bad Request',
-            description: 'Cannot tag positions with multiple occurrences of longitude or latitude 0.'
-        });
-
+        res.status(400).send('Cannot tag positions with multiple occurrences of longitude or latitude 0.');
         callback();
         return;
     }
@@ -45,22 +41,14 @@ function choosePositions(positions, res, callback) {
 
         if(!allPointsInSwitzerland) {
 
-            res.status(400).json({
-                statusText: 'Bad Request',
-                description: 'Not all positions are located within switzerland.'
-            });
-
+            res.status(400).send('Not all positions are located within switzerland.');
             callback();
             return;
         }
 
         if(!checkValidHorizontalAccuracy([beforeDownload, beforeUpload, afterUpload])) {
 
-            res.status(400).json({
-                statusText: 'Bad Request',
-                description: 'Cannot tag positions less accurate than 200 meters.'
-            });
-
+            res.status(400).send('Cannot tag positions less accurate than 200 meters.');
             callback();
             return;
         }

@@ -3,10 +3,7 @@ var velocity = require('./velocity');
 function getSpeedCalculation(req, res) {
 
     if(!checkPositions(req.body.positions)) {
-        res.status(400).json({
-            statusText: 'Bad Request',
-            description: 'Received positions without time value.'
-        });
+        res.status(400).send('Received positions without time value.');
         return;
     }
 
@@ -18,10 +15,7 @@ function getSpeedCalculation(req, res) {
         }
 
         if(result.timeSeconds === 0) {
-            res.status(400).json({
-                statusText: 'Bad Request',
-                description: 'All positions have the same time.'
-            });
+            res.status(400).send('All positions have the same time.');
             return;
         }
 

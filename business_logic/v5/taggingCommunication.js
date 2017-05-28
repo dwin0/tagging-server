@@ -32,10 +32,7 @@ function calculateVelocity(positions, res, callback) {
         }
 
         if(velocityJSON.timeSeconds === 0) {
-            res.status(400).json({
-                statusText: 'Bad Request',
-                description: 'All positions have the same time.'
-            });
+            res.status(400).send('All positions have the same time.');
             return;
         }
 
@@ -49,13 +46,7 @@ function calculateTags(res, positions, velocityJSON) {
     var typeOfMotionRes = typeOfMotion.getTypeOfMotion(velocityJSON.velocityKilometersPerHour);
 
     if(typeOfMotionRes.name === 'unknown') {
-
-        res.status(400).json({
-            statusText: 'Bad Request',
-            description: 'The input-positions are too far away from each other.',
-            velocityKilometersPerHour: velocityJSON.velocityKilometersPerHour
-        });
-
+        res.status(400).send('The input-positions are too far away from each other.');
         return;
     }
 
