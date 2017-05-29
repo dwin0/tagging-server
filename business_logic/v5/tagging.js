@@ -69,7 +69,7 @@ function getTag(typeOfMotion, positions, callback) {
 
         default:
             //callback(error, tag);
-            callback(null, { tag: UNKNOWN, probability: null });
+            callback(null, { tag: UNKNOWN, probability: 0 });
     }
 }
 
@@ -89,7 +89,7 @@ function check_RAILWAY_STREET_BUILDING(tags, positions, callback) {
                         callback(error, result);
                 });
             },
-            //Get all railways or streets within X meters for each of the 3 positions
+            //Get all railways or streets within X meters for each of the 3 positions (returns max. 3)
             function(callback) {
                 dbAccess.queryMultiple(streetDB, queries.OSM_NEAREST_WAYS, queryPositions, function (error, result) {
                         callback(error, result);
@@ -118,7 +118,7 @@ function check_RAILWAY_STREET(tags, positions, callback) {
     var database = dbAccess.getDatabase(dbAccess.STREETS_DB);
     var queryPositions = posHelper.makePoints(positions);
 
-    //Get all railways or streets within X meters for each of the 3 positions
+    //Get all railways or streets within X meters for each of the 3 positions (returns max. 3)
     dbAccess.queryMultiple(database, queries.OSM_NEAREST_WAYS, queryPositions, function (error, nearestWays) {
 
         if(error) {
@@ -136,7 +136,7 @@ function check_RAILWAY(tags, positions, callback) {
     var database = dbAccess.getDatabase(dbAccess.STREETS_DB);
     var queryPositions = posHelper.makePoints(positions);
 
-    //Get all railways within X meters for each of the 3 positions
+    //Check if there is 1 railway-line within X meters for each of the 3 positions
     dbAccess.queryMultiple(database, queries.OSM_NEAREST_RAILWAYS, queryPositions, function (error, nearestRailways) {
 
         if(error) {
