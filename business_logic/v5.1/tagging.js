@@ -51,11 +51,11 @@ function getTag(typeOfMotion, positions, callback) {
 
         //STATIONARY
         case 1:
-        //PEDESTRIAN
-        case 2:
             check_RAILWAY_STREET_BUILDING(tags, positions, callback);
             break;
 
+        //PEDESTRIAN
+        case 2:
         //VEHICULAR
         case 3:
             check_RAILWAY_STREET(tags, positions, callback);
