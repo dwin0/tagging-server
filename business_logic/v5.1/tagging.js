@@ -232,6 +232,7 @@ function returnTag(tags, callback) {
             maxWeight = tag.weight;
         }
 
+        tag.weight = tag.weight.toFixed(2);
         delete tag.location;
     }
 
@@ -240,7 +241,7 @@ function returnTag(tags, callback) {
         id: maxLocation.id,
         name: maxLocation.name,
         description: maxLocation.description,
-        weight: maxWeight,
+        weight: maxWeight.toFixed(2),
         allWeights: tags
     });
 }
