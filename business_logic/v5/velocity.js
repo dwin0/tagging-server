@@ -1,5 +1,4 @@
 var dbAccess = require('../../persistence/dbAccess_v5');
-var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
 var parallel = require('async/parallel');
 
@@ -14,7 +13,7 @@ function getVelocity(positions, callback) {
         var pos1 = positions[i-1];
         var pos2 = positions[i];
         var timeSeconds = Math.abs(new Date(pos2.time).getTime() - new Date(pos1.time).getTime()) / 1000;
-        const queryPositions = posHelper.makePoints([pos1, pos2]);
+        const queryPositions = queries.makePoints([pos1, pos2]);
 
         dbRequests[i-1] = (function(timeSeconds) {
             return function(parallelCallback) {

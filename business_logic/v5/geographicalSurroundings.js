@@ -1,5 +1,4 @@
 var dbAccess= require('../../persistence/dbAccess_v5');
-var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
 
 
@@ -12,7 +11,7 @@ const UNKNOWN = {
 
 function getGeographicalSurroundings(positions, callback) {
 
-    var queryPositions = posHelper.makeMultipoints(positions);
+    var queryPositions = queries.makeMultipoints(positions);
 
     dbAccess.queryMultiple(queries.FIND_MIDDLE_POINT, queryPositions, function (error, result) {
 

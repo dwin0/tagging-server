@@ -88,7 +88,7 @@ function filterValidLatLon(posArray) {
 
 function checkIfSwitzerland(positions, callback) {
 
-    var queryPositions = makePoints(positions);
+    var queryPositions = queries.makePoints(positions);
 
     dbAccess.singleQuery(queries.INSIDE_SWITZERLAND, queryPositions, function (error, result) {
         if(error) {
@@ -226,43 +226,7 @@ function findMoreAccurate(pos1, pos2) {
 
 
 
-//Returns positions in the required format for parametrized queries
-function makePoints(positions) {
-
-    var posArray = [];
-    const POINT = 'POINT({lon} {lat})';
-
-    for(var i = 0; i < positions.length; i++) {
-
-        posArray[i] = POINT
-            .replace('{lon}', positions[i].longitude)
-            .replace('{lat}', positions[i].latitude);
-    }
-
-    return posArray;
-}
-
-function makeMultipoints(positions) {
-
-    const MULTIPOINT = 'MULTIPOINT ({lon1} {lat1}, {lon2} {lat2})';
-    var posArray = [];
-
-    for(var i = 0; i < positions.length - 1; i++) {
-
-        posArray[i] = MULTIPOINT
-            .replace('{lon1}', positions[i].longitude)
-            .replace('{lat1}', positions[i].latitude)
-            .replace('{lon2}', positions[i + 1].longitude)
-            .replace('{lat2}', positions[i + 1].latitude);
-    }
-
-    return posArray;
-}
-
-
 
 module.exports = {
-    "choosePositions": choosePositions,
-    "makePoints": makePoints,
-    "makeMultipoints": makeMultipoints
+    "choosePositions": choosePositions
 };

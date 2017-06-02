@@ -192,6 +192,43 @@ const INSIDE_SWITZERLAND = 'SELECT osm_id FROM planet_osm_polygon ' +
 
 
 
+
+//Returns positions in the required format for parametrized queries
+function makePoints(positions) {
+
+    var posArray = [];
+    const POINT = 'POINT({lon} {lat})';
+
+    for(var i = 0; i < positions.length; i++) {
+
+        posArray[i] = POINT
+            .replace('{lon}', positions[i].longitude)
+            .replace('{lat}', positions[i].latitude);
+    }
+
+    return posArray;
+}
+
+function makeMultipoints(positions) {
+
+    const MULTIPOINT = 'MULTIPOINT ({lon1} {lat1}, {lon2} {lat2})';
+    var posArray = [];
+
+    for(var i = 0; i < positions.length - 1; i++) {
+
+        posArray[i] = MULTIPOINT
+            .replace('{lon1}', positions[i].longitude)
+            .replace('{lat1}', positions[i].latitude)
+            .replace('{lon2}', positions[i + 1].longitude)
+            .replace('{lat2}', positions[i + 1].latitude);
+    }
+
+    return posArray;
+}
+
+
+
+
 module.exports = {
     "FIND_MIDDLE_POINT": FIND_MIDDLE_POINT,
     "GEOGRAPHICAL_QUERY": GEOGRAPHICAL_QUERY,
@@ -199,5 +236,7 @@ module.exports = {
     "OSM_NEAREST_WAYS": OSM_NEAREST_WAYS,
     "OSM_NEAREST_RAILWAYS": OSM_NEAREST_RAILWAYS,
     "OSM_QUERY_DISTANCE": OSM_QUERY_DISTANCE,
-    "INSIDE_SWITZERLAND": INSIDE_SWITZERLAND
+    "INSIDE_SWITZERLAND": INSIDE_SWITZERLAND,
+    "makePoints": makePoints,
+    "makeMultipoints": makeMultipoints
 };

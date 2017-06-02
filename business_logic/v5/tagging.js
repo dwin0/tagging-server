@@ -1,5 +1,4 @@
 var dbAccess = require('../../persistence/dbAccess_v5');
-var posHelper = require('./positionsHelper');
 var queries = require('./dbQueries');
 var parallel = require('async/parallel');
 
@@ -78,7 +77,7 @@ function getTag(typeOfMotion, positions, callback) {
 
 function check_RAILWAY_STREET_BUILDING(tags, positions, callback) {
 
-    var queryPositions = posHelper.makePoints(positions);
+    var queryPositions = queries.makePoints(positions);
 
     parallel([
             //Get the nearest building within X meters of each of the 3 positions
@@ -113,7 +112,7 @@ function check_RAILWAY_STREET_BUILDING(tags, positions, callback) {
 
 function check_RAILWAY_STREET(tags, positions, callback) {
 
-    var queryPositions = posHelper.makePoints(positions);
+    var queryPositions = queries.makePoints(positions);
 
     //Get all railways or streets within X meters for each of the 3 positions (returns max. 3)
     dbAccess.queryMultiple(queries.OSM_NEAREST_WAYS, queryPositions, function (error, nearestWays) {
@@ -130,7 +129,7 @@ function check_RAILWAY_STREET(tags, positions, callback) {
 
 function check_RAILWAY(tags, positions, callback) {
 
-    var queryPositions = posHelper.makePoints(positions);
+    var queryPositions = queries.makePoints(positions);
 
     //Check if there is 1 railway-line within X meters for each of the 3 positions
     dbAccess.queryMultiple(queries.OSM_NEAREST_RAILWAYS, queryPositions, function (error, nearestRailways) {
