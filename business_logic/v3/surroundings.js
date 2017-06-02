@@ -120,25 +120,25 @@ const TOURISTICAL = {
 const FIND_MIDDLE_POINT = "SELECT ST_AsText(ST_Centroid(ST_GeomFromText(('MULTIPOINT ( {lon1} {lat1}, {lon2} {lat2})'), 4326)));";
 
 
-const NATURAL_QUERY = 'SELECT "natural" FROM multipolygons ' +
+const NATURAL_QUERY = 'SELECT "natural" FROM planet_osm_polygon ' +
                     'WHERE "natural" IS NOT NULL AND ST_Within(' +
                     'ST_GeomFromText((\'{point}\'), 4326), ' +
-                    'ST_GeomFromEWKB(wkb_geometry));';
+                    'ST_GeomFromEWKB(way));';
 
-const BOUNDARY_QUERY = 'SELECT boundary FROM multipolygons ' +
+const BOUNDARY_QUERY = 'SELECT boundary FROM planet_osm_polygon ' +
                     'WHERE boundary IS NOT NULL AND boundary != \'administrative\' AND ST_Within(' +
                     'ST_GeomFromText((\'{point}\'), 4326), ' +
-                    'ST_GeomFromEWKB(wkb_geometry));';
+                    'ST_GeomFromEWKB(way));';
 
-const LEISURE_QUERY = 'SELECT leisure FROM multipolygons ' +
+const LEISURE_QUERY = 'SELECT leisure FROM planet_osm_polygon ' +
                     'WHERE leisure IS NOT NULL AND ST_Within(' +
                     'ST_GeomFromText((\'{point}\'), 4326), ' +
-                    'ST_GeomFromEWKB(wkb_geometry))';
+                    'ST_GeomFromEWKB(way))';
 
-const LANDUSE_QUERY = 'SELECT landuse FROM multipolygons ' +
+const LANDUSE_QUERY = 'SELECT landuse FROM planet_osm_polygon ' +
                     'WHERE landuse IS NOT NULL AND ST_Within(' +
                     'ST_GeomFromText((\'{point}\'), 4326), ' +
-                    'ST_GeomFromEWKB(wkb_geometry));';
+                    'ST_GeomFromEWKB(way));';
 
 const GEOADMIN_URL = 'https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry={y},{x}' +
     '&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1&lang=de&layers=all:ch.are.bevoelkerungsdichte,' +

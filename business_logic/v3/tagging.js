@@ -39,33 +39,37 @@ const UNKNOWN = {
 
 
 const SWITZERLAND_NEAREST_BUILDING_IN_15M = 'WITH closest_candidates AS (' +
-    'SELECT * FROM public.multipolygons WHERE building IS NOT NULL ' +
-    'ORDER BY multipolygons.wkb_geometry <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) ' +
+    'SELECT * FROM planet_osm_polygon WHERE building IS NOT NULL ' +
+    'ORDER BY way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) ' +
     'ASC LIMIT 10) ' +
-    'SELECT osm_way_id, name, building, ST_Distance(wkb_geometry::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) ' +
+    'SELECT osm_id, name, building, ST_Distance(way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(wkb_geometry::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) < 15 ' +
+    'WHERE ST_Distance(way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) < 15 ' +
     'LIMIT 1;';
 
 
 const OSM_NEAREST_WAYS_IN_10M = 'WITH closest_candidates AS (' +
-    'SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
-    'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
-    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) ' +
+    'SELECT osm_id, name, highway, railway, way FROM planet_osm_line ' +
+    'WHERE railway IN (\'rail\', \'light_rail\', \'narrow_gauge\', \'tram\', \'subway\') OR ' +
+    'highway IN (\'motorway\', \'motorway_link\', \'trunk\', \'trunk_link\', \'primary\', ' +
+    '\'primary_link\', \'secondary\', \'secondary_link\', \'tertiary\', \'tertiary_link\', ' +
+    '\'residential\', \'road\', \'unclassified\', \'service\', \'living_street\', \'track\') ' +
+    'ORDER BY way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
+    'SELECT osm_id, name, highway, railway, ST_Distance(way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) < 10 ' +
-    'ORDER BY ST_Distance(geom_way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) ' +
+    'WHERE ST_Distance(way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) < 10 ' +
+    'ORDER BY ST_Distance(way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) ' +
     'LIMIT 3;';
 
 
 const OSM_NEAREST_RAILWAYS_IN_10M = 'WITH closest_candidates AS (' +
-    'SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
-    'WHERE clazz >= 50' +
-    'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
-    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) ' +
+    'SELECT osm_id, name, way FROM planet_osm_line ' +
+    'WHERE railway IN (\'rail\', \'light_rail\', \'narrow_gauge\', \'tram\', \'subway\') ' +
+    'ORDER BY way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
+    'SELECT osm_id, name, ST_Distance(way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) < 10 ' +
-    'ORDER BY ST_Distance(geom_way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) ' +
+    'WHERE ST_Distance(way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) < 10 ' +
+    'ORDER BY ST_Distance(way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) ' +
     'LIMIT 1;';
 
 
@@ -232,13 +236,12 @@ function getStreetAndRailwayProbability(tags, nearestWays) {
         //iterate through the nearest ways of 1 point
         for (var j = 0; j < nearestWays[i].length; j++){
 
-            var wayType = clazzToWayType([nearestWays[i][j].clazz]);
-            if(wayType === STREET) {
+            if(nearestWays[i][j].highway) {
                 if(amountOfStreets === 0) {
                     amountOfStreets++;
                 }
             }
-            else if (wayType === RAILWAY) {
+            else if (nearestWays[i][j].railway) {
                 if(amountOfRailways === 0) {
                     amountOfRailways++;
                 }
@@ -274,11 +277,6 @@ function getRailwayProbability(tags, nearestWays) {
 
 
 
-
-function clazzToWayType(clazz) {
-
-    return (clazz > 0 && clazz < 17) ?  STREET : RAILWAY;
-}
 
 function returnTag(tags, callback) {
 

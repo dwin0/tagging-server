@@ -1,10 +1,14 @@
 var tagging = require('./tagging');
 var dbAccess = require('../../persistence/db_access_v1');
 
-const OSM_NEAREST_OBJECTS = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
-    'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
-    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) FROM closest_candidates ' +
-    'ORDER BY ST_Distance(geom_way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) LIMIT 3;';
+const OSM_NEAREST_OBJECTS = 'WITH closest_candidates AS (SELECT osm_id, name, highway, railway, way FROM planet_osm_line ' +
+    'WHERE railway IN (\'rail\', \'light_rail\', \'narrow_gauge\', \'tram\', \'subway\') OR ' +
+    'highway IN (\'motorway\', \'motorway_link\', \'trunk\', \'trunk_link\', \'primary\', ' +
+    '\'primary_link\', \'secondary\', \'secondary_link\', \'tertiary\', \'tertiary_link\', ' +
+    '\'residential\', \'road\', \'unclassified\', \'service\', \'living_street\', \'track\') ' +
+    'ORDER BY way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
+    'SELECT osm_id, name, highway, railway, ST_Distance(way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) FROM closest_candidates ' +
+    'ORDER BY ST_Distance(way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) LIMIT 3;';
 
 
 String.prototype.replaceAll = function(target, replacement) {

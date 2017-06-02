@@ -194,12 +194,10 @@ function getStreetAndRailwayProbability(tags, positions, nearestWays) {
         //iterate through the nearest ways of 1 point
         for (var j = 0; j < nearestWays[i].length; j++){
 
-            var wayType = clazzToWayType([nearestWays[i][j].clazz]);
-
-            if(wayType === STREET && amountOfStreets === 0) {
+            if(nearestWays[i][j].highway && amountOfStreets === 0) {
                 amountOfStreets += pointProbability;
             }
-            else if (wayType === RAILWAY && amountOfRailways === 0) {
+            else if (nearestWays[i][j].railway && amountOfRailways === 0) {
                 amountOfRailways += pointProbability;
             }
         }
@@ -245,11 +243,6 @@ function getRailwayProbability(tags, positions, nearestWays) {
 
 
 
-
-function clazzToWayType(clazz) {
-
-    return (clazz > 0 && clazz < 17) ?  STREET : RAILWAY;
-}
 
 function returnTag(tags, callback) {
 

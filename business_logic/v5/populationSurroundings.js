@@ -77,10 +77,9 @@ const POPULATION_DENSITY_DESCRIPTION = 'Average of persons living in 1ha based o
 
 function getGeoAdminData(positions, callback) {
 
-    var database = dbAccess.getDatabase(dbAccess.SWITZERLAND_DB);
     var queryPositions = posHelper.makeMultipoints(positions);
 
-    dbAccess.queryMultiple(database, queries.FIND_MIDDLE_POINT, queryPositions, function (error, result) {
+    dbAccess.queryMultiple(queries.FIND_MIDDLE_POINT, queryPositions, function (error, result) {
 
         if(error) {
             callback(error);

@@ -7,7 +7,6 @@ var parallel = require('async/parallel');
 function getVelocity(positions, callback) {
 
     var dbRequests = [];
-    var database = dbAccess.getDatabase(dbAccess.STREETS_DB);
 
     //prepare dbRequests to get all distances between the input-points
     for(var i = 1; i < positions.length; i++) {
@@ -20,7 +19,7 @@ function getVelocity(positions, callback) {
         dbRequests[i-1] = (function(timeSeconds) {
             return function(parallelCallback) {
 
-                dbAccess.singleQuery(database, queries.OSM_QUERY_DISTANCE, queryPositions, function (err, res) {
+                dbAccess.singleQuery(queries.OSM_QUERY_DISTANCE, queryPositions, function (err, res) {
                     if(err) {
                         parallelCallback(err);
                         return;

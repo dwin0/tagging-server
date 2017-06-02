@@ -12,10 +12,9 @@ const UNKNOWN = {
 
 function getGeographicalSurroundings(positions, callback) {
 
-    var database = dbAccess.getDatabase(dbAccess.SWITZERLAND_DB);
     var queryPositions = posHelper.makeMultipoints(positions);
 
-    dbAccess.queryMultiple(database, queries.FIND_MIDDLE_POINT, queryPositions, function (error, result) {
+    dbAccess.queryMultiple(queries.FIND_MIDDLE_POINT, queryPositions, function (error, result) {
 
         if(error) {
             callback(error);
@@ -31,9 +30,8 @@ function getGeographicalSurroundings(positions, callback) {
          */
 
         queryPositions = [result[0][0].st_astext, result[1][0].st_astext];
-        var switzerlandDB = dbAccess.getDatabase(dbAccess.SWITZERLAND_DB);
 
-        dbAccess.queryMultiple(switzerlandDB, queries.GEOGRAPHICAL_QUERY, queryPositions, function (error, result) {
+        dbAccess.queryMultiple(queries.GEOGRAPHICAL_QUERY, queryPositions, function (error, result) {
 
             if(error) {
                 callback(error);

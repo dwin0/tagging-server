@@ -18,18 +18,6 @@ const OTHER = { id: 100, name: "other", description: "OSM-tag is defined, but no
 const UNKNOWN = { id: -1, name: "unknown", description: "No tagging possible." };
 
 
-function clazzToWayType(clazz) {
-
-    if(clazz > 0 && clazz < 17)
-    {
-        return STREET;
-    }
-    else
-    {
-        return RAILWAY;
-    }
-}
-
 function tag(results) {
 
     var amountOfStreets = 0;
@@ -39,8 +27,7 @@ function tag(results) {
 
         for (var j = 0; j < results[i].length; j++){
 
-            var wayType = clazzToWayType([results[i][j].clazz]);
-            if(wayType === STREET)
+            if(results[i][j].highway)
             {
                 amountOfStreets++;
             } else

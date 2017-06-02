@@ -5,7 +5,7 @@ var parallel = require("async/parallel");
 
 var config = {
     user: options.config.database_user,
-    database: options.config.database_streets,
+    database: options.config.database_name,
     password: options.config.database_password,
     host: options.config.database_host,
     port: options.config.database_port,

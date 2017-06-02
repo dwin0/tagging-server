@@ -88,10 +88,9 @@ function filterValidLatLon(posArray) {
 
 function checkIfSwitzerland(positions, callback) {
 
-    var database = dbAccess.getDatabase(dbAccess.SWITZERLAND_DB);
     var queryPositions = makePoints(positions);
 
-    dbAccess.singleQuery(database, queries.INSIDE_SWITZERLAND, queryPositions, function (error, result) {
+    dbAccess.singleQuery(queries.INSIDE_SWITZERLAND, queryPositions, function (error, result) {
         if(error) {
             callback(error);
             return;

@@ -5,7 +5,7 @@ var parallel = require("async/parallel");
 
 var config = {
     user: options.config.database_user,
-    database: options.config.database_streets,
+    database: options.config.database_name,
     password: options.config.database_password,
     host: options.config.database_host,
     port: options.config.database_port,
@@ -36,7 +36,7 @@ function getDatabase(dbName) {
 
             //copy config
             var newConfig = JSON.parse(JSON.stringify(config));
-            newConfig.database = options.config.database_switzerland;
+            newConfig.database = options.config.database_name;
             switzerland_osm_pool = new pg.Pool(newConfig);
             return switzerland_osm_pool;
     }

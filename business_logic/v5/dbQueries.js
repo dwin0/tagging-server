@@ -7,12 +7,12 @@ var config = require('../../config/configReader').queryConfig;
  Example:
 
  WITH middlePoint AS
- (SELECT ST_Centroid(ST_GeomFromText('MULTIPOINT (8.7095882 47.3589998, 8.7135701 47.3530638)', 4326)))
+     (SELECT ST_Centroid(ST_GeomFromText('MULTIPOINT (8.7095882 47.3589998, 8.7135701 47.3530638)', 4326)))
  SELECT ST_AsText(st_centroid), ST_X(st_centroid), ST_Y(st_centroid) FROM middlePoint;
  */
 
 const FIND_MIDDLE_POINT = 'WITH middlePoint AS ' +
-    '(SELECT ST_Centroid(ST_GeomFromText($1, 4326))) ' +
+        '(SELECT ST_Centroid(ST_GeomFromText($1, 4326))) ' +
     'SELECT ST_AsText(st_centroid), ST_X(st_centroid), ST_Y(st_centroid) FROM middlePoint;';
 
 /*END populationSurroundings.js, geographicalSurroundings.js*/
@@ -27,8 +27,8 @@ const FIND_MIDDLE_POINT = 'WITH middlePoint AS ' +
  Example:
 
  SELECT boundary, "natural", leisure, landuse
- FROM multipolygons
- WHERE ST_Within(ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326), wkb_geometry)
+ FROM planet_osm_polygon
+ WHERE ST_Within(ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326), way)
  AND (
      (boundary IS NOT NULL AND boundary != 'administrative')
      OR "natural" IS NOT NULL
@@ -37,7 +37,7 @@ const FIND_MIDDLE_POINT = 'WITH middlePoint AS ' +
  */
 
 const GEOGRAPHICAL_QUERY = 'SELECT boundary, "natural", leisure, landuse ' +
-    'FROM multipolygons WHERE ST_Within(ST_GeomFromText($1, 4326), wkb_geometry) ' +
+    'FROM planet_osm_polygon WHERE ST_Within(ST_GeomFromText($1, 4326), way) ' +
     'AND (' +
         '(boundary IS NOT NULL AND boundary != \'administrative\') OR ' +
         '"natural" IS NOT NULL OR ' +
@@ -56,24 +56,24 @@ const GEOGRAPHICAL_QUERY = 'SELECT boundary, "natural", leisure, landuse ' +
  Example:
 
  WITH closest_candidates AS (
-     SELECT * FROM multipolygons
+     SELECT osm_id, way FROM planet_osm_polygon
      WHERE building IS NOT NULL
-     ORDER BY multipolygons.wkb_geometry <-> ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)
+     ORDER BY way <-> ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)
      LIMIT 10)
- SELECT osm_way_id
+ SELECT osm_id
  FROM closest_candidates
- WHERE ST_Distance(wkb_geometry::geography, ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)::geography) < 15
+ WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)::geography) < 15
  LIMIT 1;
  */
 
 const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
-        'SELECT * FROM multipolygons ' +
+        'SELECT osm_id, way FROM planet_osm_polygon ' +
         'WHERE building IS NOT NULL ' +
-        'ORDER BY multipolygons.wkb_geometry <-> ST_GeomFromText($1, 4326) ' +
+        'ORDER BY way <-> ST_GeomFromText($1, 4326) ' +
         'LIMIT ' + config.nearestBuilding.numberOfClosestCandidates + ') ' +
-    'SELECT osm_way_id ' +
+    'SELECT osm_id ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(wkb_geometry::geography, ST_GeomFromText($1, 4326)::geography) < ' +
+    'WHERE ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) < ' +
     config.nearestBuilding.st_distanceToMeasuringLocation + ' ' +
     'LIMIT 1;';
 
@@ -83,24 +83,32 @@ const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
  Example:
 
  WITH closest_candidates AS (
-     SELECT clazz, geom_way
-     FROM switzerland
-     ORDER BY geom_way <-> ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)
+     SELECT highway, railway, way
+     FROM planet_osm_line
+     WHERE railway IN ('rail', 'light_rail', 'narrow_gauge', 'tram', 'subway') OR
+     highway IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary',
+     'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link',
+     'residential', 'road', 'unclassified', 'service', 'living_street', 'track')
+     ORDER BY way <-> ST_GeomFromText('POINT(8.7148 47.35268)', 4326)
      LIMIT 100)
- SELECT clazz
+ SELECT highway, railway
  FROM closest_candidates
- WHERE ST_Distance(geom_way::geography, ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)::geography) < 10
+ WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.7148 47.35268)', 4326)::geography) < 10
  LIMIT 3;
  */
 
 const OSM_NEAREST_WAYS = 'WITH closest_candidates AS (' +
-        'SELECT clazz, geom_way ' +
-        'FROM switzerland ' +
-        'ORDER BY geom_way <-> ST_GeomFromText($1, 4326) ' +
+        'SELECT highway, railway, way ' +
+        'FROM planet_osm_line ' +
+        'WHERE railway IN (\'rail\', \'light_rail\', \'narrow_gauge\', \'tram\', \'subway\') OR ' +
+        'highway IN (\'motorway\', \'motorway_link\', \'trunk\', \'trunk_link\', \'primary\', ' +
+        '\'primary_link\', \'secondary\', \'secondary_link\', \'tertiary\', \'tertiary_link\', ' +
+        '\'residential\', \'road\', \'unclassified\', \'service\', \'living_street\', \'track\') ' +
+        'ORDER BY way <-> ST_GeomFromText($1, 4326) ' +
         'LIMIT ' + config.nearestWays.numberOfClosestCandidates + ') ' +
-    'SELECT clazz ' +
+    'SELECT highway, railway ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) < ' +
+    'WHERE ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) < ' +
     config.nearestWays.st_distanceToMeasuringLocation + ' ' +
     'LIMIT 3;';
 
@@ -110,26 +118,26 @@ const OSM_NEAREST_WAYS = 'WITH closest_candidates AS (' +
  Example:
 
  WITH closest_candidates AS (
-     SELECT clazz, geom_way
-     FROM switzerland
-     WHERE clazz >= 50
-     ORDER BY geom_way <-> ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)
+     SELECT osm_id, way
+     FROM planet_osm_line
+     WHERE railway IN ('rail', 'light_rail', 'narrow_gauge', 'tram', 'subway')
+     ORDER BY way <-> ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)
      LIMIT 100)
- SELECT clazz
+ SELECT osm_id
  FROM closest_candidates
- WHERE ST_Distance(geom_way::geography, ST_GeomFromText('POINT(8.7165203 47.3516764)', 4326)::geography) < 10
+ WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.7165203 47.3516764)', 4326)::geography) < 10
  LIMIT 1;
  */
 
 const OSM_NEAREST_RAILWAYS = 'WITH closest_candidates AS (' +
-        'SELECT clazz, geom_way ' +
-        'FROM switzerland ' +
-        'WHERE clazz >= 50 ' +
-        'ORDER BY geom_way <-> ST_GeomFromText($1, 4326) ' +
+        'SELECT osm_id, way ' +
+        'FROM planet_osm_line ' +
+        'WHERE railway IN (\'rail\', \'light_rail\', \'narrow_gauge\', \'tram\', \'subway\') ' +
+        'ORDER BY way <-> ST_GeomFromText($1, 4326) ' +
         'LIMIT ' + config.nearestRailways.numberOfClosestCandidates + ') ' +
-    'SELECT clazz ' +
+    'SELECT osm_id ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText($1, 4326)::geography) < ' +
+    'WHERE ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) < ' +
     config.nearestRailways.st_distanceToMeasuringLocation + ' ' +
     'LIMIT 1;';
 
@@ -145,13 +153,13 @@ const OSM_NEAREST_RAILWAYS = 'WITH closest_candidates AS (' +
  Example:
 
  SELECT ST_Distance(
-                ST_GeomFromText('POINT(8.7095882 47.3589998)', 4326)::geography,
-                ST_GeomFromText('POINT(8.7165203 47.3516764)', 4326)::geography);
+ ST_GeomFromText('POINT(8.7095882 47.3589998)', 4326)::geography,
+ ST_GeomFromText('POINT(8.7165203 47.3516764)', 4326)::geography);
  */
 
 const OSM_QUERY_DISTANCE = 'SELECT ST_Distance' +
-                                '(ST_GeomFromText($1, 4326)::geography, ' +
-                                'ST_GeomFromText($2, 4326)::geography);';
+    '(ST_GeomFromText($1, 4326)::geography, ' +
+    'ST_GeomFromText($2, 4326)::geography);';
 
 /*END velocity.js*/
 
@@ -164,18 +172,20 @@ const OSM_QUERY_DISTANCE = 'SELECT ST_Distance' +
 /*
  Example:
 
- SELECT osm_id FROM multipolygons
- WHERE ST_Within(ST_GeomFromText('POINT(8.7095882 47.3589998)', 4326), wkb_geometry)
-   AND ST_Within(ST_GeomFromText('POINT(8.7135701 47.3530638)', 4326), wkb_geometry)
-   AND ST_Within(ST_GeomFromText('POINT(8.7115791 47.3560318)', 4326), wkb_geometry)
-   AND osm_id = '51701';
+ SELECT osm_id FROM planet_osm_polygon
+ WHERE ST_Within(ST_GeomFromText('POINT(8.7095882 47.3589998)', 4326), way)
+     AND ST_Within(ST_GeomFromText('POINT(8.7135701 47.3530638)', 4326), way)
+     AND ST_Within(ST_GeomFromText('POINT(8.7115791 47.3560318)', 4326), way)
+     AND osm_id = '-51701';
+
+ 51701 is the OSM-ID for the boundary of Switzerland.
  */
 
-const INSIDE_SWITZERLAND = 'SELECT osm_id FROM multipolygons ' +
-    'WHERE ST_Within(ST_GeomFromText($1, 4326), wkb_geometry) ' +
-      'AND ST_Within(ST_GeomFromText($2, 4326), wkb_geometry) ' +
-      'AND ST_Within(ST_GeomFromText($3, 4326), wkb_geometry) ' +
-      'AND osm_id = \'51701\';';
+const INSIDE_SWITZERLAND = 'SELECT osm_id FROM planet_osm_polygon ' +
+    'WHERE ST_Within(ST_GeomFromText($1, 4326), way) ' +
+        'AND ST_Within(ST_GeomFromText($2, 4326), way) ' +
+        'AND ST_Within(ST_GeomFromText($3, 4326), way) ' +
+        'AND osm_id = \'-51701\';';
 
 /*END positionsHelper.js*/
 

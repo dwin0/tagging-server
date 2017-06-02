@@ -39,31 +39,34 @@ const UNKNOWN = {
 
 
 const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
-    'SELECT * FROM public.multipolygons WHERE building IS NOT NULL ' +
-    'ORDER BY multipolygons.wkb_geometry <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) ' +
+    'SELECT * FROM planet_osm_polygon WHERE building IS NOT NULL ' +
+    'ORDER BY way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) ' +
     'ASC LIMIT 10) ' +
-    'SELECT osm_way_id, name, building, ST_Distance(wkb_geometry::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) ' +
+    'SELECT osm_id, name, building, ST_Distance(way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) ' +
     'FROM closest_candidates ' +
     'LIMIT 1;';
 
 
-const OSM_NEAREST_OBJECTS_10M = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
-    'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
-    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) FROM closest_candidates ' +
-    'WHERE ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) < 10 ORDER BY ST_Distance(geom_way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) LIMIT 3;';
+const OSM_NEAREST_OBJECTS_10M = 'WITH closest_candidates AS (SELECT osm_id, name, highway, railway, way FROM planet_osm_line ' +
+    'WHERE railway IN (\'rail\', \'light_rail\', \'narrow_gauge\', \'tram\', \'subway\') OR ' +
+    'highway IN (\'motorway\', \'motorway_link\', \'trunk\', \'trunk_link\', \'primary\', ' +
+    '\'primary_link\', \'secondary\', \'secondary_link\', \'tertiary\', \'tertiary_link\', ' +
+    '\'residential\', \'road\', \'unclassified\', \'service\', \'living_street\', \'track\') ' +
+    'ORDER BY way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
+    'SELECT osm_id, name, highway, railway, ST_Distance(way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) FROM closest_candidates ' +
+    'WHERE ST_Distance(way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) < 10 ORDER BY ST_Distance(way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) LIMIT 3;';
 
 
-const OSM_NEAREST_OBJECTS = 'WITH closest_candidates AS (SELECT id, osm_id, osm_name, clazz, geom_way FROM switzerland ' +
-    'ORDER BY geom_way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
-    'SELECT id, osm_id, osm_name, clazz, ST_Distance(geom_way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) FROM closest_candidates ' +
-    'ORDER BY ST_Distance(geom_way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) LIMIT 3;';
+const OSM_NEAREST_OBJECTS = 'WITH closest_candidates AS (SELECT osm_id, name, highway, railway, way FROM planet_osm_line ' +
+    'WHERE railway IN (\'rail\', \'light_rail\', \'narrow_gauge\', \'tram\', \'subway\') OR ' +
+    'highway IN (\'motorway\', \'motorway_link\', \'trunk\', \'trunk_link\', \'primary\', ' +
+    '\'primary_link\', \'secondary\', \'secondary_link\', \'tertiary\', \'tertiary_link\', ' +
+    '\'residential\', \'road\', \'unclassified\', \'service\', \'living_street\', \'track\') ' +
+    'ORDER BY way <-> ST_GeomFromText(\'POINT({lon} {lat})\', 4326) LIMIT 100) ' +
+    'SELECT osm_id, name, highway, railway, ST_Distance(way::geography, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)::geography) FROM closest_candidates ' +
+    'ORDER BY ST_Distance(way, ST_GeomFromText(\'POINT({lon} {lat})\', 4326)) LIMIT 3;';
 
 
-
-function clazzToWayType(clazz) {
-
-    return (clazz > 0 && clazz < 17) ?  STREET : RAILWAY;
-}
 
 function getTag(typeOfMotion, positions, callback) {
 
@@ -93,8 +96,7 @@ function getTag(typeOfMotion, positions, callback) {
 
                     for (var j = 0; j < nearestWays[i].length; j++){
 
-                        var wayType = clazzToWayType([nearestWays[i][j].clazz]);
-                        if(wayType === STREET) { amountOfCars++; }
+                        if(nearestWays[i][j].highway) { amountOfCars++; }
                         else { amountOfTrains++; }
                     }
                 }
@@ -164,13 +166,12 @@ function getTag(typeOfMotion, positions, callback) {
 
                             for (var j = 0; j < nearestWays[i].length; j++){
 
-                                var wayType = clazzToWayType([nearestWays[i][j].clazz]);
-                                if(wayType === STREET) {
+                                if(nearestWays[i][j].highway) {
                                     if(amountOfCars === 0) {
                                         amountOfCars++;
                                     }
                                 }
-                                else if (wayType === RAILWAY) {
+                                else if (nearestWays[i][j].railway) {
                                     if(amountOfTrains === 0) {
                                         amountOfTrains++;
                                     }
