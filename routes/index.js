@@ -21,7 +21,7 @@ router.get('/api', function(req, res) {
 
     const apiData = {
         title: 'API',
-        version: '5.0'
+        version: '5.1'
     };
 
     if(req.xhr || req.get('Content-Type') === 'application/json') {
@@ -69,9 +69,13 @@ router.use('/api/v4.0', require('./router/v4.0'));
 
 
 //Version 5.0
-router.use('/api', require('./router/v5.0'));
-router.use('/api/v5', require('./router/v5.0'));
 router.use('/api/v5.0', require('./router/v5.0'));
+
+
+//Version 5.1
+router.use('/api', require('./router/v5.1'));
+router.use('/api/v5', require('./router/v5.1'));
+router.use('/api/v5.1', require('./router/v5.1'));
 
 
 router.use(jsonSchema.handleJsonSchemaValidationError);
