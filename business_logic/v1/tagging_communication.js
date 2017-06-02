@@ -50,7 +50,7 @@ function renderTagJSON(res, results) {
             id: tag.id,
             name: tag.name,
             description: tag.description,
-            probability: tag.probability
+            weight: tag.probability
         },
         typeOfMotion: {
             id: null,

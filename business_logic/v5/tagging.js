@@ -34,15 +34,15 @@ function getTag(typeOfMotion, positions, callback) {
 
     var tags = {
         railway: {
-            probability: 0,
+            weight: 0,
             location: RAILWAY
         },
         street: {
-            probability: 0,
+            weight: 0,
             location: STREET
         },
         building: {
-            probability: 0,
+            weight: 0,
             location: BUILDING
         }
     };
@@ -68,7 +68,7 @@ function getTag(typeOfMotion, positions, callback) {
 
         default:
             //callback(error, tag);
-            callback(null, { tag: UNKNOWN, probability: 0 });
+            callback(null, { tag: UNKNOWN, weight: 0 });
     }
 }
 
@@ -103,8 +103,8 @@ function check_RAILWAY_STREET_BUILDING(tags, positions, callback) {
             var nearestBuildings = results[0];
             var nearestWays = results[1];
 
-            tags = getEntryProbability(tags, positions, nearestBuildings, 'building');
-            tags = getStreetAndRailwayProbability(tags, positions, nearestWays);
+            tags = getEntryWeight(tags, positions, nearestBuildings, 'building');
+            tags = getStreetAndRailwayWeight(tags, positions, nearestWays);
 
             returnTag(tags, callback);
         });
@@ -122,7 +122,7 @@ function check_RAILWAY_STREET(tags, positions, callback) {
             return;
         }
 
-        tags = getStreetAndRailwayProbability(tags, positions, nearestWays);
+        tags = getStreetAndRailwayWeight(tags, positions, nearestWays);
         returnTag(tags, callback);
     });
 }
@@ -139,7 +139,7 @@ function check_RAILWAY(tags, positions, callback) {
             return;
         }
 
-        tags = getEntryProbability(tags, positions, nearestRailways, 'railway');
+        tags = getEntryWeight(tags, positions, nearestRailways, 'railway');
         returnTag(tags, callback);
     });
 }
@@ -147,7 +147,7 @@ function check_RAILWAY(tags, positions, callback) {
 
 
 
-function getStreetAndRailwayProbability(tags, positions, nearestWays) {
+function getStreetAndRailwayWeight(tags, positions, nearestWays) {
 
     //The bigger the horizontalAccuracy (not accurate values), the smaller the positionsWeight
     var positionsWeight = getPositionWeight(positions);
@@ -170,14 +170,14 @@ function getStreetAndRailwayProbability(tags, positions, nearestWays) {
             }
         });
 
-        tags.street.probability += streetWeight;
-        tags.railway.probability += railwayWeight;
+        tags.street.weight += streetWeight;
+        tags.railway.weight += railwayWeight;
     }
 
     return tags;
 }
 
-function getEntryProbability(tags, positions, nearestEntries, tagName) {
+function getEntryWeight(tags, positions, nearestEntries, tagName) {
 
     //The bigger the horizontalAccuracy (not accurate values), the smaller the positionsWeight
     var positionsWeight = getPositionWeight(positions);
@@ -186,7 +186,7 @@ function getEntryProbability(tags, positions, nearestEntries, tagName) {
 
         //Check if db-entry was found nearby
         if(nearestEntries[i].length) {
-            tags[tagName].probability += positionsWeight[i];
+            tags[tagName].weight += positionsWeight[i];
         }
     }
 
@@ -220,16 +220,16 @@ function getPositionWeight(positions) {
 function returnTag(tags, callback) {
 
     var maxLocation = UNKNOWN;
-    var maxProbability = 0;
+    var maxWeight = 0;
 
     for(var key in tags) {
 
         if (!tags.hasOwnProperty(key)) continue;
 
         var tag = tags[key];
-        if(tag.probability > maxProbability) {
+        if(tag.weight > maxWeight) {
             maxLocation = tag.location;
-            maxProbability = tag.probability;
+            maxWeight = tag.weight;
         }
 
         delete tag.location;
@@ -240,8 +240,8 @@ function returnTag(tags, callback) {
         id: maxLocation.id,
         name: maxLocation.name,
         description: maxLocation.description,
-        probability: maxProbability,
-        allProbabilities: tags
+        weight: maxWeight,
+        allWeights: tags
     });
 }
 

@@ -89,7 +89,7 @@ function renderTaggingResult(data) {
 
     var location = $('<li class="collection-item"><div>Lokation: ' +
         data.location.name + '<br />' +
-        'Wahrscheinlichkeit: ' + data.location.probability + '</div></li>');
+        'Gewichtung: ' + data.location.weight + '</div></li>');
 
     var typeOfMotion = $('<li class="collection-item"><div>Fortbewegungs-Typ: ' +
         data.typeOfMotion.name + '</div></li>');

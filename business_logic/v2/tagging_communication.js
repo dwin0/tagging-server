@@ -42,7 +42,7 @@ function renderTagJSON(res, positions, speedResult) {
                     id: taggingRes.tag.id,
                     name: taggingRes.tag.name,
                     description: taggingRes.tag.description,
-                    probability: taggingRes.probability
+                    weight: taggingRes.probability
                 },
                 typeOfMotion: {
                     id: typeOfMotionRes.id,

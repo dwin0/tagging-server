@@ -87,7 +87,7 @@ function renderTaggingResult(data) {
     var header = $('<li class="collection-header"><h4>Tagging-Resultat:</h4></li>');
 
     var location = $('<li class="collection-item"><div>Lokation: ' + data.location.name + '<br />' +
-        'Wahrscheinlichkeit: ' + data.location.probability + '</div></li>');
+        'Gewichtung: ' + data.location.weight + '</div></li>');
 
     renderResult([header, location]);
 }
