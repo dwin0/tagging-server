@@ -51,11 +51,12 @@ function getTag(typeOfMotion, positions, callback) {
 
         //STATIONARY
         case 1:
-            check_RAILWAY_STREET_BUILDING(tags, positions, callback);
-            break;
 
         //PEDESTRIAN
         case 2:
+            check_RAILWAY_STREET_BUILDING(tags, positions, callback);
+            break;
+
         //VEHICULAR
         case 3:
             check_RAILWAY_STREET(tags, positions, callback);
@@ -103,8 +104,8 @@ function check_RAILWAY_STREET_BUILDING(tags, positions, callback) {
             var nearestBuildings = results[0];
             var nearestWays = results[1];
 
-            tags = getEntryWeight(tags, positions, nearestBuildings, 'building');
             tags = getStreetAndRailwayWeight(tags, positions, nearestWays);
+            tags = getBuildingWeight(tags, positions, nearestBuildings);
 
             returnTag(tags, callback);
         });
@@ -139,7 +140,7 @@ function check_RAILWAY(tags, positions, callback) {
             return;
         }
 
-        tags = getEntryWeight(tags, positions, nearestRailways, 'railway');
+        tags = getRailwayWeight(tags, positions, nearestRailways);
         returnTag(tags, callback);
     });
 }
@@ -177,16 +178,44 @@ function getStreetAndRailwayWeight(tags, positions, nearestWays) {
     return tags;
 }
 
-function getEntryWeight(tags, positions, nearestEntries, tagName) {
+function getBuildingWeight(tags, positions, nearestBuildings) {
+
+    //WLAN-Accuracy is between 20 and 30 Meters
+    var wlanHorizontalAccuracyPositions = [];
 
     //The bigger the horizontalAccuracy (not accurate values), the smaller the positionsWeight
     var positionsWeight = getPositionWeight(positions);
 
     for(var i = 0; i < positions.length; i++) {
 
-        //Check if db-entry was found nearby
-        if(nearestEntries[i].length) {
-            tags[tagName].weight += positionsWeight[i];
+        if(positions[i].horizontalAccuracy >= 20 && positions[i].horizontalAccuracy <= 30) {
+            wlanHorizontalAccuracyPositions.push(positions[i]);
+        }
+
+        //Check if a building was found nearby
+        if(nearestBuildings[i].length) {
+            tags.building.weight += positionsWeight[i];
+        }
+    }
+
+    if(wlanHorizontalAccuracyPositions.length > 1) {
+        tags.railway.weight *= 0.9;
+        tags.street.weight *= 0.9;
+    }
+
+    return tags;
+}
+
+function getRailwayWeight(tags, positions, nearestRailways) {
+
+    //The bigger the horizontalAccuracy (not accurate values), the smaller the positionsWeight
+    var positionsWeight = getPositionWeight(positions);
+
+    for(var i = 0; i < positions.length; i++) {
+
+        //Check if a railway-line was found nearby
+        if(nearestRailways[i].length) {
+            tags.railway.weight += positionsWeight[i];
         }
     }
 

@@ -34,9 +34,9 @@ function getTypeOfMotion(speed) {
     switch(true) {
         case (speed >= 0 && speed < 3):
             return STATIONARY;
-        case (speed >= 3 && speed < 15):
+        case (speed >= 3 && speed < 11):
             return PEDESTRIAN;
-        case (speed >= 15 && speed < 140):
+        case (speed >= 11 && speed < 140):
             return VEHICULAR;
         case (speed >= 140 && speed < 450):
             return HIGH_SPEED_VEHICULAR;

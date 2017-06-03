@@ -1,7 +1,7 @@
 {
   "nearestRailways": {
     "numberOfClosestCandidates": 100,
-    "st_distanceToMeasuringLocation": 10
+    "st_distanceToMeasuringLocation": 20
   },
   "nearestWays": {
     "numberOfClosestCandidates": 100,

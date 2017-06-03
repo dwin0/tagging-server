@@ -57,7 +57,8 @@ const GEOGRAPHICAL_QUERY = 'SELECT boundary, "natural", leisure, landuse ' +
 
  WITH closest_candidates AS (
      SELECT osm_id, way FROM planet_osm_polygon
-     WHERE building IS NOT NULL
+     WHERE building IS NOT NULL OR tourism IN ('resort', 'bed_and_breakfast', 'wilderness_hut', 'motel', 'guest_house',
+     'chalet', 'apartment', 'mountain_hut', 'castle', 'restaurant', 'casino', 'alpine_hut', 'hotel', 'hut')
      ORDER BY way <-> ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)
      LIMIT 10)
  SELECT osm_id
@@ -68,7 +69,9 @@ const GEOGRAPHICAL_QUERY = 'SELECT boundary, "natural", leisure, landuse ' +
 
 const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
         'SELECT osm_id, way FROM planet_osm_polygon ' +
-        'WHERE building IS NOT NULL ' +
+        'WHERE building IS NOT NULL OR tourism IN (\'resort\', \'bed_and_breakfast\', \'wilderness_hut\', \'motel\', ' +
+        '\'guest_house\', \'chalet\', \'apartment\', \'mountain_hut\', \'castle\', \'restaurant\', \'casino\', ' +
+        '\'alpine_hut\', \'hotel\', \'hut\') ' +
         'ORDER BY way <-> ST_GeomFromText($1, 4326) ' +
         'LIMIT ' + config.nearestBuilding.numberOfClosestCandidates + ') ' +
     'SELECT osm_id ' +
