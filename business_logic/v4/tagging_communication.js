@@ -20,8 +20,8 @@ function getTagsJSON(req, res) {
 
     if(surroundingsPositions.length < 3) {
 
-        res.status(400).send('Phases DownloadStart, DownloadEnd and UploadEnd where expected. ' +
-            'At least one phase is missing.');
+        res.status(400).json({ error: 'Phases DownloadStart, DownloadEnd and UploadEnd where expected. ' +
+            'At least one phase is missing.' });
         return;
     }
 

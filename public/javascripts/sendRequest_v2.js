@@ -72,10 +72,12 @@ function sendRequest(url, sendData, successCallback) {
         },
         error: function (request) {
 
-            console.error(request.responseText);
+            var response = JSON.parse(request.responseText);
+
+            console.error(response.error);
 
             $('#loading-icon').css('display', 'none');
-            renderError(request.status, request.statusText, request.responseText);
+            renderError(request.status, request.statusText, response.error);
         }
     });
 }

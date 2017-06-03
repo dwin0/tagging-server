@@ -29,7 +29,7 @@ function choosePositions(body, res, callback) {
 
     if(!beforeDownload || !beforeUpload || !afterUpload) {
 
-        res.status(400).send('Cannot tag positions with multiple occurrences of longitude or latitude 0.');
+        res.status(400).json({ error: 'Cannot tag positions with multiple occurrences of longitude or latitude 0.' });
         callback();
         return;
     }
@@ -37,7 +37,7 @@ function choosePositions(body, res, callback) {
     checkIfSwitzerland([beforeDownload, beforeUpload, afterUpload], function (error, allPointsInSwitzerland) {
 
         if(error) {
-            res.status(500).send('Internal Server Error');
+            res.status(500).json({ error: 'Internal Server Error' });
             logError(500, 'Internal Server Error', error, 'checkIfSwitzerland', 'positionsHelper', body);
             callback();
             return;
@@ -45,14 +45,14 @@ function choosePositions(body, res, callback) {
 
         if(!allPointsInSwitzerland) {
 
-            res.status(400).send('Not all positions are located within switzerland.');
+            res.status(400).json({ error: 'Not all positions are located within switzerland.' });
             callback();
             return;
         }
 
         if(!checkValidHorizontalAccuracy([beforeDownload, beforeUpload, afterUpload])) {
 
-            res.status(400).send('Cannot tag positions less accurate than 200 meters.');
+            res.status(400).json({ error: 'Cannot tag positions less accurate than 200 meters.' });
             callback();
             return;
         }

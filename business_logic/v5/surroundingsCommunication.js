@@ -36,7 +36,7 @@ function calculateSurroundings(positions, body, res) {
         function(err, results) {
 
             if(err) {
-                res.status(500).send('Internal Server Error');
+                res.status(500).json({ error: 'Internal Server Error' });
                 logError(500, 'Internal Server Error', err, 'parallel', 'surroundingsCommunication', body);
                 return;
             }

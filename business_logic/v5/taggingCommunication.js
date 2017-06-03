@@ -28,14 +28,14 @@ function calculateVelocity(positions, body, res, callback) {
     velocity.getVelocity(positions, function (error, velocityJSON) {
 
         if(error || velocityJSON.velocityKilometersPerHour < 0) {
-            res.status(500).send('Internal Server Error');
+            res.status(500).json({ error: 'Internal Server Error' });
             logError(500, 'Internal Server Error', error || 'Speed: ' + velocityJSON.velocityKilometersPerHour + 'km/h',
                 'velocity.getVelocity', 'taggingCommunication', body);
             return;
         }
 
         if(velocityJSON.timeSeconds === 0) {
-            res.status(400).send('All positions have the same time.');
+            res.status(400).json({ error: 'All positions have the same time.' });
             return;
         }
 
@@ -49,7 +49,7 @@ function calculateTags(positions, body, res, velocityJSON) {
     var typeOfMotionRes = typeOfMotion.getTypeOfMotion(velocityJSON.velocityKilometersPerHour);
 
     if(typeOfMotionRes.name === 'unknown') {
-        res.status(400).send('The input-positions are too far away from each other.');
+        res.status(400).json({ error: 'The input-positions are too far away from each other.' });
         return;
     }
 
@@ -79,7 +79,7 @@ function calculateTags(positions, body, res, velocityJSON) {
         function(err, results) {
 
             if(err) {
-                res.status(500).send('Internal Server Error');
+                res.status(500).json({ error: 'Internal Server Error' });
                 logError(500, 'Internal Server Error', err, 'parallel', 'taggingCommunication', body);
                 return;
             }
