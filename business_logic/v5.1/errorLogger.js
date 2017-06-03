@@ -1,7 +1,9 @@
 var fs = require('fs');
 var Log = require('log');
+var path = require('path');
 
-const LOG_DIRECTORY = process.cwd() + '\\log\\';
+
+const LOG_DIRECTORY = path.join(__dirname, '\\..\\..\\log\\');
 fs.existsSync(LOG_DIRECTORY) || fs.mkdirSync(LOG_DIRECTORY);
 var logger = new Log('error', fs.createWriteStream(LOG_DIRECTORY + 'error.log', {'flags': 'a'}));
 
