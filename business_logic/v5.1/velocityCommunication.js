@@ -5,7 +5,7 @@ var logError = require('./errorLogger').logError;
 function getSpeedCalculation(req, res) {
 
     if(!checkPositions(req.body.positions)) {
-        res.status(400).json({ error: 'Received positions without time value.' });
+        res.status(400).json({ error: 'Received positions with invalid time value.' });
         return;
     }
 
@@ -30,7 +30,7 @@ function getSpeedCalculation(req, res) {
 function checkPositions(positions) {
 
     for(var i = 0; i < positions.length; i++) {
-        if(positions[i].time === '') {
+        if(!Date.parse(positions[i].time)) {
             return false;
         }
     }

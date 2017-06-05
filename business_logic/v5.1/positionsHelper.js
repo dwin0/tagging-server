@@ -29,7 +29,8 @@ function choosePositions(body, res, callback) {
 
     if(!beforeDownload || !beforeUpload || !afterUpload) {
 
-        res.status(400).json({ error: 'Cannot tag positions with multiple occurrences of longitude or latitude 0.' });
+        res.status(400).json({ error: 'Cannot tag invalid positions.\n(Multiple occurrences of longitude or latitude 0 ' +
+                             'OR invalid time strings.' });
         callback();
         return;
     }
@@ -63,20 +64,20 @@ function choosePositions(body, res, callback) {
 
 function chooseForPhase(phaseCandidates, phaseSelectionMethod) {
 
-    var validCandidates = filterValidLatLon(phaseCandidates);
+    var validCandidates = filterValidPositions(phaseCandidates);
     if(!validCandidates) {
         return;
     }
     return phaseSelectionMethod(validCandidates);
 }
 
-function filterValidLatLon(posArray) {
+function filterValidPositions(posArray) {
 
     var validPositions = [];
 
     posArray.forEach(function (pos) {
 
-        if(pos.latitude !== 0 && pos.longitude !== 0) {
+        if(pos.latitude !== 0 && pos.longitude !== 0 && Date.parse(pos.time)) {
             validPositions.push(pos);
         }
     });
