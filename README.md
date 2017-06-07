@@ -19,7 +19,7 @@ Der Inhalt von "setup" ist anschliessend in den Ordner WORK_DIRECTORY zu kopiere
 ```
 chmod +x setup_tagging_server.sh
 sed -i -e 's/\r$//' setup_tagging_server.sh
-. ./setup\tagging\server.sh
+. ./setup_tagging_server.sh
 ```
 
 ## Authors
