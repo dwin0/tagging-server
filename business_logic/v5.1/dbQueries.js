@@ -50,7 +50,7 @@ const GEOGRAPHICAL_QUERY = 'SELECT boundary, "natural", leisure, landuse ' +
 
 
 
-/*--------- tagging.js -------------------------------------------------------*/
+/*--------- location.js -------------------------------------------------------*/
 
 /*
  Example:
@@ -144,7 +144,7 @@ const OSM_NEAREST_RAILWAYS = 'WITH closest_candidates AS (' +
     config.nearestRailways.st_distanceToMeasuringLocation + ' ' +
     'LIMIT 1;';
 
-/*END tagging.js*/
+/*END location.js*/
 
 
 

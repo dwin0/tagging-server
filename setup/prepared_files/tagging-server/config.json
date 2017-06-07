@@ -1,0 +1,10 @@
+{
+  "server_port": "80",
+  "database_user": "performance",
+  "database_password": "password",
+  "database_name": "switzerland",
+  "database_host": "localhost",
+  "database_port": 5432,
+  "max_database_connections": 10,
+  "database_idleTimeoutMillis": 30000
+}

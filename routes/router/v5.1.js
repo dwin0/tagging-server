@@ -25,7 +25,7 @@ router.get('/findSurroundings', function (req, res) {
     res.render('surroundingsIndex', { title: 'Umgebungsabfrage', version: '5.1' });
 });
 
-router.post('/findSurroundings', validate({body: jsonSchema.SURROUNDINGS_SCHEMA}), function (req, res) {
+router.post('/findSurroundings', validate({body: jsonSchema.TAGGING_SCHEMA_V5}), function (req, res) {
     surroundings_v5.getSurroundings(req, res);
 });
 

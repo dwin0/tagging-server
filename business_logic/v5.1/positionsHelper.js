@@ -29,8 +29,8 @@ function choosePositions(body, res, callback) {
 
     if(!beforeDownload || !beforeUpload || !afterUpload) {
 
-        res.status(400).json({ error: 'Cannot tag invalid positions.\n(Multiple occurrences of longitude or latitude 0 ' +
-                             'OR invalid time strings.' });
+        res.status(400).json({ error: 'Cannot tag invalid positions. (Multiple occurrences of longitude or latitude 0 ' +
+                             'OR invalid time strings.)' });
         callback();
         return;
     }
@@ -46,7 +46,7 @@ function choosePositions(body, res, callback) {
 
         if(!allPointsInSwitzerland) {
 
-            res.status(400).json({ error: 'Not all positions are located within switzerland.' });
+            res.status(400).json({ error: 'Not all positions are located within Switzerland.' });
             callback();
             return;
         }

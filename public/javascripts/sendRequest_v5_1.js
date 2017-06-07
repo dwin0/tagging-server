@@ -77,9 +77,13 @@ function sendSurroundingsRequest(event) {
         var longitude = Number($('#longitude' + i).val());
         var latitude = Number($('#latitude' + i).val());
         var horizontalAccuracy = Number($('#horizontalAccuracy' + i).val());
-        var phase = $('#phase' + i).val();
+        var time = $('#time' + i).val();
 
-        positions[i-1] = { longitude: longitude, latitude: latitude, horizontalAccuracy:horizontalAccuracy, phase: phase };
+        positions[i-1] = {
+            longitude: longitude,
+            latitude: latitude,
+            horizontalAccuracy: horizontalAccuracy,
+            time: time };
     }
 
     sendRequest("/api/v5.1/findSurroundings", { positions: positions }, renderSurroundingsResult);

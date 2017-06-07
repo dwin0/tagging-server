@@ -1,10 +1,10 @@
-function renderTagJson(taggingRes, typeOfMotion, velocityJSON, geographicalSurroundingsResult, geoAdminResults) {
+function renderTagJson(locationRes, typeOfMotion, velocityJSON, geographicalSurroundingsResult, geoAdminResults) {
 
     var surroundingsJson = renderSurroundingsJson(geographicalSurroundingsResult, geoAdminResults);
 
     return {
         title: 'Calculated Tagging',
-        location: taggingRes,
+        location: locationRes,
         typeOfMotion: typeOfMotion,
         velocity: velocityJSON,
         surroundings: surroundingsJson.surroundings

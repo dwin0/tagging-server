@@ -30,9 +30,9 @@ const UNKNOWN = {
 };
 
 
-function getTag(typeOfMotion, positions, callback) {
+function getLocation(typeOfMotion, positions, callback) {
 
-    var tags = {
+    var locations = {
         railway: {
             weight: 0,
             location: RAILWAY
@@ -54,29 +54,34 @@ function getTag(typeOfMotion, positions, callback) {
 
         //PEDESTRIAN
         case 2:
-            check_RAILWAY_STREET_BUILDING(tags, positions, callback);
+            check_RAILWAY_STREET_BUILDING(locations, positions, callback);
             break;
 
         //VEHICULAR
         case 3:
-            check_RAILWAY_STREET(tags, positions, callback);
+            check_RAILWAY_STREET(locations, positions, callback);
             break;
 
         //HIGH_SPEED_VEHICULAR
         case 4:
-            check_RAILWAY(tags, positions, callback);
+            check_RAILWAY(locations, positions, callback);
             break;
 
         default:
-            //callback(error, tag);
-            callback(null, { tag: UNKNOWN, weight: 0 });
+            //callback(error, location);
+            callback(null, {
+                id: UNKNOWN.id,
+                name: UNKNOWN.name,
+                description: UNKNOWN.description,
+                weight: 0,
+                allWeights: locations });
     }
 }
 
 
 
 
-function check_RAILWAY_STREET_BUILDING(tags, positions, callback) {
+function check_RAILWAY_STREET_BUILDING(locations, positions, callback) {
 
     var queryPositions = queries.makePoints(positions);
 
@@ -104,14 +109,14 @@ function check_RAILWAY_STREET_BUILDING(tags, positions, callback) {
             var nearestBuildings = results[0];
             var nearestWays = results[1];
 
-            tags = getStreetAndRailwayWeight(tags, positions, nearestWays);
-            tags = getBuildingWeight(tags, positions, nearestBuildings);
+            locations = getStreetAndRailwayWeight(locations, positions, nearestWays);
+            locations = getBuildingWeight(locations, positions, nearestBuildings);
 
-            returnTag(tags, callback);
+            returnLocation(locations, callback);
         });
 }
 
-function check_RAILWAY_STREET(tags, positions, callback) {
+function check_RAILWAY_STREET(locations, positions, callback) {
 
     var queryPositions = queries.makePoints(positions);
 
@@ -123,12 +128,12 @@ function check_RAILWAY_STREET(tags, positions, callback) {
             return;
         }
 
-        tags = getStreetAndRailwayWeight(tags, positions, nearestWays);
-        returnTag(tags, callback);
+        locations = getStreetAndRailwayWeight(locations, positions, nearestWays);
+        returnLocation(locations, callback);
     });
 }
 
-function check_RAILWAY(tags, positions, callback) {
+function check_RAILWAY(locations, positions, callback) {
 
     var queryPositions = queries.makePoints(positions);
 
@@ -140,15 +145,15 @@ function check_RAILWAY(tags, positions, callback) {
             return;
         }
 
-        tags = getRailwayWeight(tags, positions, nearestRailways);
-        returnTag(tags, callback);
+        locations = getRailwayWeight(locations, positions, nearestRailways);
+        returnLocation(locations, callback);
     });
 }
 
 
 
 
-function getStreetAndRailwayWeight(tags, positions, nearestWays) {
+function getStreetAndRailwayWeight(locations, positions, nearestWays) {
 
     //The bigger the horizontalAccuracy (not accurate values), the smaller the positionsWeight
     var positionsWeight = getPositionWeight(positions);
@@ -171,14 +176,14 @@ function getStreetAndRailwayWeight(tags, positions, nearestWays) {
             }
         });
 
-        tags.street.weight += streetWeight;
-        tags.railway.weight += railwayWeight;
+        locations.street.weight += streetWeight;
+        locations.railway.weight += railwayWeight;
     }
 
-    return tags;
+    return locations;
 }
 
-function getBuildingWeight(tags, positions, nearestBuildings) {
+function getBuildingWeight(locations, positions, nearestBuildings) {
 
     //WLAN-Accuracy is between 20 and 30 Meters
     var wlanHorizontalAccuracyPositions = [];
@@ -194,19 +199,19 @@ function getBuildingWeight(tags, positions, nearestBuildings) {
 
         //Check if a building was found nearby
         if(nearestBuildings[i].length) {
-            tags.building.weight += positionsWeight[i];
+            locations.building.weight += positionsWeight[i];
         }
     }
 
     if(wlanHorizontalAccuracyPositions.length > 1) {
-        tags.railway.weight *= 0.9;
-        tags.street.weight *= 0.9;
+        locations.railway.weight *= 0.9;
+        locations.street.weight *= 0.9;
     }
 
-    return tags;
+    return locations;
 }
 
-function getRailwayWeight(tags, positions, nearestRailways) {
+function getRailwayWeight(locations, positions, nearestRailways) {
 
     //The bigger the horizontalAccuracy (not accurate values), the smaller the positionsWeight
     var positionsWeight = getPositionWeight(positions);
@@ -215,11 +220,11 @@ function getRailwayWeight(tags, positions, nearestRailways) {
 
         //Check if a railway-line was found nearby
         if(nearestRailways[i].length) {
-            tags.railway.weight += positionsWeight[i];
+            locations.railway.weight += positionsWeight[i];
         }
     }
 
-    return tags;
+    return locations;
 }
 
 function getPositionWeight(positions) {
@@ -246,36 +251,36 @@ function getPositionWeight(positions) {
 
 
 
-function returnTag(tags, callback) {
+function returnLocation(locations, callback) {
 
     var maxLocation = UNKNOWN;
     var maxWeight = 0;
 
-    for(var key in tags) {
+    for(var key in locations) {
 
-        if (!tags.hasOwnProperty(key)) continue;
+        if (!locations.hasOwnProperty(key)) continue;
 
-        var tag = tags[key];
-        if(tag.weight > maxWeight) {
-            maxLocation = tag.location;
-            maxWeight = tag.weight;
+        var location = locations[key];
+        if(location.weight > maxWeight) {
+            maxLocation = location.location;
+            maxWeight = location.weight;
         }
 
-        tag.weight = tag.weight.toFixed(2);
-        delete tag.location;
+        location.weight = location.weight.toFixed(2);
+        delete location.location;
     }
 
-    //callback(error, tag);
+    //callback(error, location);
     callback(null, {
         id: maxLocation.id,
         name: maxLocation.name,
         description: maxLocation.description,
         weight: maxWeight.toFixed(2),
-        allWeights: tags
+        allWeights: locations
     });
 }
 
 
 module.exports = {
-    "getTag": getTag
+    "getLocation": getLocation
 };

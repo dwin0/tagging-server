@@ -1,4 +1,5 @@
-config.json
+config/config.json
+!setup/tagging-server/config.json
 
 #Webstorm
 *.idea
