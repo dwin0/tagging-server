@@ -14,7 +14,7 @@ und "update_database.sh" anzupassen.
 * DATABASE_NAME=switzerland
 * DATABASE_PASSWORD=password
 
-Der Inhalt von "setup" ist anschliessend in den Ordner WORK_DIRECTORY zu kopieren. Von wird das Skript wie folgt gestartet:
+Der Inhalt von "setup" ist anschliessend in den Ordner WORK_DIRECTORY zu kopieren. Von dort wird das Skript wie folgt gestartet:
 
 ```
 chmod +x setup_tagging_server.sh
