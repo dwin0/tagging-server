@@ -13,7 +13,7 @@
 #Hierhin sind dieses Installations-Skript und der Ordner prepared_files zu kopieren
 WORK_DIRECTORY=/home/server
 DATABASE_NAME=switzerland
-PASSWORD=password
+DATABASE_PASSWORD=password
 
 #Lese die Paketlisten neu ein.
 apt-get update
@@ -36,8 +36,8 @@ apt-get install -y --no-install-recommends osm2pgsql
 #Erstelle Benutzer "performance". Der Benutzer muss für die Erstellung von DB-Extensions Superuser sein.
 #Achtung: die Umgebungsvariable PGPASSWORD wird hier neu gesetzt!
 #https://www.postgresql.org/docs/9.3/static/app-createuser.html
-sudo -u postgres bash -c "psql -c \"CREATE USER performance WITH PASSWORD '"$PASSWORD"' SUPERUSER;\""
-export PGPASSWORD=$PASSWORD
+sudo -u postgres bash -c "psql -c \"CREATE USER performance WITH PASSWORD '"$DATABASE_PASSWORD"' SUPERUSER;\""
+export PGPASSWORD=$DATABASE_PASSWORD
 
 #Erstelle die OSM-Datenbank.
 psql -U performance -h localhost -d postgres -c "CREATE DATABASE "$DATABASE_NAME";"
@@ -113,11 +113,6 @@ mv -f $WORK_DIRECTORY/prepared_files/update_database.sh $WORK_DIRECTORY/updates
 chmod +x update_database.sh
 sed -i -e 's/\r$//' update_database.sh
 
-#Update-Cronjob einrichten
-#2>/dev/null, um Fehlermeldungen zu vermeiden, wenn noch kein Cronjob für den Benutzer erstellt wurde
-#Update-Skript wird jede Stunde um Viertel nach aufgerufen
-(crontab -l 2>/dev/null; echo "15 * * * * cd "$WORK_DIRECTORY"/updates && . ./update_database.sh >> database_update_logfile.log 2>&1") | crontab -
-
 
 
 
@@ -147,3 +142,13 @@ mkdir -p $WORK_DIRECTORY/tagging-server/log
 touch $WORK_DIRECTORY/tagging-server/log/error.log
 npm install
 node ./bin/www>stdout.txt 2>./log/error.log &
+
+
+
+
+
+
+#Update-Cronjob einrichten
+#2>/dev/null, um Fehlermeldungen zu vermeiden, wenn noch kein Cronjob für den Benutzer erstellt wurde
+#Update-Skript wird jede Stunde um Viertel nach aufgerufen
+(crontab -l 2>/dev/null; echo "15 * * * * cd "$WORK_DIRECTORY"/updates && . ./update_database.sh >> database_update_logfile.log 2>&1") | crontab -

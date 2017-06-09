@@ -97,6 +97,7 @@ const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
  SELECT highway, railway
  FROM closest_candidates
  WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.7148 47.35268)', 4326)::geography) < 10
+ ORDER BY ST_Distance(way::geography, ST_GeomFromText('POINT(8.7148 47.35268)', 4326)::geography)
  LIMIT 3;
  */
 
@@ -113,6 +114,7 @@ const OSM_NEAREST_WAYS = 'WITH closest_candidates AS (' +
     'FROM closest_candidates ' +
     'WHERE ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) < ' +
     config.nearestWays.st_distanceToMeasuringLocation + ' ' +
+    'ORDER BY ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) ' +
     'LIMIT 3;';
 
 
@@ -128,7 +130,7 @@ const OSM_NEAREST_WAYS = 'WITH closest_candidates AS (' +
      LIMIT 100)
  SELECT osm_id
  FROM closest_candidates
- WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.7165203 47.3516764)', 4326)::geography) < 10
+ WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.7165203 47.3516764)', 4326)::geography) < 20
  LIMIT 1;
  */
 
@@ -182,6 +184,7 @@ const OSM_QUERY_DISTANCE = 'SELECT ST_Distance' +
      AND osm_id = '-51701';
 
  51701 is the OSM-ID for the boundary of Switzerland.
+ osm2pgsql: To prevent overlap between relation IDs and way IDs relations are imported with a negative ID number.
  */
 
 const INSIDE_SWITZERLAND = 'SELECT osm_id FROM planet_osm_polygon ' +

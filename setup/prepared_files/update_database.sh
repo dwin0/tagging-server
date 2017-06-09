@@ -3,13 +3,13 @@
 #Pfad für Datenbank-Files und node.js-Server
 WORK_DIRECTORY=/home/server
 DATABASE_NAME=switzerland
-PASSWORD=password
+DATABASE_PASSWORD=password
 
 #Das Style-File bestimmt welche OSM-Einträge in welche Tabelle geladen werden.
 #https://github.com/gravitystorm/openstreetmap-carto
 STYLE_FILE=$WORK_DIRECTORY/osm/openstreetmap-carto/openstreetmap-carto.style
 WORKDIR_OSMOSIS=$WORK_DIRECTORY/updates/.osmosis
-export PGPASSWORD=$PASSWORD
+export PGPASSWORD=$DATABASE_PASSWORD
 
 #Hole neuste OpenStreetMap diffs von https://planet.osm.ch/ und füge sie in changes.osc.gz zusammen.
 #http://wiki.openstreetmap.org/wiki/HowTo_minutely_hstore#Acquire_Replication_Data
