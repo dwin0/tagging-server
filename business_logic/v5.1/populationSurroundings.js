@@ -177,7 +177,11 @@ function getPopulationDensity(geoAdminResult) {
         total += res.properties.popt_ha;
     });
 
-    return Math.round(total / geoAdminResult.results.length);
+    if(geoAdminResult.results.length) {
+        total = Math.round(total / geoAdminResult.results.length);
+    }
+
+    return total;
 }
 
 function getCommunityTypeJSON(geoAdminResult) {

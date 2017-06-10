@@ -94,7 +94,7 @@ function check_RAILWAY_STREET_BUILDING(locations, positions, callback) {
             },
             //Get all railways or streets within X meters for each of the 3 positions (returns max. 3)
             function(callback) {
-                dbAccess.queryMultiple(queries.OSM_NEAREST_WAYS, queryPositions, function (error, result) {
+                dbAccess.queryMultiple(queries.OSM_NEAREST_PEDESTRIAN_WAYS, queryPositions, function (error, result) {
                         callback(error, result);
                 });
             }
@@ -171,7 +171,7 @@ function getStreetAndRailwayWeight(locations, positions, nearestWays) {
             if(way.highway && streetWeight === 0) {
                 streetWeight += positionsWeight[i];
             }
-            else if (way.railway && railwayWeight === 0) {
+            if (way.railway && railwayWeight === 0) {
                 railwayWeight += positionsWeight[i];
             }
         });

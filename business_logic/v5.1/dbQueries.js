@@ -86,6 +86,45 @@ const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
  Example:
 
  WITH closest_candidates AS (
+ SELECT highway, railway, way
+     FROM planet_osm_line
+     WHERE railway IN ('rail', 'light_rail', 'narrow_gauge', 'tram', 'subway') OR
+     highway IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary',
+     'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link',
+     'residential', 'road', 'unclassified', 'service', 'living_street', 'track'
+     'pedestrian', 'path', 'footway')
+     ORDER BY way <-> ST_GeomFromText('POINT(8.7148 47.35268)', 4326)
+ LIMIT 100)
+ SELECT highway, railway
+ FROM closest_candidates
+ WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.7148 47.35268)', 4326)::geography) < 10
+ ORDER BY ST_Distance(way::geography, ST_GeomFromText('POINT(8.7148 47.35268)', 4326)::geography)
+ LIMIT 3;
+ */
+
+const OSM_NEAREST_PEDESTRIAN_WAYS = 'WITH closest_candidates AS (' +
+    'SELECT highway, railway, way ' +
+        'FROM planet_osm_line ' +
+        'WHERE railway IN (\'rail\', \'light_rail\', \'narrow_gauge\', \'tram\', \'subway\') OR ' +
+        'highway IN (\'motorway\', \'motorway_link\', \'trunk\', \'trunk_link\', \'primary\', ' +
+        '\'primary_link\', \'secondary\', \'secondary_link\', \'tertiary\', \'tertiary_link\', ' +
+        '\'residential\', \'road\', \'unclassified\', \'service\', \'living_street\', \'track\'' +
+        '\'pedestrian\', \'path\', \'footway\') ' +
+        'ORDER BY way <-> ST_GeomFromText($1, 4326) ' +
+    'LIMIT ' + config.nearestWays.numberOfClosestCandidates + ') ' +
+    'SELECT highway, railway ' +
+    'FROM closest_candidates ' +
+    'WHERE ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) < ' +
+    config.nearestWays.st_distanceToMeasuringLocation + ' ' +
+    'ORDER BY ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) ' +
+    'LIMIT 3;';
+
+
+
+/*
+ Example:
+
+ WITH closest_candidates AS (
      SELECT highway, railway, way
      FROM planet_osm_line
      WHERE railway IN ('rail', 'light_rail', 'narrow_gauge', 'tram', 'subway') OR
@@ -239,6 +278,7 @@ module.exports = {
     "FIND_MIDDLE_POINT": FIND_MIDDLE_POINT,
     "GEOGRAPHICAL_QUERY": GEOGRAPHICAL_QUERY,
     "SWITZERLAND_NEAREST_BUILDING": SWITZERLAND_NEAREST_BUILDING,
+    "OSM_NEAREST_PEDESTRIAN_WAYS": OSM_NEAREST_PEDESTRIAN_WAYS,
     "OSM_NEAREST_WAYS": OSM_NEAREST_WAYS,
     "OSM_NEAREST_RAILWAYS": OSM_NEAREST_RAILWAYS,
     "OSM_QUERY_DISTANCE": OSM_QUERY_DISTANCE,
