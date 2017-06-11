@@ -266,7 +266,7 @@ function returnLocation(locations, callback) {
             maxWeight = location.weight;
         }
 
-        location.weight = location.weight.toFixed(2);
+        location.weight = parseFloat(location.weight.toFixed(2));
         delete location.location;
     }
 
@@ -275,7 +275,7 @@ function returnLocation(locations, callback) {
         id: maxLocation.id,
         name: maxLocation.name,
         description: maxLocation.description,
-        weight: maxWeight.toFixed(2),
+        weight: parseFloat(maxWeight.toFixed(2)),
         allWeights: locations
     });
 }

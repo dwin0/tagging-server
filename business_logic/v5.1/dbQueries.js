@@ -97,7 +97,7 @@ const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
  LIMIT 100)
  SELECT highway, railway
  FROM closest_candidates
- WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.7148 47.35268)', 4326)::geography) < 10
+ WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.7148 47.35268)', 4326)::geography) < 20
  ORDER BY ST_Distance(way::geography, ST_GeomFromText('POINT(8.7148 47.35268)', 4326)::geography)
  LIMIT 3;
  */
