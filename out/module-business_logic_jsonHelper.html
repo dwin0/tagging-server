@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: business_logic/dbQueries</title>
+    <title>JSDoc: Module: business_logic/jsonHelper</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: business_logic/dbQueries</h1>
+    <h1 class="page-title">Module: business_logic/jsonHelper</h1>
 
     
 
@@ -38,7 +38,7 @@
     <div class="container-overview">
     
         
-            <div class="description">This module includes all database queries and the helper methods which are used to create a final database query.</div>
+            <div class="description">This module is needed to return a consistent answer for the /tag and /findSurroundings route.</div>
         
 
         
@@ -87,7 +87,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_dbQueries.js.html">business_logic/v5.1/dbQueries.js</a>, <a href="business_logic_v5.1_dbQueries.js.html#line3">line 3</a>
+        <a href="business_logic_v5.1_jsonHelper.js.html">business_logic/v5.1/jsonHelper.js</a>, <a href="business_logic_v5.1_jsonHelper.js.html#line1">line 1</a>
     </li></ul></dd>
     
 
@@ -137,14 +137,14 @@
 
     
 
-    <h4 class="name" id="~makeMultipoints"><span class="type-signature">(inner) </span>makeMultipoints<span class="signature">(positions)</span><span class="type-signature"> &rarr; {array}</span></h4>
+    <h4 class="name" id="~renderSurroundingsJson"><span class="type-signature">(inner) </span>renderSurroundingsJson<span class="signature">(geographicalSurroundingsResult, geoAdminResults)</span><span class="type-signature"> &rarr; {object}</span></h4>
 
     
 
 
 
 <div class="description">
-    Returns an array of positions in the required format for parametrized queries, in this case'MULTIPOINT(longitude1 latitude1, longitude2 latitude2)'
+    Function which creates a consistent answer for the /findSurroundings route
 </div>
 
 
@@ -180,13 +180,13 @@
 
         <tr>
             
-                <td class="name"><code>positions</code></td>
+                <td class="name"><code>geographicalSurroundingsResult</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">array</span>
+<span class="param-type">object</span>
 
 
             
@@ -196,7 +196,30 @@
 
             
 
-            <td class="description last">positions which should be changed into format 'MULTIPOINT(longitude1 latitude1, longitude2 latitude2)',array must contain at least two positions</td>
+            <td class="description last">object with the results of the geographical surroundings calculation</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>geoAdminResults</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">object with the results of the geoAdmin calculation</td>
         </tr>
 
     
@@ -237,7 +260,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_dbQueries.js.html">business_logic/v5.1/dbQueries.js</a>, <a href="business_logic_v5.1_dbQueries.js.html#line275">line 275</a>
+        <a href="business_logic_v5.1_jsonHelper.js.html">business_logic/v5.1/jsonHelper.js</a>, <a href="business_logic_v5.1_jsonHelper.js.html#line39">line 39</a>
     </li></ul></dd>
     
 
@@ -264,7 +287,7 @@
 
         
 <div class="param-desc">
-    array with correct formatted strings
+    object with title and surroundings, surroundings includes download and upload which each includepopulationDensity, communityType and geographicalSurroundings
 </div>
 
 
@@ -275,7 +298,7 @@
     </dt>
     <dd>
         
-<span class="param-type">array</span>
+<span class="param-type">object</span>
 
 
     </dd>
@@ -290,14 +313,14 @@
 
     
 
-    <h4 class="name" id="~makePoints"><span class="type-signature">(inner) </span>makePoints<span class="signature">(positions)</span><span class="type-signature"> &rarr; {array}</span></h4>
+    <h4 class="name" id="~renderTagJson"><span class="type-signature">(inner) </span>renderTagJson<span class="signature">(locationRes, typeOfMotion, velocityJSON, geographicalSurroundingsResult, geoAdminResults)</span><span class="type-signature"> &rarr; {object}</span></h4>
 
     
 
 
 
 <div class="description">
-    Returns an array of positions in the required format for parametrized queries, in this case 'POINT(longitude latitude)'
+    Function which creates a consistent answer for the /tag route.
 </div>
 
 
@@ -333,13 +356,13 @@
 
         <tr>
             
-                <td class="name"><code>positions</code></td>
+                <td class="name"><code>locationRes</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">array</span>
+<span class="param-type">object</span>
 
 
             
@@ -349,7 +372,99 @@
 
             
 
-            <td class="description last">positions which should be changed into format 'POINT(longitude latitude)'</td>
+            <td class="description last">object with the results of the location calculation</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>typeOfMotion</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">object with the results of the type of motion calculation</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>velocityJSON</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">object with the results of the velocity calculation</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>geographicalSurroundingsResult</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">object with the results of the geographical surroundings calculation</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>geoAdminResults</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">object with the results of the geoAdmin calculation</td>
         </tr>
 
     
@@ -390,7 +505,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_dbQueries.js.html">business_logic/v5.1/dbQueries.js</a>, <a href="business_logic_v5.1_dbQueries.js.html#line252">line 252</a>
+        <a href="business_logic_v5.1_jsonHelper.js.html">business_logic/v5.1/jsonHelper.js</a>, <a href="business_logic_v5.1_jsonHelper.js.html#line17">line 17</a>
     </li></ul></dd>
     
 
@@ -417,7 +532,7 @@
 
         
 <div class="param-desc">
-    array with correct formatted strings
+    object with title, location, typeoOfMotion, velocity and surroundings
 </div>
 
 
@@ -428,7 +543,7 @@
     </dt>
     <dd>
         
-<span class="param-type">array</span>
+<span class="param-type">object</span>
 
 
     </dd>
