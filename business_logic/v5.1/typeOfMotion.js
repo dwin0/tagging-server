@@ -1,3 +1,8 @@
+/**
+ * This module returns the type of motion which can be: stationary, pedestrian, vehicular or high-speed-vehicular.
+ * @module business_logic/typeOfMotion
+ */
+
 const STATIONARY = {
     id: 1,
     name: 'stationary',
@@ -29,6 +34,13 @@ const UNKNOWN = {
 };
 
 
+/**
+ * Function which returns the type of motion for a velocity in kilometers per hour.
+ *
+ * @param {number} speed - speed in kilometers per hour which should be the result of getVelocity from velocity
+ * @see business_logic/velocity
+ * @returns {object} an object with id, name and description
+ */
 function getTypeOfMotion(speed) {
 
     switch(true) {
