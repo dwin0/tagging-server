@@ -2,14 +2,23 @@ var dbAccess= require('../../persistence/dbAccess_v5');
 var queries = require('./dbQueries');
 var logError = require('./errorLogger').logError;
 
+/**
+ * In this module the correct formatted input-positions will be validated and filtered. Validation includes: a check if
+ * the positions are inside switzerland, a check if at least one of the lon, lat values of a position is not equal to zero,
+ * a check if the time string of a position can be parsed to a valid date and a check whether at least one horizontalAccuracy is
+ * below 200m. If the validation fails an error will be sent back to the client. Otherwise the best position for each
+ * phase will be selected.
+ * @module business_logic/positionsHelper
+ */
+
 
 /**
  * Filters the 8 input-positions for the 3 bests.
  * Positions 1-3, 4-5 and 6-8 are close to each other. This methods chooses the best position out of each group.
  *
- * @param body
- * @param res
- * @param callback
+ * @param {object} body - part of the request, should have positions inside
+ * @param {object} res - response object, will be used to send an error if something went wrong
+ * @param {function} callback - function which will be called with the calculated results, in case of error undefined is returned
  */
 function choosePositions(body, res, callback) {
 
@@ -62,6 +71,14 @@ function choosePositions(body, res, callback) {
     });
 }
 
+
+/**
+ * Validates and filters the phaseCandidates for the best position and returns it. Returns undefined if none of the phaseCandidates is valid.
+ * Needs to be called for each phase separately.
+ *
+ * @param {array} phaseCandidates - are the positions of one phase (phases are currently one of 1-3, 4-5 or 6-8 of the whole positions array)
+ * @param {function} phaseSelectionMethod - method which will be called to filter the valid phaseCandidates for one phase
+ */
 function chooseForPhase(phaseCandidates, phaseSelectionMethod) {
 
     var validCandidates = filterValidPositions(phaseCandidates);
@@ -71,6 +88,13 @@ function chooseForPhase(phaseCandidates, phaseSelectionMethod) {
     return phaseSelectionMethod(validCandidates);
 }
 
+
+/**
+ * Filters the posArray for the best position and returns it. Returns undefined if none of the posArray elements is valid.
+ * Needs to be called for each phase separately.
+ *
+ * @param {array} posArray - array includes the positions of one phase (phases are currently one of 1-3, 4-5 or 6-8 of the whole positions array)
+ */
 function filterValidPositions(posArray) {
 
     var validPositions = [];
@@ -87,6 +111,15 @@ function filterValidPositions(posArray) {
     }
 }
 
+
+/**
+ * Checks whether all positions are inside switzerland or not, if they are not inside 0 is returned otherwise 1 is returned.
+ * If a database error occurs an error will be returned.
+ *
+ * @param {array} positions - includes the positions which should be checked
+ * @param {function} callback - function which will be called with the result of the check, param1 of callback is the error
+ * which is null if no error occurred, param2 of callback is the result
+ */
 function checkIfSwitzerland(positions, callback) {
 
     var queryPositions = queries.makePoints(positions);
@@ -101,6 +134,12 @@ function checkIfSwitzerland(positions, callback) {
     });
 }
 
+
+/**
+ * Checks whether at least one position has a horizontalAccuracy which is below 200m.
+ *
+ * @param {array} positions - includes the positions which should be checked
+ */
 function checkValidHorizontalAccuracy(positions) {
 
     var result = false;
@@ -117,6 +156,12 @@ function checkValidHorizontalAccuracy(positions) {
 
 
 
+
+/**
+ * Returns the best position for the phase "before download"
+ *
+ * @param {array} posArray - includes the positions which should be filtered
+ */
 function chooseBeforeDownload(posArray) {
 
     /*
@@ -160,6 +205,12 @@ function chooseBeforeDownload(posArray) {
     }
 }
 
+
+/**
+ * Returns the best position for the phase "before upload"
+ *
+ * @param {array} posArray - includes the positions which should be filtered
+ */
 function chooseBeforeUpload(posArray) {
 
     /*
@@ -178,6 +229,12 @@ function chooseBeforeUpload(posArray) {
     }
 }
 
+
+/**
+ * Returns the best position for the phase "after upload"
+ *
+ * @param {array} posArray - includes the positions which should be filtered
+ */
 function chooseAfterUpload(posArray) {
 
     /*
@@ -221,6 +278,13 @@ function chooseAfterUpload(posArray) {
     }
 }
 
+
+/**
+ * Returns the position which is more accurate, if accuracies are the same pos1 is returned
+ *
+ * @param {object} pos1 - position with horizontalAccuracy
+ * @param {object} pos2 - position with horizontalAccuracy
+ */
 function findMoreAccurate(pos1, pos2) {
     return pos2.horizontalAccuracy < pos1.horizontalAccuracy ? pos2 : pos1;
 }
