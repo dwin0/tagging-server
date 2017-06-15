@@ -36,8 +36,12 @@ input[type=text] {
 
 /*api.hbs*/
 
+#velocityContainer, #surroundingsContainer {
+    margin-left: 6em;
+}
+
 h3.url-title {
-    margin-top: 7vw !important;
+    margin-top: 5vw !important;
     font-weight: bold !important;
 }
 

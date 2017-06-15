@@ -36,7 +36,7 @@ router.get('/schemas', function(req, res) {
     res.status(200).json({
         taggingSchema: jsonSchema.TAGGING_SCHEMA_V5,
         speedCalculationSchema: jsonSchema.VELOCITY_SCHEMA,
-        surroundingsSchema: jsonSchema.SURROUNDINGS_SCHEMA
+        surroundingsSchema: jsonSchema.TAGGING_SCHEMA_V5
     });
 });
 

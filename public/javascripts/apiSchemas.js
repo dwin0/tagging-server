@@ -12,7 +12,7 @@ $(document).ready(function () {
             insertJSON(data.surroundingsSchema, '#surroundings-schema > p');
             insertJSON(POSSIBLE_TAGGING_INPUT, '#possible-tagging-input > p');
             insertJSON(POSSIBLE_SPEED_CALCULATION_INPUT, '#possible-speedCalculation-input > p');
-            insertJSON(POSSIBLE_SURROUNDINGS_INPUT, '#possible-surroundings-input > p');
+            insertJSON(POSSIBLE_TAGGING_INPUT, '#possible-surroundings-input > p');
             insertJSON(POSSIBLE_TAGGING_OUTPUT, '#possible-tagging-output > p');
             insertJSON(POSSIBLE_SPEED_CALCULATION_OUTPUT, '#possible-speedCalculation-output > p');
             insertJSON(POSSIBLE_SURROUNDINGS_OUTPUT, '#possible-surroundings-output > p');
@@ -54,58 +54,50 @@ const POSSIBLE_TAGGING_INPUT = {
         {
             "longitude": 8.7095882,
             "latitude": 47.3589998,
-            "horizontal_accuracy": 800,
-            "time": "2017-03-28 07:31:44.0",
-            "phase": "FCTStart"
+            "horizontalAccuracy": 800,
+            "time": "2017-03-28 07:31:44.0"
         },
         {
             "longitude": 8.7095882,
             "latitude": 47.3589998,
-            "horizontal_accuracy": 800,
-            "time": "2017-03-28 07:31:44.0",
-            "phase": "FCTEnd"
+            "horizontalAccuracy": 800,
+            "time": "2017-03-28 07:31:44.0"
         },
         {
             "longitude": 8.7095882,
             "latitude": 47.3589998,
-            "horizontal_accuracy": 800,
-            "time": "2017-03-28 07:31:44.0",
-            "phase": "DownloadStart"
+            "horizontalAccuracy": 800,
+            "time": "2017-03-28 07:31:44.0"
         },
         {
             "longitude": 8.7135701,
             "latitude": 47.3530638,
-            "horizontal_accuracy": 98.4000015258789,
-            "time": "2017-03-28 07:31:54.0",
-            "phase": "DownloadEnd"
+            "horizontalAccuracy": 98.4000015258789,
+            "time": "2017-03-28 07:31:54.0"
         },
         {
             "longitude": 8.7135701,
             "latitude": 47.3530638,
-            "horizontal_accuracy": 98.4000015258789,
-            "time": "2017-03-28 07:31:54.0",
-            "phase": "UploadStart"
+            "horizontalAccuracy": 98.4000015258789,
+            "time": "2017-03-28 07:31:54.0"
         },
         {
             "longitude": 8.7165203,
             "latitude": 47.3516764,
-            "horizontal_accuracy": 82.5,
-            "time": "2017-03-28 07:32:06.0",
-            "phase": "UploadEnd"
+            "horizontalAccuracy": 82.5,
+            "time": "2017-03-28 07:32:06.0"
         },
         {
             "longitude": 8.7165203,
             "latitude": 47.3516764,
-            "horizontal_accuracy": 82.5,
-            "time": "2017-03-28 07:32:06.0",
-            "phase": "RTTStart"
+            "horizontalAccuracy": 82.5,
+            "time": "2017-03-28 07:32:06.0"
         },
         {
             "longitude": 8.7165203,
             "latitude": 47.3516764,
-            "horizontal_accuracy": 82.5,
-            "time": "2017-03-28 07:32:07.0",
-            "phase": "RTTEnd"
+            "horizontalAccuracy": 82.5,
+            "time": "2017-03-28 07:32:07.0"
         }
     ]
 };
@@ -115,84 +107,70 @@ const POSSIBLE_TAGGING_OUTPUT = {
     "location": {
         "id": 1,
         "name": "railway",
-        "description": "Includes OpenStreetMap-Key:railway, Values: rail, light_rail, narrow_gauge, tram and subway.",
-        "probability": 0.3333333333333333,
-        "allProbabilities": {
+        "description": "Includes OpenStreetMap-Key: railway, Values: rail, light_rail, narrow_gauge, tram and subway.",
+        "weight": 0.52,
+        "allWeights": {
             "railway": {
-                "probability": 0.3333333333333333,
-                "location": {
-                    "id": 1,
-                    "name": "railway",
-                    "description": "Includes OpenStreetMap-Key:railway, Values: rail, light_rail, narrow_gauge, tram and subway."
-                }
+                "weight": 0.52
+            },
+            "street": {
+                "weight": 0
+            },
+            "building": {
+                "weight": 0
             }
         }
     },
-    "type_of_motion": {
+    "typeOfMotion": {
         "id": 4,
-        "name": "high-speed_vehicular",
-        "description": "120 km/h to 350km/h",
-        "probability": null
+        "name": "high-speed-vehicular",
+        "description": "140 km/h to 450km/h"
     },
     "velocity": {
-        "time_s": 23,
-        "velocity_ms": 43.31952685695652,
-        "velocity_kmh": 155.95029668504347,
-        "probability": null
+        "distanceMeters": 996,
+        "timeSeconds": 22,
+        "velocityMeterPerSecond": 45,
+        "velocityKilometersPerHour": 163
     },
     "surroundings": {
         "download": {
-            "geographical_surroundings": {
-                "id": 1,
-                "name": "grassland",
-                "osm_tag": "wetland",
-                "description": "Includes OpenStreetMap-Key: landuse with the values: meadow, farmland, grass, farmyard, allotments, " +
-                "greenhouse_horticulture, plant_nursery, recreation_ground, village_green, greenfield and conservation. Includes " +
-                "OpenStreetMap-Key: natural with the values: scrub, grassland, wetland, fell, heath, meadow and grass. Includes " +
-                "OpenStreetMap-Key: protected_area, national_park and nature_reserve. Includes OpenStreetMap-Key: leisure with the " +
-                "values: garden, park, nature_reserve, golf_course, miniature_golf, recreation_ground and dog_park.",
-                "probability": null
+            "populationDensity": {
+                "number": 73,
+                "description": "Average of persons living in 1ha based on a radius-search of 300 meters."
             },
-            "population_density": {
-                "number": 66.5,
-                "description": "Number of people living in 1ha",
-                "probability": null
-            },
-            "community_type": {
+            "communityType": {
                 "id": 2,
                 "type": "Nebenzentrum eines Grosszentrums",
-                "community_id": "198",
-                "community_name": "Uster",
-                "canton_id": "1",
-                "canton_name": "ZH",
-                "description": "Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)",
-                "probability": null
+                "description": "Tag comes from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)",
+                "communityId": "198",
+                "communityName": "Uster",
+                "cantonId": "1",
+                "cantonName": "ZH"
+            },
+            "geographicalSurroundings": {
+                "osmKey": "landuse",
+                "osmValue": "residential",
+                "description": "Tag comes from: OpenStreetMap"
             }
         },
         "upload": {
-            "geographical_surroundings": {
-                "id": 3,
-                "name": "constructedArea",
-                "osm_tag": "residential",
-                "description": "Includes OpenStreetMap-Key: landuse with the values: residential, industrial, construction, commercial, " +
-                "quarry, railway, military, retail, landfill, brownfield and garages. Includes OpenStreetMap-Key: leisure with the values: " +
-                "sports_centre and stadium.",
-                "probability": null
+            "populationDensity": {
+                "number": 64,
+                "description": "Average of persons living in 1ha based on a radius-search of 300 meters."
             },
-            "population_density": {
-                "number": 58,
-                "description": "Number of people living in 1ha",
-                "probability": null
-            },
-            "community_type": {
+            "communityType": {
                 "id": 2,
                 "type": "Nebenzentrum eines Grosszentrums",
-                "community_id": "198",
-                "community_name": "Uster",
-                "canton_id": "1",
-                "canton_name": "ZH",
-                "description": "Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)",
-                "probability": null
+                "description": "Tag comes from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)",
+                "communityId": "198",
+                "communityName": "Uster",
+                "cantonId": "1",
+                "cantonName": "ZH"
+            },
+            "geographicalSurroundings": {
+                "osmKey": "landuse",
+                "osmValue": "residential",
+                "description": "Tag comes from: OpenStreetMap"
             }
         }
     }
@@ -205,127 +183,66 @@ const POSSIBLE_SPEED_CALCULATION_INPUT = {
         {
             "longitude": 8.7135701,
             "latitude": 47.3530638,
-            "time": "2017-03-28 07:31:54.0",
+            "time": "2017-03-28 07:31:54.0"
         },
         {
             "longitude": 8.7165203,
             "latitude": 47.3516764,
-            "time": "2017-03-28 07:32:07.0",
+            "time": "2017-03-28 07:32:07.0"
         }
     ]
 };
 
 const POSSIBLE_SPEED_CALCULATION_OUTPUT = {
-    "title": "Calculated velocity:",
-    "distance_m": 271.06690764,
-    "time_s": 13,
-    "velocity_ms": 20.851300587692307,
-    "velocity_kmh": 75.06468211569232,
-    "probability": null
+    "distanceMeters": 271,
+    "timeSeconds": 13,
+    "velocityMeterPerSecond": 21,
+    "velocityKilometersPerHour": 75
 };
 
 
-
-const POSSIBLE_SURROUNDINGS_INPUT = {
-    "positions": [
-        {
-            "longitude": 8.7095882,
-            "latitude": 47.3589998,
-            "phase": "FCTStart"
-        },
-        {
-            "longitude": 8.7095882,
-            "latitude": 47.3589998,
-            "phase": "FCTEnd"
-        },
-        {
-            "longitude": 8.7095882,
-            "latitude": 47.3589998,
-            "phase": "DownloadStart"
-        },
-        {
-            "longitude": 8.7135701,
-            "latitude": 47.3530638,
-            "phase": "DownloadEnd"
-        },
-        {
-            "longitude": 8.7135701,
-            "latitude": 47.3530638,
-            "phase": "UploadStart"
-        },
-        {
-            "longitude": 8.7165203,
-            "latitude": 47.3516764,
-            "phase": "UploadEnd"
-        },
-        {
-            "longitude": 8.7165203,
-            "latitude": 47.3516764,
-            "phase": "RTTStart"
-        },
-        {
-            "longitude": 8.7165203,
-            "latitude": 47.3516764,
-            "phase": "RTTEnd"
-        }
-    ]
-};
 
 const POSSIBLE_SURROUNDINGS_OUTPUT = {
     "title": "Calculated Surroundings",
     "surroundings": {
         "download": {
-            "geographical_surroundings": {
-                "id": 1,
-                "name": "grassland",
-                "osm_tag": "wetland",
-                "description": "Includes OpenStreetMap-Key: landuse with the values: meadow, farmland, grass, farmyard, allotments, " +
-                "greenhouse_horticulture, plant_nursery, recreation_ground, village_green, greenfield and conservation. Includes " +
-                "OpenStreetMap-Key: natural with the values: scrub, grassland, wetland, fell, heath, meadow and grass. Includes " +
-                "OpenStreetMap-Key: protected_area, national_park and nature_reserve. Includes OpenStreetMap-Key: leisure with the " +
-                "values: garden, park, nature_reserve, golf_course, miniature_golf, recreation_ground and dog_park.",
-                "probability": null
+            "populationDensity": {
+                "number": 73,
+                "description": "Average of persons living in 1ha based on a radius-search of 300 meters."
             },
-            "population_density": {
-                "number": 66.5,
-                "description": "Number of people living in 1ha",
-                "probability": null
-            },
-            "community_type": {
+            "communityType": {
                 "id": 2,
                 "type": "Nebenzentrum eines Grosszentrums",
-                "community_id": "198",
-                "community_name": "Uster",
-                "canton_id": "1",
-                "canton_name": "ZH",
-                "description": "Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)",
-                "probability": null
+                "description": "Tag comes from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)",
+                "communityId": "198",
+                "communityName": "Uster",
+                "cantonId": "1",
+                "cantonName": "ZH"
+            },
+            "geographicalSurroundings": {
+                "osmKey": "landuse",
+                "osmValue": "residential",
+                "description": "Tag comes from: OpenStreetMap"
             }
         },
         "upload": {
-            "geographical_surroundings": {
-                "id": 3,
-                "name": "constructedArea",
-                "osm_tag": "residential",
-                "description": "Includes OpenStreetMap-Key: landuse with the values: residential, industrial, construction, commercial, " +
-                "quarry, railway, military, retail, landfill, brownfield and garages. Includes OpenStreetMap-Key: leisure with the values: " +
-                "sports_centre and stadium.",
-                "probability": null
+            "populationDensity": {
+                "number": 64,
+                "description": "Average of persons living in 1ha based on a radius-search of 300 meters."
             },
-            "population_density": {
-                "number": 58,
-                "description": "Number of people living in 1ha",
-                "probability": null
-            },
-            "community_type": {
+            "communityType": {
                 "id": 2,
                 "type": "Nebenzentrum eines Grosszentrums",
-                "community_id": "198",
-                "community_name": "Uster",
-                "canton_id": "1",
-                "canton_name": "ZH",
-                "description": "Tag is derived from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)",
-                "probability": null
+                "description": "Tag comes from: Gemeindetypologie ARE (Bundesamt für Raumentwicklung)",
+                "communityId": "198",
+                "communityName": "Uster",
+                "cantonId": "1",
+                "cantonName": "ZH"
+            },
+            "geographicalSurroundings": {
+                "osmKey": "landuse",
+                "osmValue": "residential",
+                "description": "Tag comes from: OpenStreetMap"
             }
         }
     }

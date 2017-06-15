@@ -43,91 +43,95 @@
 </ul>
 
 
+<div id="velocityContainer">
+    <h3 class="url-title">Geschwindigkeitsberechnung</h3>
+    <p>Unterpunkt von Tagging</p>
+    <ul class="collapsible" data-collapsible="expandable">
+        <li>
+            <div class="collapsible-header">
+                <div class="html-method get">
+                    GET
+                </div>
+                api/v{{version}}/calculateSpeed
+            </div>
+            <div class="collapsible-body">
+                <a class="waves-effect waves-light btn right" href="api/v{{version}}/calculateSpeed">
+                    <i class="material-icons right">launch</i>
+                    Website aufrufen
+                </a>
+                <p>Gibt die Erfassungs-Ansicht für 2 Input-Punkte zurück.</p>
+            </div>
+        </li>
+        <li>
+            <div class="collapsible-header">
+                <div class="html-method post">
+                    POST
+                </div>
+                api/v{{version}}/calculateSpeed
+            </div>
+            <div class="collapsible-body">
+                <div>
+                    <span>Erstellt eine Geschwindigkeitsberechnung für 2 Input-Punkte und gibt die Antwort als JSON zurück.</span>
+                </div>
+                <div id="speedCalculation-schema" class="schema">
+                    <p>Input-Schema</p>
+                </div>
+                <div id="possible-speedCalculation-input" class="possible-input">
+                    <p>Möglicher Input</p>
+                </div>
+                <div id="possible-speedCalculation-output" class="possible-output">
+                    <p>Möglicher Output</p>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
 
-<h3 class="url-title">Geschwindigkeitsberechnung</h3>
-<ul class="collapsible" data-collapsible="expandable">
-    <li>
-        <div class="collapsible-header">
-            <div class="html-method get">
-                GET
-            </div>
-            api/v{{version}}/calculateSpeed
-        </div>
-        <div class="collapsible-body">
-            <a class="waves-effect waves-light btn right" href="api/v{{version}}/calculateSpeed">
-                <i class="material-icons right">launch</i>
-                Website aufrufen
-            </a>
-            <p>Gibt die Erfassungs-Ansicht für 2 Input-Punkte zurück.</p>
-        </div>
-    </li>
-    <li>
-        <div class="collapsible-header">
-            <div class="html-method post">
-                POST
-            </div>
-            api/v{{version}}/calculateSpeed
-        </div>
-        <div class="collapsible-body">
-            <div>
-                <span>Erstellt eine Geschwindigkeitsberechnung für 2 Input-Punkte und gibt die Antwort als JSON zurück.</span>
-            </div>
-            <div id="speedCalculation-schema" class="schema">
-                <p>Input-Schema</p>
-            </div>
-            <div id="possible-speedCalculation-input" class="possible-input">
-                <p>Möglicher Input</p>
-            </div>
-            <div id="possible-speedCalculation-output" class="possible-output">
-                <p>Möglicher Output</p>
-            </div>
-        </div>
-    </li>
-</ul>
 
 
-
-
-<h3 class="url-title">Umgebungsabfrage</h3>
-<ul class="collapsible" data-collapsible="expandable">
-    <li>
-        <div class="collapsible-header">
-            <div class="html-method get">
-                GET
+<div id="surroundingsContainer">
+    <h3 class="url-title">Umgebungsabfrage</h3>
+    <p>Unterpunkt von Tagging</p>
+    <ul class="collapsible" data-collapsible="expandable">
+        <li>
+            <div class="collapsible-header">
+                <div class="html-method get">
+                    GET
+                </div>
+                api/v{{version}}/findSurroundings
             </div>
-            api/v{{version}}/findSurroundings
-        </div>
-        <div class="collapsible-body">
-            <a class="waves-effect waves-light btn right" href="api/v{{version}}/findSurroundings">
-                <i class="material-icons right">launch</i>
-                Website aufrufen
-            </a>
-            <p>Gibt die Erfassungs-Ansicht für 3-8 Input-Punkte zurück.</p>
-        </div>
-    </li>
-    <li>
-        <div class="collapsible-header">
-            <div class="html-method post">
-                POST
+            <div class="collapsible-body">
+                <a class="waves-effect waves-light btn right" href="api/v{{version}}/findSurroundings">
+                    <i class="material-icons right">launch</i>
+                    Website aufrufen
+                </a>
+                <p>Gibt die Erfassungs-Ansicht für 8 Input-Punkte zurück.</p>
             </div>
-            api/v{{version}}/findSurroundings
-        </div>
-        <div class="collapsible-body">
-            <div>
-                <span>Erstellt eine Surrounding-Abfrage für 3-8 Input-Punkte und gibt die Antwort als JSON zurück.</span>
+        </li>
+        <li>
+            <div class="collapsible-header">
+                <div class="html-method post">
+                    POST
+                </div>
+                api/v{{version}}/findSurroundings
             </div>
-            <div id="surroundings-schema" class="schema">
-                <p>Input-Schema</p>
+            <div class="collapsible-body">
+                <div>
+                    <span>Erstellt eine Surrounding-Abfrage für 8 Input-Punkte und gibt die Antwort als JSON zurück.</span>
+                </div>
+                <div id="surroundings-schema" class="schema">
+                    <p>Input-Schema</p>
+                </div>
+                <div id="possible-surroundings-input" class="possible-input">
+                    <p>Möglicher Input</p>
+                </div>
+                <div id="possible-surroundings-output" class="possible-output">
+                    <p>Möglicher Output</p>
+                </div>
             </div>
-            <div id="possible-surroundings-input" class="possible-input">
-                <p>Möglicher Input</p>
-            </div>
-            <div id="possible-surroundings-output" class="possible-output">
-                <p>Möglicher Output</p>
-            </div>
-        </div>
-    </li>
-</ul>
+        </li>
+    </ul>
+</div>
 
 
 <script type="text/javascript" src="/javascripts/apiSchemas.js"></script>
