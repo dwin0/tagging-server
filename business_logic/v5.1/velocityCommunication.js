@@ -1,7 +1,18 @@
+/**
+ * This module checks the validity of the input-values, passes them to velocity and returns the answer to the client.
+ * @module business_logic/velocityCommunication
+ */
+
+
 var velocity = require('./velocity');
 var logError = require('./errorLogger').logError;
 
 
+/**
+ * Function which starts the speedCalculation.
+ * @param {object} req - client request
+ * @param {object} res - response which will be sent to the client
+ */
 function getSpeedCalculation(req, res) {
 
     if(!checkPositions(req.body.positions)) {
@@ -27,6 +38,11 @@ function getSpeedCalculation(req, res) {
     })
 }
 
+/**
+ * Function which checks if all input-position have a valid time.
+ * @param {array} positions - input-positions from the client
+ * @returns {boolean} true if all input-position have a valid time, otherwise false
+ */
 function checkPositions(positions) {
 
     for(var i = 0; i < positions.length; i++) {
