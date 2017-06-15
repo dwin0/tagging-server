@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: business_logic/errorLogger</title>
+    <title>JSDoc: Module: business_logic/geographicalSurroundings</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: business_logic/errorLogger</h1>
+    <h1 class="page-title">Module: business_logic/geographicalSurroundings</h1>
 
     
 
@@ -38,7 +38,7 @@
     <div class="container-overview">
     
         
-            <div class="description">Exceptions which are caught in the code and which are answered with a status code 500 are logged with this errorLogger.</div>
+            <div class="description">In this module the geographical surroundings is calculated.</div>
         
 
         
@@ -87,7 +87,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="errorLogger.js.html">errorLogger.js</a>, <a href="errorLogger.js.html#line5">line 5</a>
+        <a href="geographicalSurroundings.js.html">geographicalSurroundings.js</a>, <a href="geographicalSurroundings.js.html#line4">line 4</a>
     </li></ul></dd>
     
 
@@ -137,14 +137,14 @@
 
     
 
-    <h4 class="name" id="~logError"><span class="type-signature">(inner) </span>logError<span class="signature">(statusCode, statusText, error, functionCall, fileName, body)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~getGeographicalSurroundings"><span class="type-signature">(inner) </span>getGeographicalSurroundings<span class="signature">(positions, callback)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Writes the error in a log file.
+    Queries the database for the keys boundary, "natural", leisure and landuse for the download and the upload and returnsthe result.
 </div>
 
 
@@ -180,13 +180,13 @@
 
         <tr>
             
-                <td class="name"><code>statusCode</code></td>
+                <td class="name"><code>positions</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">array</span>
 
 
             
@@ -196,20 +196,20 @@
 
             
 
-            <td class="description last">status code which was returned to the client</td>
+            <td class="description last">the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>statusText</code></td>
+                <td class="name"><code>callback</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">function</span>
 
 
             
@@ -219,99 +219,7 @@
 
             
 
-            <td class="description last">status text which was returned to the client</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>error</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">error which was returned from the system</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>functionCall</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">name of the function in which the exception was thrown</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>fileName</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">name of the file in which the exception was thrown</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>body</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the request body which led to the exception</td>
+            <td class="description last">function which will be called with the result of the database, param1 of callback is the errorwhich is null if no error occurred, param2 of callback is the result</td>
         </tr>
 
     
@@ -352,7 +260,145 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="errorLogger.js.html">errorLogger.js</a>, <a href="errorLogger.js.html#line25">line 25</a>
+        <a href="geographicalSurroundings.js.html">geographicalSurroundings.js</a>, <a href="geographicalSurroundings.js.html#line26">line 26</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>business_logic/positionsHelper</li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="~prepareResult"><span class="type-signature">(inner) </span>prepareResult<span class="signature">(dbResult)</span><span class="type-signature"> &rarr; {object}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Changes result of database query into an object.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dbResult</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">result of the database query</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="geographicalSurroundings.js.html">geographicalSurroundings.js</a>, <a href="geographicalSurroundings.js.html#line81">line 81</a>
     </li></ul></dd>
     
 
@@ -375,6 +421,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    object with following: {osmKey: string, osmValue: string, description: string}
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 

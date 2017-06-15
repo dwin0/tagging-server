@@ -14,11 +14,12 @@ var logError = require('./errorLogger').logError;
 
 /**
  * Filters the 8 input-positions for the 3 bests.
- * Positions 1-3, 4-5 and 6-8 are close to each other. This methods chooses the best position out of each group.
+ * Positions 1-3, 4-5 and 6-8 are close to each other. This methods chooses the best position out of each group / phase.
  *
  * @param {object} body - part of the request, should have positions inside
  * @param {object} res - response object, will be used to send an error if something went wrong
  * @param {function} callback - function which will be called with the calculated results, in case of error undefined is returned
+ * @returns {array} array with the 3 best positions
  */
 function choosePositions(body, res, callback) {
 
@@ -73,11 +74,11 @@ function choosePositions(body, res, callback) {
 
 
 /**
- * Validates and filters the phaseCandidates for the best position and returns it. Returns undefined if none of the phaseCandidates is valid.
- * Needs to be called for each phase separately.
+ * Validates and filters the phaseCandidates for the best position and returns it. Needs to be called for each phase separately.
  *
  * @param {array} phaseCandidates - are the positions of one phase (phases are currently one of 1-3, 4-5 or 6-8 of the whole positions array)
  * @param {function} phaseSelectionMethod - method which will be called to filter the valid phaseCandidates for one phase
+ * @returns {object} the best position for a phase, undefined if none of the phaseCandidates are valid
  */
 function chooseForPhase(phaseCandidates, phaseSelectionMethod) {
 
@@ -90,10 +91,10 @@ function chooseForPhase(phaseCandidates, phaseSelectionMethod) {
 
 
 /**
- * Filters the posArray for the best position and returns it. Returns undefined if none of the posArray elements is valid.
- * Needs to be called for each phase separately.
+ * Filters the posArray for the valid positions and returns them. Needs to be called for each phase separately.
  *
  * @param {array} posArray - array includes the positions of one phase (phases are currently one of 1-3, 4-5 or 6-8 of the whole positions array)
+ * @returns {array} filtered array with valid positions, undefined if none of the posArray elements are valid
  */
 function filterValidPositions(posArray) {
 
@@ -139,6 +140,7 @@ function checkIfSwitzerland(positions, callback) {
  * Checks whether at least one position has a horizontalAccuracy which is below 200m.
  *
  * @param {array} positions - includes the positions which should be checked
+ * @returns {boolean} true if at least one position is below 200m, false if none are below 200m
  */
 function checkValidHorizontalAccuracy(positions) {
 
@@ -158,9 +160,10 @@ function checkValidHorizontalAccuracy(positions) {
 
 
 /**
- * Returns the best position for the phase "before download"
+ * Returns the best position for the phase "before download".
  *
  * @param {array} posArray - includes the positions which should be filtered
+ * @returns {object} best position
  */
 function chooseBeforeDownload(posArray) {
 
@@ -207,9 +210,10 @@ function chooseBeforeDownload(posArray) {
 
 
 /**
- * Returns the best position for the phase "before upload"
+ * Returns the best position for the phase "before upload".
  *
  * @param {array} posArray - includes the positions which should be filtered
+ * @returns {object} best position
  */
 function chooseBeforeUpload(posArray) {
 
@@ -231,9 +235,10 @@ function chooseBeforeUpload(posArray) {
 
 
 /**
- * Returns the best position for the phase "after upload"
+ * Returns the best position for the phase "after upload".
  *
  * @param {array} posArray - includes the positions which should be filtered
+ * @returns {object} best position
  */
 function chooseAfterUpload(posArray) {
 
@@ -280,10 +285,11 @@ function chooseAfterUpload(posArray) {
 
 
 /**
- * Returns the position which is more accurate, if accuracies are the same pos1 is returned
+ * Returns the position which is more accurate, if accuracies are the same pos1 is returned.
  *
  * @param {object} pos1 - position with horizontalAccuracy
  * @param {object} pos2 - position with horizontalAccuracy
+ * @returns {object} more accurate position, if accuracies are the same pos1 is returned
  */
 function findMoreAccurate(pos1, pos2) {
     return pos2.horizontalAccuracy < pos1.horizontalAccuracy ? pos2 : pos1;
