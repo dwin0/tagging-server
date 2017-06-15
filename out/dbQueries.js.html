@@ -1,4 +1,32 @@
-var config = require('../../config/configReader').queryConfig;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: dbQueries.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: dbQueries.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var config = require('../../config/configReader').queryConfig;
 
 /**
  * This module includes all database queries and the helper methods which are used to create a final database query.
@@ -64,11 +92,11 @@ const GEOGRAPHICAL_QUERY = 'SELECT boundary, "natural", leisure, landuse ' +
      SELECT osm_id, way FROM planet_osm_polygon
      WHERE building IS NOT NULL OR tourism IN ('resort', 'bed_and_breakfast', 'wilderness_hut', 'motel', 'guest_house',
      'chalet', 'apartment', 'mountain_hut', 'castle', 'restaurant', 'casino', 'alpine_hut', 'hotel', 'hut')
-     ORDER BY way <-> ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)
+     ORDER BY way &lt;-> ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)
      LIMIT 10)
  SELECT osm_id
  FROM closest_candidates
- WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)::geography) < 15
+ WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)::geography) &lt; 15
  LIMIT 1;
  */
 
@@ -77,11 +105,11 @@ const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
         'WHERE building IS NOT NULL OR tourism IN (\'resort\', \'bed_and_breakfast\', \'wilderness_hut\', \'motel\', ' +
         '\'guest_house\', \'chalet\', \'apartment\', \'mountain_hut\', \'castle\', \'restaurant\', \'casino\', ' +
         '\'alpine_hut\', \'hotel\', \'hut\') ' +
-        'ORDER BY way <-> ST_GeomFromText($1, 4326) ' +
+        'ORDER BY way &lt;-> ST_GeomFromText($1, 4326) ' +
         'LIMIT ' + config.nearestBuilding.numberOfClosestCandidates + ') ' +
     'SELECT osm_id ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) < ' +
+    'WHERE ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) &lt; ' +
     config.nearestBuilding.st_distanceToMeasuringLocation + ' ' +
     'LIMIT 1;';
 
@@ -98,11 +126,11 @@ const SWITZERLAND_NEAREST_BUILDING = 'WITH closest_candidates AS (' +
      'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link',
      'residential', 'road', 'unclassified', 'service', 'living_street', 'track'
      'pedestrian', 'path', 'footway')
-     ORDER BY way <-> ST_GeomFromText('POINT(8.7148 47.35268)', 4326)
+     ORDER BY way &lt;-> ST_GeomFromText('POINT(8.7148 47.35268)', 4326)
  LIMIT 100)
  SELECT highway, railway
  FROM closest_candidates
- WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.7148 47.35268)', 4326)::geography) < 20
+ WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.7148 47.35268)', 4326)::geography) &lt; 20
  ORDER BY ST_Distance(way::geography, ST_GeomFromText('POINT(8.7148 47.35268)', 4326)::geography)
  LIMIT 3;
  */
@@ -115,11 +143,11 @@ const OSM_NEAREST_PEDESTRIAN_WAYS = 'WITH closest_candidates AS (' +
         '\'primary_link\', \'secondary\', \'secondary_link\', \'tertiary\', \'tertiary_link\', ' +
         '\'residential\', \'road\', \'unclassified\', \'service\', \'living_street\', \'track\'' +
         '\'pedestrian\', \'path\', \'footway\') ' +
-        'ORDER BY way <-> ST_GeomFromText($1, 4326) ' +
+        'ORDER BY way &lt;-> ST_GeomFromText($1, 4326) ' +
     'LIMIT ' + config.nearestWays.numberOfClosestCandidates + ') ' +
     'SELECT highway, railway ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) < ' +
+    'WHERE ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) &lt; ' +
     config.nearestWays.st_distanceToMeasuringLocation + ' ' +
     'ORDER BY ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) ' +
     'LIMIT 3;';
@@ -136,11 +164,11 @@ const OSM_NEAREST_PEDESTRIAN_WAYS = 'WITH closest_candidates AS (' +
      highway IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary',
      'primary_link', 'secondary', 'secondary_link', 'tertiary', 'tertiary_link',
      'residential', 'road', 'unclassified', 'service', 'living_street', 'track')
-     ORDER BY way <-> ST_GeomFromText('POINT(8.7148 47.35268)', 4326)
+     ORDER BY way &lt;-> ST_GeomFromText('POINT(8.7148 47.35268)', 4326)
      LIMIT 100)
  SELECT highway, railway
  FROM closest_candidates
- WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.7148 47.35268)', 4326)::geography) < 10
+ WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.7148 47.35268)', 4326)::geography) &lt; 10
  ORDER BY ST_Distance(way::geography, ST_GeomFromText('POINT(8.7148 47.35268)', 4326)::geography)
  LIMIT 3;
  */
@@ -152,11 +180,11 @@ const OSM_NEAREST_WAYS = 'WITH closest_candidates AS (' +
         'highway IN (\'motorway\', \'motorway_link\', \'trunk\', \'trunk_link\', \'primary\', ' +
         '\'primary_link\', \'secondary\', \'secondary_link\', \'tertiary\', \'tertiary_link\', ' +
         '\'residential\', \'road\', \'unclassified\', \'service\', \'living_street\', \'track\') ' +
-        'ORDER BY way <-> ST_GeomFromText($1, 4326) ' +
+        'ORDER BY way &lt;-> ST_GeomFromText($1, 4326) ' +
         'LIMIT ' + config.nearestWays.numberOfClosestCandidates + ') ' +
     'SELECT highway, railway ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) < ' +
+    'WHERE ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) &lt; ' +
     config.nearestWays.st_distanceToMeasuringLocation + ' ' +
     'ORDER BY ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) ' +
     'LIMIT 3;';
@@ -170,11 +198,11 @@ const OSM_NEAREST_WAYS = 'WITH closest_candidates AS (' +
      SELECT osm_id, way
      FROM planet_osm_line
      WHERE railway IN ('rail', 'light_rail', 'narrow_gauge', 'tram', 'subway')
-     ORDER BY way <-> ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)
+     ORDER BY way &lt;-> ST_GeomFromText('POINT(8.71157915 47.3560318)', 4326)
      LIMIT 100)
  SELECT osm_id
  FROM closest_candidates
- WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.7165203 47.3516764)', 4326)::geography) < 20
+ WHERE ST_Distance(way::geography, ST_GeomFromText('POINT(8.7165203 47.3516764)', 4326)::geography) &lt; 20
  LIMIT 1;
  */
 
@@ -182,11 +210,11 @@ const OSM_NEAREST_RAILWAYS = 'WITH closest_candidates AS (' +
         'SELECT osm_id, way ' +
         'FROM planet_osm_line ' +
         'WHERE railway IN (\'rail\', \'light_rail\', \'narrow_gauge\', \'tram\', \'subway\') ' +
-        'ORDER BY way <-> ST_GeomFromText($1, 4326) ' +
+        'ORDER BY way &lt;-> ST_GeomFromText($1, 4326) ' +
         'LIMIT ' + config.nearestRailways.numberOfClosestCandidates + ') ' +
     'SELECT osm_id ' +
     'FROM closest_candidates ' +
-    'WHERE ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) < ' +
+    'WHERE ST_Distance(way::geography, ST_GeomFromText($1, 4326)::geography) &lt; ' +
     config.nearestRailways.st_distanceToMeasuringLocation + ' ' +
     'LIMIT 1;';
 
@@ -253,7 +281,7 @@ function makePoints(positions) {
     var posArray = [];
     const POINT = 'POINT({lon} {lat})';
 
-    for(var i = 0; i < positions.length; i++) {
+    for(var i = 0; i &lt; positions.length; i++) {
 
         posArray[i] = POINT
             .replace('{lon}', positions[i].longitude)
@@ -275,7 +303,7 @@ function makeMultipoints(positions) {
     const MULTIPOINT = 'MULTIPOINT ({lon1} {lat1}, {lon2} {lat2})';
     var posArray = [];
 
-    for(var i = 0; i < positions.length - 1; i++) {
+    for(var i = 0; i &lt; positions.length - 1; i++) {
 
         posArray[i] = MULTIPOINT
             .replace('{lon1}', positions[i].longitude)
@@ -301,4 +329,26 @@ module.exports = {
     "INSIDE_SWITZERLAND": INSIDE_SWITZERLAND,
     "makePoints": makePoints,
     "makeMultipoints": makeMultipoints
-};
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-business_logic_dbQueries.html">business_logic/dbQueries</a></li><li><a href="module-business_logic_positionsHelper.html">business_logic/positionsHelper</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Jun 15 2017 15:17:59 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
