@@ -1,3 +1,10 @@
+/**
+ * This module is responsible to send tagging- speedCalculation and surroundings-requests to the server and
+ * display the result.
+ * @module public/javascripts/sendRequest
+ */
+
+
 $(document).on('ready', function () {
 
     var title = $(document).find("title").text();
@@ -19,7 +26,10 @@ $(document).on('ready', function () {
 });
 
 
-//Send POST-Request in specific format: TAGGING_SCHEMA_V4 in jsonSchemas.js
+/**
+ * Collects all tagging-form-values and sends these in the required form (TAGGING_SCHEMA in jsonSchemas.js).
+ * @param {object} event - event-object of button-click
+ */
 function sendTaggingRequest(event) {
 
     event.preventDefault();
@@ -44,7 +54,10 @@ function sendTaggingRequest(event) {
     sendRequest("/api/v5.1/tag", { positions: positions }, renderTaggingResult);
 }
 
-//Send POST-Request in specific format: VELOCITY_SCHEMA_V3 in jsonSchemas.js
+/**
+ * Collects all speedCalculation-form-values and sends these in the required form (VELOCITY_SCHEMA in jsonSchemas.js).
+ * @param {object} event - event-object of button-click
+ */
 function sendSpeedCalculationRequest(event) {
 
     event.preventDefault();
@@ -64,7 +77,10 @@ function sendSpeedCalculationRequest(event) {
     sendRequest("/api/v5.1/calculateSpeed", { positions: positions }, renderSpeedCalculationResult);
 }
 
-//Send POST-Request in specific format: SURROUNDINGS_SCHEMA_V3 in jsonSchemas.js
+/**
+ * Collects all surroundings-form-values and sends these in the required form (TAGGING_SCHEMA in jsonSchemas.js).
+ * @param {object} event - event-object of button-click
+ */
 function sendSurroundingsRequest(event) {
 
     event.preventDefault();
@@ -89,11 +105,20 @@ function sendSurroundingsRequest(event) {
     sendRequest("/api/v5.1/findSurroundings", { positions: positions }, renderSurroundingsResult);
 }
 
+/**
+ * Displays a white layer and a loading-spinner in the foreground.
+ */
 function showLoadingView() {
     $('#loading-icon').css('display', 'inline');
     $('#loading-layer').css('display', 'inherit');
 }
 
+/**
+ * Sends the collected form-data to the specified url.
+ * @param {string} url - URL to send the data to
+ * @param {object} sendData - POST-data to send
+ * @param {function} successCallback - function which will be called with the result of type object
+ */
 function sendRequest(url, sendData, successCallback) {
 
     $.ajax({
@@ -124,7 +149,10 @@ function sendRequest(url, sendData, successCallback) {
 
 
 
-
+/**
+ * Displays the tagging-result received by the server.
+ * @param {object} data - tagging-result
+ */
 function renderTaggingResult(data) {
 
     var header = $('<li class="collection-header"><h4>Tagging-Resultat:</h4></li>');
@@ -155,6 +183,10 @@ function renderTaggingResult(data) {
         typeOfMotion, velocity]);
 }
 
+/**
+ * Displays the speedCalculation-result received by the server.
+ * @param {object} data - speedCalculation-result
+ */
 function renderSpeedCalculationResult(data) {
 
     var header = $('<li class="collection-header"><h4>Geschwindigkeits-Resultat:</h4></li>');
@@ -171,6 +203,10 @@ function renderSpeedCalculationResult(data) {
     renderResult([header, distanceMeters, timeSeconds, velocityMeterPerSecond, velocityKilometersPerHour]);
 }
 
+/**
+ * Displays the surroundings-result received by the server.
+ * @param {object} data - surroundings-result
+ */
 function renderSurroundingsResult(data) {
 
     var header = $('<li class="collection-header"><h4>Surroundings-Resultat:</h4></li>');
@@ -205,7 +241,15 @@ function renderSurroundingsResult(data) {
         uploadGeographic, uploadPopulation, uploadCommunityName, uploadCommunityType]);
 }
 
+/**
+ * Displays the server-error which happend during sendRequest.
+ * @param {number} statusCode - status-code received by the server
+ * @param {string} statusText - status-text received by the server
+ * @param {string} responseText - response-text received by the server
+ */
 function renderError(statusCode, statusText, responseText) {
+
+    console.log(typeof statusCode + ', ' + typeof statusText + ', ' + typeof responseText);
 
     var header = $('<li class="collection-header error"><h4>Error:</h4></li>');
 
@@ -215,6 +259,10 @@ function renderError(statusCode, statusText, responseText) {
     renderResult([header, error]);
 }
 
+/**
+ * Displays all jQuery-elements in the argument to the result-view.
+ * @param {array} appendArray - array containing all jQuery-elements to display
+ */
 function renderResult(appendArray) {
 
     var resultView = $('#result-view').html('<div></div>');
@@ -229,7 +277,9 @@ function renderResult(appendArray) {
 }
 
 
-
+/**
+ * Closes the result-view on click outside.
+ */
 function addResultViewListener() {
 
     //Close result-view on click outside

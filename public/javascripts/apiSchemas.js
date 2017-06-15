@@ -4,9 +4,7 @@
  * @module public/javascripts/apiSchemas
  */
 
-/**
- * Loads all json-schemas and displays all json-schemas, possible input values and possible output values.
- */
+
 $(document).ready(function () {
 
     $.ajax({

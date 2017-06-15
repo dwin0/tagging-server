@@ -1,3 +1,9 @@
+/**
+ * This module is responsible to display and clear form-input on the leaflet map.
+ * @module public/javascripts/setInputAsMarker
+ */
+
+
 $(window).load(function () {
     setMarkers();
 
@@ -11,6 +17,9 @@ $(window).load(function () {
 
 var markers = new L.FeatureGroup();
 
+/**
+ * Collects all input-coordinates and displays these on the leaflet map.
+ */
 function setMarkers() {
 
     markers.clearLayers();
@@ -50,6 +59,9 @@ function setMarkers() {
     map.setView(new L.LatLng(latitude, longitude), 15);
 }
 
+/**
+ * Clears all form-input-fields and removes the markers on the leaflet map.
+ */
 function addClearListener() {
     $('#clearInput').on('click', function () {
         $('input').val(null);
@@ -58,6 +70,10 @@ function addClearListener() {
 }
 
 
+/**
+ * Returns the number of all form-input-fields.
+ * @returns {number} - number of all form-input-fields
+ */
 function getNumberOfPositions() {
 
     var numberOfPositions = 0;
