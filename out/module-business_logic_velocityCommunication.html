@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: business_logic/surroundingsCommunication</title>
+    <title>JSDoc: Module: business_logic/velocityCommunication</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: business_logic/surroundingsCommunication</h1>
+    <h1 class="page-title">Module: business_logic/velocityCommunication</h1>
 
     
 
@@ -38,7 +38,7 @@
     <div class="container-overview">
     
         
-            <div class="description">This module chooses the best positions with help of the positionsHelper, passes them on to geographicalSurroundings andpopulationSurroundings and prepares the answer of those delegations with help of the jsonHelper for the answer to the client.</div>
+            <div class="description">This module checks the validity of the input-values, passes them to velocity and returns the answer to the client.</div>
         
 
         
@@ -87,23 +87,12 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_surroundingsCommunication.js.html">business_logic/v5.1/surroundingsCommunication.js</a>, <a href="business_logic_v5.1_surroundingsCommunication.js.html#line1">line 1</a>
+        <a href="business_logic_v5.1_velocityCommunication.js.html">business_logic/v5.1/velocityCommunication.js</a>, <a href="business_logic_v5.1_velocityCommunication.js.html#line1">line 1</a>
     </li></ul></dd>
     
 
     
 
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li>business_logic/positionsHelper</li>
-        
-            <li>business_logic/geographicalSurroundings</li>
-        
-            <li>business_logic/populationSurroundings</li>
-        </ul>
-    </dd>
     
 
     
@@ -148,14 +137,14 @@
 
     
 
-    <h4 class="name" id="~calculateSurroundings"><span class="type-signature">(inner) </span>calculateSurroundings<span class="signature">(positions, body, res)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~checkPositions"><span class="type-signature">(inner) </span>checkPositions<span class="signature">(positions)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
 
     
 
 
 
 <div class="description">
-    Function which starts the calculation of the geographical surroundings as well as the population density and the community type in parallel.
+    Function which checks if all input-position have a valid time.
 </div>
 
 
@@ -197,7 +186,7 @@
             <td class="type">
             
                 
-<span class="param-type">Array</span>
+<span class="param-type">array</span>
 
 
             
@@ -207,53 +196,7 @@
 
             
 
-            <td class="description last">the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>body</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">part of the request, will only be used in case of an error, so that the body which triggers the error can be logged</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">response object, will be used to send an error if something went wrong otherwise the result of thegeographical surroundings calculation is returned to the client</td>
+            <td class="description last">input-positions from the client</td>
         </tr>
 
     
@@ -294,19 +237,12 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_surroundingsCommunication.js.html">business_logic/v5.1/surroundingsCommunication.js</a>, <a href="business_logic_v5.1_surroundingsCommunication.js.html#line47">line 47</a>
+        <a href="business_logic_v5.1_velocityCommunication.js.html">business_logic/v5.1/velocityCommunication.js</a>, <a href="business_logic_v5.1_velocityCommunication.js.html#line46">line 46</a>
     </li></ul></dd>
     
 
     
 
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li>business_logic/positionsHelper</li>
-        </ul>
-    </dd>
     
 
     
@@ -324,6 +260,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    true if all input-position have a valid time, otherwise false
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -332,14 +290,14 @@
 
     
 
-    <h4 class="name" id="~getSurroundings"><span class="type-signature">(inner) </span>getSurroundings<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~getSpeedCalculation"><span class="type-signature">(inner) </span>getSpeedCalculation<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Function which filters the best positions and returns the result of the surroundings calculation.
+    Function which starts the speedCalculation.
 </div>
 
 
@@ -455,7 +413,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_surroundingsCommunication.js.html">business_logic/v5.1/surroundingsCommunication.js</a>, <a href="business_logic_v5.1_surroundingsCommunication.js.html#line24">line 24</a>
+        <a href="business_logic_v5.1_velocityCommunication.js.html">business_logic/v5.1/velocityCommunication.js</a>, <a href="business_logic_v5.1_velocityCommunication.js.html#line16">line 16</a>
     </li></ul></dd>
     
 

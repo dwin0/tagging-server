@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: business_logic/surroundingsCommunication</title>
+    <title>JSDoc: Module: business_logic/velocity</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: business_logic/surroundingsCommunication</h1>
+    <h1 class="page-title">Module: business_logic/velocity</h1>
 
     
 
@@ -38,7 +38,7 @@
     <div class="container-overview">
     
         
-            <div class="description">This module chooses the best positions with help of the positionsHelper, passes them on to geographicalSurroundings andpopulationSurroundings and prepares the answer of those delegations with help of the jsonHelper for the answer to the client.</div>
+            <div class="description">This module calculates the velocity.</div>
         
 
         
@@ -87,23 +87,12 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_surroundingsCommunication.js.html">business_logic/v5.1/surroundingsCommunication.js</a>, <a href="business_logic_v5.1_surroundingsCommunication.js.html#line1">line 1</a>
+        <a href="business_logic_v5.1_velocity.js.html">business_logic/v5.1/velocity.js</a>, <a href="business_logic_v5.1_velocity.js.html#line1">line 1</a>
     </li></ul></dd>
     
 
     
 
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li>business_logic/positionsHelper</li>
-        
-            <li>business_logic/geographicalSurroundings</li>
-        
-            <li>business_logic/populationSurroundings</li>
-        </ul>
-    </dd>
     
 
     
@@ -148,14 +137,167 @@
 
     
 
-    <h4 class="name" id="~calculateSurroundings"><span class="type-signature">(inner) </span>calculateSurroundings<span class="signature">(positions, body, res)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~calcAverageVelocity"><span class="type-signature">(inner) </span>calcAverageVelocity<span class="signature">(dbResults)</span><span class="type-signature"> &rarr; {object}</span></h4>
 
     
 
 
 
 <div class="description">
-    Function which starts the calculation of the geographical surroundings as well as the population density and the community type in parallel.
+    Function which brings the database result of the velocity calculation into a consistent answer, which can later be sent back to the client.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dbResults</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">database result of the velocity calculation</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="business_logic_v5.1_velocity.js.html">business_logic/v5.1/velocity.js</a>, <a href="business_logic_v5.1_velocity.js.html#line64">line 64</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    an object like this: {distanceMeters: number, timeSeconds: number, velocityMeterPerSecond: number, velocityKilometersPerHour: number}
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="~getVelocity"><span class="type-signature">(inner) </span>getVelocity<span class="signature">(positions, callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Function which makes database calls to calculate the velocity.
 </div>
 
 
@@ -207,20 +349,20 @@
 
             
 
-            <td class="description last">the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper</td>
+            <td class="description last">the array is expected to have at least two positions inside</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>body</code></td>
+                <td class="name"><code>callback</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">function</span>
 
 
             
@@ -230,30 +372,7 @@
 
             
 
-            <td class="description last">part of the request, will only be used in case of an error, so that the body which triggers the error can be logged</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">response object, will be used to send an error if something went wrong otherwise the result of thegeographical surroundings calculation is returned to the client</td>
+            <td class="description last">function which will be called with the result of the velocity calculation, param1 of callback is the errorwhich is null if no error occurred, param2 of callback is an object with distanceMeters, timeSeconds, velocityMeterPerSecond and velocityKilometersPerHour</td>
         </tr>
 
     
@@ -294,168 +413,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_surroundingsCommunication.js.html">business_logic/v5.1/surroundingsCommunication.js</a>, <a href="business_logic_v5.1_surroundingsCommunication.js.html#line47">line 47</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li>business_logic/positionsHelper</li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="~getSurroundings"><span class="type-signature">(inner) </span>getSurroundings<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Function which filters the best positions and returns the result of the surroundings calculation.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">client request</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">response which will be sent to the client</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_surroundingsCommunication.js.html">business_logic/v5.1/surroundingsCommunication.js</a>, <a href="business_logic_v5.1_surroundingsCommunication.js.html#line24">line 24</a>
+        <a href="business_logic_v5.1_velocity.js.html">business_logic/v5.1/velocity.js</a>, <a href="business_logic_v5.1_velocity.js.html#line18">line 18</a>
     </li></ul></dd>
     
 

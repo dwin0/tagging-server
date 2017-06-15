@@ -1,8 +1,20 @@
+/**
+ * This module calculates the velocity.
+ * @module business_logic/velocity
+ */
+
 var dbAccess = require('../../persistence/dbAccess_v5');
 var queries = require('./dbQueries');
 var parallel = require('async/parallel');
 
 
+/**
+ * Function which makes database calls to calculate the velocity.
+ *
+ * @param {Array} positions - the array is expected to have at least two positions inside
+ * @param {function} callback - function which will be called with the result of the velocity calculation, param1 of callback is the error
+ * which is null if no error occurred, param2 of callback is an object with distanceMeters, timeSeconds, velocityMeterPerSecond and velocityKilometersPerHour
+ */
 function getVelocity(positions, callback) {
 
     var dbRequests = [];
@@ -43,6 +55,12 @@ function getVelocity(positions, callback) {
 }
 
 
+/**
+ * Function which brings the database result of the velocity calculation into a consistent answer, which can later be sent back to the client.
+ *
+ * @param {Array} dbResults - database result of the velocity calculation
+ * @returns {object} an object like this: {distanceMeters: number, timeSeconds: number, velocityMeterPerSecond: number, velocityKilometersPerHour: number}
+ */
 function calcAverageVelocity(dbResults) {
 
     //velocity = (s1 + s2) / (t1 + t2)

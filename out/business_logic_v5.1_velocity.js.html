@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: persistence/dbAccess_v5.js</title>
+    <title>JSDoc: Source: business_logic/v5.1/velocity.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: persistence/dbAccess_v5.js</h1>
+    <h1 class="page-title">Source: business_logic/v5.1/velocity.js</h1>
 
     
 
@@ -27,58 +27,49 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * This module is responsible for querying the postgres-database.
- * @module persistence/dbAccess
+ * This module calculates the velocity.
+ * @module business_logic/velocity
  */
 
-
-var pg = require('pg');
-var options = require('../config/configReader').config;
+var dbAccess = require('../../persistence/dbAccess_v5');
+var queries = require('./dbQueries');
 var parallel = require('async/parallel');
 
 
-var config = {
-    user: options.database_user,
-    database: options.database_name,
-    password: options.database_password,
-    host: options.database_host,
-    port: options.database_port,
-    max: options.max_database_connections,
-    idleTimeoutMillis: options.database_idleTimeoutMillis
-};
-
-var databasePool = new pg.Pool(config);
-
-
 /**
- * queries the database with multiple variations of a single statement in parallel.
- * @param {string} statement - statement a placeholder like $1 $2 $3
- * @param {Array} variables - array containing a values for every query like [ [VAR1_1.1, VAR1_1.2, VAR1_1.3],
- * [VAR1_2.1, VAR1_2.2, VAR1_2.3], [VAR1_3.1, VAR1_3.2, VAR1_3.3] ] which returns in 3 queries.
- * Use makePoints or makeMultipoints to fit the required form.
- * @param {function} callback - function which will be called with the result of type (error, array)
+ * Function which makes database calls to calculate the velocity.
+ *
+ * @param {Array} positions - the array is expected to have at least two positions inside
+ * @param {function} callback - function which will be called with the result of the velocity calculation, param1 of callback is the error
+ * which is null if no error occurred, param2 of callback is an object with distanceMeters, timeSeconds, velocityMeterPerSecond and velocityKilometersPerHour
  */
-function queryMultiple(statement, variables, callback) {
+function getVelocity(positions, callback) {
 
     var dbRequests = [];
 
-    for(var i = 0; i &lt; variables.length; i++) {
+    //prepare dbRequests to get all distances between the input-points
+    for(var i = 1; i &lt; positions.length; i++) {
 
-        dbRequests[i] = (function (i) {
-            return function(callback) {
-                
-                databasePool.query(statement, [variables[i]], function (err, result) {
-                    if (err) {
-                        console.error('error happened during query', err);
-                        callback(err);
+        var pos1 = positions[i-1];
+        var pos2 = positions[i];
+        var timeSeconds = Math.abs(new Date(pos2.time).getTime() - new Date(pos1.time).getTime()) / 1000;
+        const queryPositions = queries.makePoints([pos1, pos2]);
+
+        dbRequests[i-1] = (function(timeSeconds) {
+            return function(parallelCallback) {
+
+                dbAccess.singleQuery(queries.OSM_QUERY_DISTANCE, queryPositions, function (err, res) {
+                    if(err) {
+                        parallelCallback(err);
                         return;
                     }
-                    callback(null, result.rows);
+                    parallelCallback(null, { timeSeconds: timeSeconds, distanceMeters: res[0].st_distance });
                 });
             };
-        })(i);
+        }(timeSeconds));
     }
 
+    //Request database and calculate average speed
     parallel(dbRequests,
         function(err, results) {
             if(err) {
@@ -86,38 +77,44 @@ function queryMultiple(statement, variables, callback) {
                 return;
             }
 
-            callback(null, results);
+            callback(null, calcAverageVelocity(results));
         }
     );
 }
 
 
-
 /**
- * queries the database with a parametrized query.
- * @param {string} statement - statement with placeholders like $1 $2 $3
- * @param {Array} variables - array containing a value for every placeholder like [ VAR_1, VAR_2, VAR3 ].
- * Use makePoints or makeMultipoints to fit the required form.
- * @param {function} callback - function which will be called with the result of type (error, array)
+ * Function which brings the database result of the velocity calculation into a consistent answer, which can later be sent back to the client.
+ *
+ * @param {Array} dbResults - database result of the velocity calculation
+ * @returns {object} an object like this: {distanceMeters: number, timeSeconds: number, velocityMeterPerSecond: number, velocityKilometersPerHour: number}
  */
-function singleQuery(statement, variables, callback) {
+function calcAverageVelocity(dbResults) {
 
-    databasePool.query(statement, variables, function (err, result) {
-        if (err) {
-            console.error('error happened during query', err);
-            callback(err);
-            return;
-        }
+    //velocity = (s1 + s2) / (t1 + t2)
 
-        callback(null, result.rows);
+    var totalDistance = 0;
+    var totalTime = 0;
+
+    dbResults.forEach(function (pos) {
+        totalDistance += pos.distanceMeters;
+        totalTime += pos.timeSeconds;
     });
+
+    var velocityMeterPerSecond = totalDistance / totalTime;
+    var velocityKilometersPerHour = velocityMeterPerSecond * 3.6;
+
+    return {
+        distanceMeters: Math.round(totalDistance),
+        timeSeconds: totalTime,
+        velocityMeterPerSecond: Math.round(velocityMeterPerSecond),
+        velocityKilometersPerHour: Math.round(velocityKilometersPerHour)
+    };
 }
 
 
-
 module.exports = {
-    "singleQuery": singleQuery,
-    "queryMultiple": queryMultiple
+    "getVelocity": getVelocity
 };</code></pre>
         </article>
     </section>

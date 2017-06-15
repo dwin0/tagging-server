@@ -196,7 +196,7 @@
 
             
 
-            <td class="description last">statement a placeholder like $1</td>
+            <td class="description last">statement a placeholder like $1 $2 $3</td>
         </tr>
 
     
@@ -219,7 +219,7 @@
 
             
 
-            <td class="description last">array containing a value for every query like [ VAR_1, VAR_2, VAR3 ]which returns in 3 queries. Use makePoints or makeMultipoints to fit the required form.</td>
+            <td class="description last">array containing a values for every query like [ [VAR1_1.1, VAR1_1.2, VAR1_1.3],[VAR1_2.1, VAR1_2.2, VAR1_2.3], [VAR1_3.1, VAR1_3.2, VAR1_3.3] ] which returns in 3 queries.Use makePoints or makeMultipoints to fit the required form.</td>
         </tr>
 
     
@@ -283,7 +283,184 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="persistence_dbAccess_v5.js.html">persistence/dbAccess_v5.js</a>, <a href="persistence_dbAccess_v5.js.html#line32">line 32</a>
+        <a href="persistence_dbAccess_v5.js.html">persistence/dbAccess_v5.js</a>, <a href="persistence_dbAccess_v5.js.html#line33">line 33</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="~singleQuery"><span class="type-signature">(inner) </span>singleQuery<span class="signature">(statement, variables, callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    queries the database with a parametrized query.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>statement</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">statement with placeholders like $1 $2 $3</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>variables</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">array containing a value for every placeholder like [ VAR_1, VAR_2, VAR3 ].Use makePoints or makeMultipoints to fit the required form.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">function which will be called with the result of type (error, array)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="persistence_dbAccess_v5.js.html">persistence/dbAccess_v5.js</a>, <a href="persistence_dbAccess_v5.js.html#line75">line 75</a>
     </li></ul></dd>
     
 
@@ -325,13 +502,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-business_logic_dbQueries.html">business_logic/dbQueries</a></li><li><a href="module-business_logic_errorLogger.html">business_logic/errorLogger</a></li><li><a href="module-business_logic_geographicalSurroundings.html">business_logic/geographicalSurroundings</a></li><li><a href="module-business_logic_jsonHelper.html">business_logic/jsonHelper</a></li><li><a href="module-business_logic_location.html">business_logic/location</a></li><li><a href="module-business_logic_populationSurroundings.html">business_logic/populationSurroundings</a></li><li><a href="module-business_logic_positionsHelper.html">business_logic/positionsHelper</a></li><li><a href="module-business_logic_surroundingsCommunication.html">business_logic/surroundingsCommunication</a></li><li><a href="module-business_logic_taggingCommunication.html">business_logic/taggingCommunication</a></li><li><a href="module-business_logic_typeOfMotion.html">business_logic/typeOfMotion</a></li><li><a href="module-config_configReader.html">config/configReader</a></li><li><a href="module-persistence_dbAccess.html">persistence/dbAccess</a></li><li><a href="module-public_javascripts_apiSchemas.html">public/javascripts/apiSchemas</a></li><li><a href="module-public_javascripts_initForm.html">public/javascripts/initForm</a></li><li><a href="module-public_javascripts_initMap.html">public/javascripts/initMap</a></li><li><a href="module-public_javascripts_materialDesign.html">public/javascripts/materialDesign</a></li><li><a href="module-public_javascripts_sendRequest.html">public/javascripts/sendRequest</a></li><li><a href="module-public_javascripts_setInputAsMarker.html">public/javascripts/setInputAsMarker</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-business_logic_dbQueries.html">business_logic/dbQueries</a></li><li><a href="module-business_logic_errorLogger.html">business_logic/errorLogger</a></li><li><a href="module-business_logic_geographicalSurroundings.html">business_logic/geographicalSurroundings</a></li><li><a href="module-business_logic_jsonHelper.html">business_logic/jsonHelper</a></li><li><a href="module-business_logic_location.html">business_logic/location</a></li><li><a href="module-business_logic_populationSurroundings.html">business_logic/populationSurroundings</a></li><li><a href="module-business_logic_positionsHelper.html">business_logic/positionsHelper</a></li><li><a href="module-business_logic_surroundingsCommunication.html">business_logic/surroundingsCommunication</a></li><li><a href="module-business_logic_taggingCommunication.html">business_logic/taggingCommunication</a></li><li><a href="module-business_logic_typeOfMotion.html">business_logic/typeOfMotion</a></li><li><a href="module-business_logic_velocity.html">business_logic/velocity</a></li><li><a href="module-business_logic_velocityCommunication.html">business_logic/velocityCommunication</a></li><li><a href="module-config_configReader.html">config/configReader</a></li><li><a href="module-persistence_dbAccess.html">persistence/dbAccess</a></li><li><a href="module-public_javascripts_apiSchemas.html">public/javascripts/apiSchemas</a></li><li><a href="module-public_javascripts_initForm.html">public/javascripts/initForm</a></li><li><a href="module-public_javascripts_initMap.html">public/javascripts/initMap</a></li><li><a href="module-public_javascripts_materialDesign.html">public/javascripts/materialDesign</a></li><li><a href="module-public_javascripts_sendRequest.html">public/javascripts/sendRequest</a></li><li><a href="module-public_javascripts_setInputAsMarker.html">public/javascripts/setInputAsMarker</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Jun 15 2017 20:46:16 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Jun 15 2017 20:59:40 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>
