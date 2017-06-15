@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: public/javascripts/materialDesign.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,40 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: public/javascripts/materialDesign.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This module is responsible to activate all material-design-items.
+ * @module public/javascripts/materialDesign
+ */
+
+$(document).ready(function(){
+
+    //Highlight current page in nav-bar
+    var title = $(document).find("title").text();
+    $('.' + title.toLowerCase()).addClass('active');
 
 
-    <h3> </h3>
+    $('.collapsible').collapsible();
 
 
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+    $('.button-collapse').sideNav({
+            menuWidth: 400,
+            edge: 'left', // Choose the horizontal origin
+            closeOnClick: true, // Closes side-nav on &lt;a> clicks, useful for Angular/Meteor
+            draggable: true // Choose whether you can drag to open on touch screens
+        }
+    );
+});</code></pre>
+        </article>
+    </section>
 
 
 

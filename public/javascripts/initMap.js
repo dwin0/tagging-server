@@ -1,6 +1,6 @@
 /**
  * This module is responsible to load the leaflet map.
- * @module public/initMap
+ * @module public/javascripts/initMap
  */
 
 var map;

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: business_logic/geographicalSurroundings</title>
+    <title>JSDoc: Module: public/javascripts/apiSchemas</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: business_logic/geographicalSurroundings</h1>
+    <h1 class="page-title">Module: public/javascripts/apiSchemas</h1>
 
     
 
@@ -38,7 +38,7 @@
     <div class="container-overview">
     
         
-            <div class="description">In this module the geographical surroundings is calculated.</div>
+            <div class="description">This module is responsible to load and display all json-schemas, possible input values and possible output valuesin the api description.</div>
         
 
         
@@ -87,7 +87,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_geographicalSurroundings.js.html">business_logic/v5.1/geographicalSurroundings.js</a>, <a href="business_logic_v5.1_geographicalSurroundings.js.html#line4">line 4</a>
+        <a href="public_javascripts_apiSchemas.js.html">public/javascripts/apiSchemas.js</a>, <a href="public_javascripts_apiSchemas.js.html#line1">line 1</a>
     </li></ul></dd>
     
 
@@ -137,14 +137,14 @@
 
     
 
-    <h4 class="name" id="~getGeographicalSurroundings"><span class="type-signature">(inner) </span>getGeographicalSurroundings<span class="signature">(positions, callback)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~insertJSON"><span class="type-signature">(inner) </span>insertJSON<span class="signature">(json, id)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Queries the database for the keys boundary, "natural", leisure and landuse for the download and the upload and returnsthe result.
+    Syntax-Highlights the json-object and inserts it.
 </div>
 
 
@@ -180,13 +180,13 @@
 
         <tr>
             
-                <td class="name"><code>positions</code></td>
+                <td class="name"><code>json</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">array</span>
+<span class="param-type">object</span>
 
 
             
@@ -196,20 +196,20 @@
 
             
 
-            <td class="description last">the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper</td>
+            <td class="description last">json-object to insert</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>callback</code></td>
+                <td class="name"><code>id</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">function</span>
+<span class="param-type">string</span>
 
 
             
@@ -219,7 +219,7 @@
 
             
 
-            <td class="description last">function which will be called with the result of the database, param1 of callback is the errorwhich is null if no error occurred, param2 of callback is the result</td>
+            <td class="description last">id of element after which the json is inserted</td>
         </tr>
 
     
@@ -260,19 +260,12 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_geographicalSurroundings.js.html">business_logic/v5.1/geographicalSurroundings.js</a>, <a href="business_logic_v5.1_geographicalSurroundings.js.html#line26">line 26</a>
+        <a href="public_javascripts_apiSchemas.js.html">public/javascripts/apiSchemas.js</a>, <a href="public_javascripts_apiSchemas.js.html#line41">line 41</a>
     </li></ul></dd>
     
 
     
 
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li>business_logic/positionsHelper</li>
-        </ul>
-    </dd>
     
 
     
@@ -298,14 +291,14 @@
 
     
 
-    <h4 class="name" id="~prepareResult"><span class="type-signature">(inner) </span>prepareResult<span class="signature">(dbResult)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="~syntaxHighlight"><span class="type-signature">(inner) </span>syntaxHighlight<span class="signature">(json)</span><span class="type-signature"> &rarr; {string}</span></h4>
 
     
 
 
 
 <div class="description">
-    Changes result of database query into an object.
+    Highlights json-keywords and types with separate colours. Uses <span>-elements and CSS-classes.
 </div>
 
 
@@ -341,7 +334,7 @@
 
         <tr>
             
-                <td class="name"><code>dbResult</code></td>
+                <td class="name"><code>json</code></td>
             
 
             <td class="type">
@@ -357,7 +350,7 @@
 
             
 
-            <td class="description last">result of the database query</td>
+            <td class="description last">object to highlight</td>
         </tr>
 
     
@@ -398,7 +391,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_geographicalSurroundings.js.html">business_logic/v5.1/geographicalSurroundings.js</a>, <a href="business_logic_v5.1_geographicalSurroundings.js.html#line81">line 81</a>
+        <a href="public_javascripts_apiSchemas.js.html">public/javascripts/apiSchemas.js</a>, <a href="public_javascripts_apiSchemas.js.html#line51">line 51</a>
     </li></ul></dd>
     
 
@@ -425,7 +418,7 @@
 
         
 <div class="param-desc">
-    object with following: {osmKey: string, osmValue: string, description: string}
+    - syntax-highlighted json as string including HTML-Elements
 </div>
 
 
@@ -436,7 +429,7 @@
     </dt>
     <dd>
         
-<span class="param-type">object</span>
+<span class="param-type">string</span>
 
 
     </dd>

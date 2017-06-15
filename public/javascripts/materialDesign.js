@@ -1,6 +1,6 @@
 /**
  * This module is responsible to activate all material-design-items.
- * @module public/materialDesign
+ * @module public/javascripts/materialDesign
  */
 
 $(document).ready(function(){

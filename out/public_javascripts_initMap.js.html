@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: public/javascripts/initMap.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,36 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: public/javascripts/initMap.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This module is responsible to load the leaflet map.
+ * @module public/javascripts/initMap
+ */
 
+var map;
 
-    <h3> </h3>
+(function setupMap() {
 
+    map = new L.Map('map');
 
+    // create the tile layer with correct attribution
+    var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    var osmAttrib='Map data © &lt;a href="http://openstreetmap.org">OpenStreetMap&lt;/a> contributors';
+    var osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 20, attribution: osmAttrib});
 
-
-
-
-
-
-
-
-    
-
-
-
-
-
+    map.setView(new L.LatLng(47.3, 8.55),9);
+    map.addLayer(osm);
+})();</code></pre>
+        </article>
+    </section>
 
 
 
