@@ -137,7 +137,7 @@ function renderTaggingResult(data) {
         data.surroundings.download.geographicalSurroundings.osmValue + '</div></li>');
 
     var populationDensity = $('<li class="collection-item"><div>Bevölkerungsdichte: ' +
-        data.surroundings.download.populationDensity.number + '</div></li>');
+        data.surroundings.download.populationDensity.number + ' Personen pro Hektar (Durchschnitt über 300m Radius)</div></li>');
 
     var communityName = $('<li class="collection-item"><div>Gemeinde: ' +
         data.surroundings.download.communityType.communityName + '</div></li>');
@@ -180,7 +180,7 @@ function renderSurroundingsResult(data) {
         data.surroundings.download.geographicalSurroundings.osmValue + '</div></li>');
 
     var downloadPopulation = $('<li class="collection-item"><div>Download - Bevölkerungsdichte: ' +
-        data.surroundings.download.populationDensity.number + '</div></li>');
+        data.surroundings.download.populationDensity.number + ' Personen pro Hektar (Durchschnitt über 300m Radius)</div></li>');
 
     var downloadCommunityName = $('<li class="collection-item"><div>Download - Gemeinde: ' +
         data.surroundings.download.communityType.communityName + '</div></li>');
@@ -193,7 +193,7 @@ function renderSurroundingsResult(data) {
         data.surroundings.upload.geographicalSurroundings.osmValue + '</div></li>');
 
     var uploadPopulation = $('<li class="collection-item"><div>Upload - Bevölkerungsdichte: ' +
-        data.surroundings.upload.populationDensity.number + '</div></li>');
+        data.surroundings.upload.populationDensity.number + ' Personen pro Hektar (Durchschnitt über 300m Radius)</div></li>');
 
     var uploadCommunityName = $('<li class="collection-item"><div>Upload - Gemeinde: ' +
         data.surroundings.upload.communityType.communityName + '</div></li>');

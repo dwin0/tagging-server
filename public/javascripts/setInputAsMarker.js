@@ -45,6 +45,9 @@ function setMarkers() {
     }
 
     map.addLayer(markers);
+
+    // zoom in on last point on the osm map
+    map.setView(new L.LatLng(latitude, longitude), 15);
 }
 
 function addClearListener() {
