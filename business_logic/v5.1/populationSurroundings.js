@@ -83,7 +83,7 @@ const POPULATION_DENSITY_DESCRIPTION = 'Average of persons living in 1ha based o
  * This function calculates the population density and the community type for download and upload.
  *
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {function} callback - function which will be called with the result of the population density and community type
  * calculation, param1 of callback is the error which is null if no error occurred, param2 of callback is an object with
  * download and upload which both contain communityType and populationDensity which itself contains number and description

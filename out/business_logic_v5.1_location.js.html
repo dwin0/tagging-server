@@ -26,15 +26,16 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>var dbAccess = require('../../persistence/dbAccess_v5');
-var queries = require('./dbQueries');
-var parallel = require('async/parallel');
-
-/**
+            <pre class="prettyprint source linenums"><code>/**
  * In this module the location calculation is done. For the calculation the type of motion is used and the database
  * is queried for railway, street and building.
  * @module business_logic/location
  */
+
+
+var dbAccess = require('../../persistence/dbAccess_v5');
+var queries = require('./dbQueries');
+var parallel = require('async/parallel');
 
 
 const RAILWAY = {
@@ -68,9 +69,9 @@ const UNKNOWN = {
  *  Is the function which delegates the calculation depending on the type of motion.
  *
  * @param {object} typeOfMotion - should be the result of getTypeOfMotion from typeOfMotion
- * @see {business_logic/typeOfMotion}
+ * @see business_logic/typeOfMotion
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {function} callback - function which will be called with the result of the location calculation, param1 of callback is the error
  * which is null if no error occurred, param2 of callback is an object with id, name, description, weight and allWeights
  */
@@ -128,7 +129,7 @@ function getLocation(typeOfMotion, positions, callback) {
  *
  * @param {object} locations - object with the empty weights for all locations (railway, street, building)
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {function} callback - function which will be called with the result of the location calculation, param1 of callback is the error
  * which is null if no error occurred, param2 of callback is an object with id, name, description, weight and allWeights
  */
@@ -172,7 +173,7 @@ function check_RAILWAY_STREET_BUILDING(locations, positions, callback) {
  *
  * @param {object} locations - object with the empty weights for all locations (railway, street, building)
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {function} callback - function which will be called with the result of the location calculation, param1 of callback is the error
  * which is null if no error occurred, param2 of callback is an object with id, name, description, weight and allWeights
  */
@@ -198,7 +199,7 @@ function check_RAILWAY_STREET(locations, positions, callback) {
  *
  * @param {object} locations - object with the empty weights for all locations (railway, street, building)
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {function} callback - function which will be called with the result of the location calculation, param1 of callback is the error
  * which is null if no error occurred, param2 of callback is an object with id, name, description, weight and allWeights
  */
@@ -227,7 +228,7 @@ function check_RAILWAY(locations, positions, callback) {
  *
  * @param {object} locations - object with the weights for all locations (railway, street, building)
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {object} nearestWays - database result for nearest ways
  * @returns {object} an object with railway, street and building which each include weight and location
  */
@@ -267,7 +268,7 @@ function getStreetAndRailwayWeight(locations, positions, nearestWays) {
  *
  * @param {object} locations - object with the weights for all locations (railway, street, building)
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {object} nearestBuildings - database result for nearest buildings
  * @returns {object} an object with railway, street and building which each include weight and location
  */
@@ -305,7 +306,7 @@ function getBuildingWeight(locations, positions, nearestBuildings) {
  *
  * @param {object} locations - object with the weights for all locations (railway, street, building)
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {object} nearestRailways - database result for nearest ways
  * @returns {object} an object with railway, street and building which each include weight and location
  */
@@ -405,13 +406,13 @@ module.exports = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-business_logic_dbQueries.html">business_logic/dbQueries</a></li><li><a href="module-business_logic_errorLogger.html">business_logic/errorLogger</a></li><li><a href="module-business_logic_geographicalSurroundings.html">business_logic/geographicalSurroundings</a></li><li><a href="module-business_logic_jsonHelper.html">business_logic/jsonHelper</a></li><li><a href="module-business_logic_location.html">business_logic/location</a></li><li><a href="module-business_logic_populationSurroundings.html">business_logic/populationSurroundings</a></li><li><a href="module-business_logic_positionsHelper.html">business_logic/positionsHelper</a></li><li><a href="module-business_logic_surroundingsCommunication.html">business_logic/surroundingsCommunication</a></li><li><a href="module-public_javascripts_apiSchemas.html">public/javascripts/apiSchemas</a></li><li><a href="module-public_javascripts_initForm.html">public/javascripts/initForm</a></li><li><a href="module-public_javascripts_initMap.html">public/javascripts/initMap</a></li><li><a href="module-public_javascripts_materialDesign.html">public/javascripts/materialDesign</a></li><li><a href="module-public_javascripts_sendRequest.html">public/javascripts/sendRequest</a></li><li><a href="module-public_javascripts_setInputAsMarker.html">public/javascripts/setInputAsMarker</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-business_logic_dbQueries.html">business_logic/dbQueries</a></li><li><a href="module-business_logic_errorLogger.html">business_logic/errorLogger</a></li><li><a href="module-business_logic_geographicalSurroundings.html">business_logic/geographicalSurroundings</a></li><li><a href="module-business_logic_jsonHelper.html">business_logic/jsonHelper</a></li><li><a href="module-business_logic_location.html">business_logic/location</a></li><li><a href="module-business_logic_populationSurroundings.html">business_logic/populationSurroundings</a></li><li><a href="module-business_logic_positionsHelper.html">business_logic/positionsHelper</a></li><li><a href="module-business_logic_surroundingsCommunication.html">business_logic/surroundingsCommunication</a></li><li><a href="module-business_logic_taggingCommunication.html">business_logic/taggingCommunication</a></li><li><a href="module-config_configReader.html">config/configReader</a></li><li><a href="module-persistence_dbAccess.html">persistence/dbAccess</a></li><li><a href="module-public_javascripts_apiSchemas.html">public/javascripts/apiSchemas</a></li><li><a href="module-public_javascripts_initForm.html">public/javascripts/initForm</a></li><li><a href="module-public_javascripts_initMap.html">public/javascripts/initMap</a></li><li><a href="module-public_javascripts_materialDesign.html">public/javascripts/materialDesign</a></li><li><a href="module-public_javascripts_sendRequest.html">public/javascripts/sendRequest</a></li><li><a href="module-public_javascripts_setInputAsMarker.html">public/javascripts/setInputAsMarker</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Jun 15 2017 20:02:59 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Jun 15 2017 20:38:28 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>

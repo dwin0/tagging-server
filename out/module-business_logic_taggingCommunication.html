@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: business_logic/surroundingsCommunication</title>
+    <title>JSDoc: Module: business_logic/taggingCommunication</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: business_logic/surroundingsCommunication</h1>
+    <h1 class="page-title">Module: business_logic/taggingCommunication</h1>
 
     
 
@@ -38,7 +38,7 @@
     <div class="container-overview">
     
         
-            <div class="description">This module chooses the best positions with help of the positionsHelper, passes them on to geographicalSurroundings andpopulationSurroundings and prepares the answer of those delegations with help of the jsonHelper for the answer to the client.</div>
+            <div class="description">This module chooses the best positions with help of the positionsHelper, passes them on to velocity, typeOfMotion, location,geographicalSurroundings and populationSurroundings and prepares the answer of those delegations with help of the jsonHelperfor the answer to the client.</div>
         
 
         
@@ -87,7 +87,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_surroundingsCommunication.js.html">business_logic/v5.1/surroundingsCommunication.js</a>, <a href="business_logic_v5.1_surroundingsCommunication.js.html#line1">line 1</a>
+        <a href="business_logic_v5.1_taggingCommunication.js.html">business_logic/v5.1/taggingCommunication.js</a>, <a href="business_logic_v5.1_taggingCommunication.js.html#line1">line 1</a>
     </li></ul></dd>
     
 
@@ -98,6 +98,12 @@
     <dd class="tag-see">
         <ul>
             <li>business_logic/positionsHelper</li>
+        
+            <li>business_logic/velocity</li>
+        
+            <li>business_logic/typeOfMotion</li>
+        
+            <li>business_logic/location</li>
         
             <li>business_logic/geographicalSurroundings</li>
         
@@ -148,14 +154,14 @@
 
     
 
-    <h4 class="name" id="~calculateSurroundings"><span class="type-signature">(inner) </span>calculateSurroundings<span class="signature">(positions, body, res)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~calculateTags"><span class="type-signature">(inner) </span>calculateTags<span class="signature">(positions, body, res, velocityJSON)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Function which starts the calculation of the geographical surroundings as well as the population density and the community type in parallel.
+    Function which starts the type of motion calculation and after the type of motion is received in parallel the calculationof the location, the geographical surroundings, the population density and the community type.
 </div>
 
 
@@ -253,7 +259,30 @@
 
             
 
-            <td class="description last">response object, will be used to send an error if something went wrong otherwise the result of thegeographical surroundings calculation is returned to the client</td>
+            <td class="description last">response object, will be used to send an error if something went wrong otherwise the the result of thetagging calculation is returned to the client</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>velocityJSON</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">result of the calculateVelocity function</td>
         </tr>
 
     
@@ -294,7 +323,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_surroundingsCommunication.js.html">business_logic/v5.1/surroundingsCommunication.js</a>, <a href="business_logic_v5.1_surroundingsCommunication.js.html#line47">line 47</a>
+        <a href="business_logic_v5.1_taggingCommunication.js.html">business_logic/v5.1/taggingCommunication.js</a>, <a href="business_logic_v5.1_taggingCommunication.js.html#line87">line 87</a>
     </li></ul></dd>
     
 
@@ -332,14 +361,221 @@
 
     
 
-    <h4 class="name" id="~getSurroundings"><span class="type-signature">(inner) </span>getSurroundings<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="~calculateVelocity"><span class="type-signature">(inner) </span>calculateVelocity<span class="signature">(positions, body, res, callback)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Function which filters the best positions and returns the result of the surroundings calculation.
+    Function which starts the calculation of the velocity.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>positions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>body</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">part of the request, will only be used in case of an error, so that the body which triggers the error can be logged</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">response object, will be used to send an error if something went wrong</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">function which will be called with the result of the velocity calculation, param1 of callback is thepositions array, param2 of callback is the body, param3 is the response, param4 is the result of the velocity calculation</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="business_logic_v5.1_taggingCommunication.js.html">business_logic/v5.1/taggingCommunication.js</a>, <a href="business_logic_v5.1_taggingCommunication.js.html#line55">line 55</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>business_logic/positionsHelper</li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="~getTags"><span class="type-signature">(inner) </span>getTags<span class="signature">(req, res)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Function which filters the positions and starts the calculation of the velocity and the calculation of the rest of the tags.
 </div>
 
 
@@ -455,7 +691,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="business_logic_v5.1_surroundingsCommunication.js.html">business_logic/v5.1/surroundingsCommunication.js</a>, <a href="business_logic_v5.1_surroundingsCommunication.js.html#line24">line 24</a>
+        <a href="business_logic_v5.1_taggingCommunication.js.html">business_logic/v5.1/taggingCommunication.js</a>, <a href="business_logic_v5.1_taggingCommunication.js.html#line31">line 31</a>
     </li></ul></dd>
     
 

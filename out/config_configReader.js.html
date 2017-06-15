@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: public/javascripts/initMap</title>
+    <title>JSDoc: Source: config/configReader.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,126 +17,32 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: public/javascripts/initMap</h1>
+    <h1 class="page-title">Source: config/configReader.js</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-            
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description">This module is responsible to load the leaflet map.</div>
-        
-
-        
-            
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This module is responsible for reading and returning the configuration-files.
+ * @module config/configReader
+ */
 
 
+var fs = require('fs');
 
+var config = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'UTF-8'));
+var queryConfig = JSON.parse(fs.readFileSync(__dirname + '/queryConfig.json', 'UTF-8'));
 
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="public_javascripts_initMap.js.html">public/javascripts/initMap.js</a>, <a href="public_javascripts_initMap.js.html#line1">line 1</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+module.exports = {
+    "config": config,
+    "queryConfig": queryConfig
+};</code></pre>
+        </article>
+    </section>
 
 
 

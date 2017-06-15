@@ -41,9 +41,9 @@ const UNKNOWN = {
  *  Is the function which delegates the calculation depending on the type of motion.
  *
  * @param {object} typeOfMotion - should be the result of getTypeOfMotion from typeOfMotion
- * @see {business_logic/typeOfMotion}
+ * @see business_logic/typeOfMotion
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {function} callback - function which will be called with the result of the location calculation, param1 of callback is the error
  * which is null if no error occurred, param2 of callback is an object with id, name, description, weight and allWeights
  */
@@ -101,7 +101,7 @@ function getLocation(typeOfMotion, positions, callback) {
  *
  * @param {object} locations - object with the empty weights for all locations (railway, street, building)
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {function} callback - function which will be called with the result of the location calculation, param1 of callback is the error
  * which is null if no error occurred, param2 of callback is an object with id, name, description, weight and allWeights
  */
@@ -145,7 +145,7 @@ function check_RAILWAY_STREET_BUILDING(locations, positions, callback) {
  *
  * @param {object} locations - object with the empty weights for all locations (railway, street, building)
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {function} callback - function which will be called with the result of the location calculation, param1 of callback is the error
  * which is null if no error occurred, param2 of callback is an object with id, name, description, weight and allWeights
  */
@@ -171,7 +171,7 @@ function check_RAILWAY_STREET(locations, positions, callback) {
  *
  * @param {object} locations - object with the empty weights for all locations (railway, street, building)
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {function} callback - function which will be called with the result of the location calculation, param1 of callback is the error
  * which is null if no error occurred, param2 of callback is an object with id, name, description, weight and allWeights
  */
@@ -200,7 +200,7 @@ function check_RAILWAY(locations, positions, callback) {
  *
  * @param {object} locations - object with the weights for all locations (railway, street, building)
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {object} nearestWays - database result for nearest ways
  * @returns {object} an object with railway, street and building which each include weight and location
  */
@@ -240,7 +240,7 @@ function getStreetAndRailwayWeight(locations, positions, nearestWays) {
  *
  * @param {object} locations - object with the weights for all locations (railway, street, building)
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {object} nearestBuildings - database result for nearest buildings
  * @returns {object} an object with railway, street and building which each include weight and location
  */
@@ -278,7 +278,7 @@ function getBuildingWeight(locations, positions, nearestBuildings) {
  *
  * @param {object} locations - object with the weights for all locations (railway, street, building)
  * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {business_logic/positionsHelper}
+ * @see business_logic/positionsHelper
  * @param {object} nearestRailways - database result for nearest ways
  * @returns {object} an object with railway, street and building which each include weight and location
  */
