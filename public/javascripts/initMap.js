@@ -1,3 +1,8 @@
+/**
+ * This module is responsible to load the leaflet map.
+ * @module public/initMap
+ */
+
 var map;
 
 (function setupMap() {

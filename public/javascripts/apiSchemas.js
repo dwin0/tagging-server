@@ -4,7 +4,7 @@
  * @module public/apiSchemas
  */
 
-/***
+/**
  * Loads all json-schemas and displays all json-schemas, possible input values and possible output values.
  */
 $(document).ready(function () {
@@ -33,7 +33,7 @@ $(document).ready(function () {
 
 });
 
-/***
+/**
  * Syntax-Highlights the json-object and inserts it.
  * @param {object} json - json-object to insert
  * @param {string} id - id of element after which the json is inserted
@@ -43,7 +43,7 @@ function insertJSON(json, id) {
     $('<pre></pre>').insertAfter(id).html(syntaxHighlight(jsonString));
 }
 
-/***
+/**
  * Highlights json-keywords and types with separate colours. Uses <span>-elements and CSS-classes.
  * @param {object} json - object to highlight
  * @returns {string} - syntax-highlighted json as string including HTML-Elements

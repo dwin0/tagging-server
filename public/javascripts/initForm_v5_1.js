@@ -1,6 +1,6 @@
-/***
+/**
  * This module is responsible to populate the HTML-form with form-elements and prepared values.
- * @module business_logic/dbQueries
+ * @module public/initForm
  */
 
 
@@ -28,7 +28,7 @@ $(window).on('load', function () {
 });
 
 
-/***
+/**
  * Creates all form-elements for the tagging-page and populates these elements with default-values.
  */
 function createTaggingForm() {
@@ -57,7 +57,7 @@ function createTaggingForm() {
     $('select').material_select();
 }
 
-/***
+/**
  * Creates all form-elements for the speed-calculation-page and populates these elements with default-values.
  */
 function createSpeedForm() {
@@ -80,7 +80,7 @@ function createSpeedForm() {
     $('select').material_select();
 }
 
-/***
+/**
  * Creates an element of type input with a <div>-wrapper.
  * @param {string} forString - value of attributes 'for', 'name' and 'id'
  * @param {string} labelText - value of tag 'label'
@@ -94,7 +94,7 @@ function createInputElement(forString, labelText) {
             '</div>');
 }
 
-/***
+/**
  * Creates an dropdown-element in the required format.
  * @param {object} inputForm - jQuery-object on which the dropdown-element is appended
  */
@@ -106,7 +106,7 @@ function createDropdown(inputForm) {
     pointSelect.change(onPointSelectChange);
 }
 
-/***
+/**
  * Creates an element of type select with a <div>-wrapper.
  * @param {string} forString - value of attributes 'for', 'name' and 'id'
  * @param {string} labelText - value of tag 'label'
@@ -127,7 +127,7 @@ function createSelectElement(forString, labelText, disabledValue) {
         '</div>')
 }
 
-/***
+/**
  * Initializes the input-form with the chosen points-values of the select-element.
  */
 function onPointSelectChange() {
@@ -198,7 +198,7 @@ const speedDefaultValues = [
     [8.7165203, 47.3516764, "", "2017-03-28 07:32:07.0"]
 ];
 
-/***
+/**
  * Initializes the input-form with the given argument.
  * @param {array} defaultValues - values to initialize the input-form
  */

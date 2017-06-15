@@ -1,3 +1,8 @@
+/**
+ * This module is responsible to activate all material-design-items.
+ * @module public/materialDesign
+ */
+
 $(document).ready(function(){
 
     //Highlight current page in nav-bar
