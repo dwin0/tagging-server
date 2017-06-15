@@ -3,6 +3,11 @@
 API zur Kategorisierung von Mobile Speedtest Daten
 
 
+### Dokumentation
+
+Die Dokumentation ist unter folgender URL auffindbar: https://dwin94.github.io/
+
+
 ### Installation auf Linux
 
 Das Installations-Skript befindet sich im Ordner "setup". Folgenden Variablen sind in den Dateien "setup_tagging_server.sh" 
