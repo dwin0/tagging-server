@@ -200,7 +200,7 @@ const speedDefaultValues = [
 
 /**
  * Initializes the input-form with the given argument.
- * @param {array} defaultValues - values to initialize the input-form
+ * @param {Array} defaultValues - values to initialize the input-form
  */
 function initializeDefaultValues(defaultValues) {
 

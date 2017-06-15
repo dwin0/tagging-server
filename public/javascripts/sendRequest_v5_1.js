@@ -261,7 +261,7 @@ function renderError(statusCode, statusText, responseText) {
 
 /**
  * Displays all jQuery-elements in the argument to the result-view.
- * @param {array} appendArray - array containing all jQuery-elements to display
+ * @param {Array} appendArray - array containing all jQuery-elements to display
  */
 function renderResult(appendArray) {
 
