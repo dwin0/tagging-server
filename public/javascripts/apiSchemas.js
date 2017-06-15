@@ -1,3 +1,12 @@
+/**
+ * This module is responsible to load and display all json-schemas, possible input values and possible output values
+ * in the api description.
+ * @module public/apiSchemas
+ */
+
+/***
+ * Loads all json-schemas and displays all json-schemas, possible input values and possible output values.
+ */
 $(document).ready(function () {
 
     $.ajax({
@@ -24,11 +33,21 @@ $(document).ready(function () {
 
 });
 
+/***
+ * Syntax-Highlights the json-object and inserts it.
+ * @param {object} json - json-object to insert
+ * @param {string} id - id of element after which the json is inserted
+ */
 function insertJSON(json, id) {
     var jsonString = JSON.stringify(json, null, 4);
     $('<pre></pre>').insertAfter(id).html(syntaxHighlight(jsonString));
 }
 
+/***
+ * Highlights json-keywords and types with separate colours. Uses <span>-elements and CSS-classes.
+ * @param {object} json - object to highlight
+ * @returns {string} - syntax-highlighted json as string including HTML-Elements
+ */
 function syntaxHighlight(json) {
     json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {

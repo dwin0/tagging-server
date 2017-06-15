@@ -1,3 +1,9 @@
+/***
+ * This module is responsible to populate the HTML-form with form-elements and prepared values.
+ * @module business_logic/dbQueries
+ */
+
+
 var numberOfPositions;
 
 
@@ -22,7 +28,9 @@ $(window).on('load', function () {
 });
 
 
-
+/***
+ * Creates all form-elements for the tagging-page and populates these elements with default-values.
+ */
 function createTaggingForm() {
 
     var inputForm = $('#input-form-elements');
@@ -49,6 +57,9 @@ function createTaggingForm() {
     $('select').material_select();
 }
 
+/***
+ * Creates all form-elements for the speed-calculation-page and populates these elements with default-values.
+ */
 function createSpeedForm() {
     for(var i = 1; i <= numberOfPositions; i++) {
 
@@ -69,6 +80,12 @@ function createSpeedForm() {
     $('select').material_select();
 }
 
+/***
+ * Creates an element of type input with a <div>-wrapper.
+ * @param {string} forString - value of attributes 'for', 'name' and 'id'
+ * @param {string} labelText - value of tag 'label'
+ * @returns {object} - div-element as jQuery-object
+ */
 function createInputElement(forString, labelText) {
     return $('<div>' +
                 '<label for="' + forString + '">' + labelText + ' : ' +
@@ -77,7 +94,10 @@ function createInputElement(forString, labelText) {
             '</div>');
 }
 
-
+/***
+ * Creates an dropdown-element in the required format.
+ * @param {object} inputForm - jQuery-object on which the dropdown-element is appended
+ */
 function createDropdown(inputForm) {
     var card = $('<div class="row"><div class="col s12 m6"><div class="card-panel indigo darken-4"></div></div></div>');
     var pointSelect = createSelectElement('measurrement0', 'Beispielmessung', 'Wähle eine Beispielmessung').addClass('input');
@@ -86,6 +106,13 @@ function createDropdown(inputForm) {
     pointSelect.change(onPointSelectChange);
 }
 
+/***
+ * Creates an element of type select with a <div>-wrapper.
+ * @param {string} forString - value of attributes 'for', 'name' and 'id'
+ * @param {string} labelText - value of tag 'label'
+ * @param {string} disabledValue - text if no option is selected
+ * @returns {object} - div-element as jQuery-object
+ */
 function createSelectElement(forString, labelText, disabledValue) {
     return $(
         '<div>' +
@@ -100,6 +127,9 @@ function createSelectElement(forString, labelText, disabledValue) {
         '</div>')
 }
 
+/***
+ * Initializes the input-form with the chosen points-values of the select-element.
+ */
 function onPointSelectChange() {
     var selectedElement = $("select option:selected")[0].value;
 
@@ -168,6 +198,10 @@ const speedDefaultValues = [
     [8.7165203, 47.3516764, "", "2017-03-28 07:32:07.0"]
 ];
 
+/***
+ * Initializes the input-form with the given argument.
+ * @param {array} defaultValues - values to initialize the input-form
+ */
 function initializeDefaultValues(defaultValues) {
 
     for(var i = 1; i <= numberOfPositions; i++) {
