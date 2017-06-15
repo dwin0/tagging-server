@@ -72,7 +72,7 @@ function addClearListener() {
 
 /**
  * Returns the number of all form-input-fields.
- * @returns {number} - number of all form-input-fields
+ * @returns {number} number of all form-input-fields
  */
 function getNumberOfPositions() {
 

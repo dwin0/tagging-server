@@ -1,12 +1,13 @@
-var dbAccess = require('../../persistence/dbAccess_v5');
-var queries = require('./dbQueries');
-var parallel = require('async/parallel');
-
 /**
  * In this module the location calculation is done. For the calculation the type of motion is used and the database
  * is queried for railway, street and building.
  * @module business_logic/location
  */
+
+
+var dbAccess = require('../../persistence/dbAccess_v5');
+var queries = require('./dbQueries');
+var parallel = require('async/parallel');
 
 
 const RAILWAY = {

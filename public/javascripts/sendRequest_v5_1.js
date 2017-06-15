@@ -1,5 +1,5 @@
 /**
- * This module is responsible to send tagging- speedCalculation and surroundings-requests to the server and
+ * This module is responsible to send tagging-, speedCalculation-, and surroundings-requests to the server and
  * display the result.
  * @module public/javascripts/sendRequest
  */
@@ -114,7 +114,7 @@ function showLoadingView() {
 }
 
 /**
- * Sends the collected form-data to the specified url.
+ * Sends the collected form-data to the specified URL.
  * @param {string} url - URL to send the data to
  * @param {object} sendData - POST-data to send
  * @param {function} successCallback - function which will be called with the result of type object

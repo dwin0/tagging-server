@@ -1,10 +1,11 @@
-var dbAccess= require('../../persistence/dbAccess_v5');
-var queries = require('./dbQueries');
-
 /**
  * In this module the geographical surroundings is calculated.
  * @module business_logic/geographicalSurroundings
  */
+
+
+var dbAccess= require('../../persistence/dbAccess_v5');
+var queries = require('./dbQueries');
 
 
 const UNKNOWN = {

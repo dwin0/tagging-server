@@ -42,9 +42,9 @@ function insertJSON(json, id) {
 }
 
 /**
- * Highlights json-keywords and types with separate colours. Uses <span>-elements and CSS-classes.
+ * Highlights json-keywords and json-types with separate colours. Uses span-elements and CSS-classes.
  * @param {object} json - object to highlight
- * @returns {string} - syntax-highlighted json as string including HTML-Elements
+ * @returns {string} syntax-highlighted json as string that includes HTML-Elements
  */
 function syntaxHighlight(json) {
     json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

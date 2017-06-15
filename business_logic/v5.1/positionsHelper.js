@@ -1,7 +1,3 @@
-var dbAccess= require('../../persistence/dbAccess_v5');
-var queries = require('./dbQueries');
-var logError = require('./errorLogger').logError;
-
 /**
  * In this module the correct formatted input-positions will be validated and filtered. Validation includes: a check if
  * the positions are inside switzerland, a check if at least one of the lon, lat values of a position is not equal to zero,
@@ -10,6 +6,11 @@ var logError = require('./errorLogger').logError;
  * phase will be selected.
  * @module business_logic/positionsHelper
  */
+
+
+var dbAccess= require('../../persistence/dbAccess_v5');
+var queries = require('./dbQueries');
+var logError = require('./errorLogger').logError;
 
 
 /**

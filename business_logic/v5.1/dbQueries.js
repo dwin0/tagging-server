@@ -1,9 +1,10 @@
-var config = require('../../config/configReader').queryConfig;
-
 /**
  * This module includes all database queries and the helper methods which are used to create a final database query.
  * @module business_logic/dbQueries
  */
+
+
+var config = require('../../config/configReader').queryConfig;
 
 
 /*---------- populationSurroundings.js, geographicalSurroundings.js ----------*/

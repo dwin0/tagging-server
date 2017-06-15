@@ -84,7 +84,7 @@ function createSpeedForm() {
  * Creates an element of type input with a div-wrapper.
  * @param {string} forString - value of attributes 'for', 'name' and 'id'
  * @param {string} labelText - value of tag 'label'
- * @returns {object} - div-element as jQuery-object
+ * @returns {object} div-element as jQuery-object
  */
 function createInputElement(forString, labelText) {
     return $('<div>' +
@@ -111,7 +111,7 @@ function createDropdown(inputForm) {
  * @param {string} forString - value of attributes 'for', 'name' and 'id'
  * @param {string} labelText - value of tag 'label'
  * @param {string} disabledValue - text if no option is selected
- * @returns {object} - div-element as jQuery-object
+ * @returns {object} div-element as jQuery-object
  */
 function createSelectElement(forString, labelText, disabledValue) {
     return $(

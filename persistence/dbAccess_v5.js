@@ -1,3 +1,9 @@
+/**
+ * This module is responsible for querying the postgres-database.
+ * @module persistence/dbAccess
+ */
+
+
 var pg = require('pg');
 var options = require('../config/configReader').config;
 var parallel = require('async/parallel');
@@ -17,9 +23,11 @@ var databasePool = new pg.Pool(config);
 
 
 /**
- * @param statement
- * @param variables: Use makePoints or makeMultipoints to fit the required form
- * @param callback
+ * queries the database with multiple variations of a single statement in parallel.
+ * @param {string} statement - statement a placeholder like $1
+ * @param {Array} variables - array containing a value for every query like [ VAR_1, VAR_2, VAR3 ]
+ * which returns in 3 queries. Use makePoints or makeMultipoints to fit the required form.
+ * @param {function} callback - function which will be called with the result of type (error, array)
  */
 function queryMultiple(statement, variables, callback) {
 
