@@ -18,8 +18,8 @@ const UNKNOWN = {
  * Queries the database for the keys boundary, "natural", leisure and landuse for the download and the upload and returns
  * the result.
  *
- * @param {array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
- * @see {@link business_logic/positionsHelper}
+ * @param {Array} positions - the array is expected to have the best three positions in it, positions should be the result of choosePositions from positionsHelper
+ * @see {business_logic/positionsHelper}
  * @param {function} callback - function which will be called with the result of the database, param1 of callback is the error
  * which is null if no error occurred, param2 of callback is the result
  */

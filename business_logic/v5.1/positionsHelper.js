@@ -18,8 +18,8 @@ var logError = require('./errorLogger').logError;
  *
  * @param {object} body - part of the request, should have positions inside
  * @param {object} res - response object, will be used to send an error if something went wrong
- * @param {function} callback - function which will be called with the calculated results, in case of error undefined is returned
- * @returns {array} array with the 3 best positions
+ * @param {function} callback - function which will be called with the three best positions, in case of error callback is
+ * called with no parameters
  */
 function choosePositions(body, res, callback) {
 

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: public/javascripts/sendRequest_v5_1.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: public/javascripts/sendRequest_v5_1.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This module is responsible to send tagging- speedCalculation and surroundings-requests to the server and
+ * display the result.
+ * @module public/javascripts/sendRequest
+ */
+
+
+$(document).on('ready', function () {
+
+    var title = $(document).find("title").text();
+    var submitButton = $('#submitButton');
+
+    switch (title) {
+        case 'Tagging-Server':
+            submitButton.on('click', sendTaggingRequest);
+            break;
+        case 'Geschwindigkeitsberechnung':
+            submitButton.on('click', sendSpeedCalculationRequest);
+            break;
+        case 'Umgebungsabfrage':
+            submitButton.on('click', sendSurroundingsRequest);
+            break;
+    }
+
+    addResultViewListener();
+});
+
+
+/**
+ * Collects all tagging-form-values and sends these in the required form (TAGGING_SCHEMA in jsonSchemas.js).
+ * @param {object} event - event-object of button-click
+ */
+function sendTaggingRequest(event) {
+
+    event.preventDefault();
+    showLoadingView();
+
+    var positions = [];
+    var numberOfPositions = getNumberOfPositions();
+
+    for(var i = 1; i &lt;= numberOfPositions; i++) {
+        var longitude = Number($('#longitude' + i).val());
+        var latitude = Number($('#latitude' + i).val());
+        var horizontalAccuracy = Number($('#horizontalAccuracy' + i).val());
+        var time = $('#time' + i).val();
+
+        positions[i-1] = {
+            longitude: longitude,
+            latitude: latitude,
+            horizontalAccuracy: horizontalAccuracy,
+            time: time };
+    }
+
+    sendRequest("/api/v5.1/tag", { positions: positions }, renderTaggingResult);
+}
+
+/**
+ * Collects all speedCalculation-form-values and sends these in the required form (VELOCITY_SCHEMA in jsonSchemas.js).
+ * @param {object} event - event-object of button-click
+ */
+function sendSpeedCalculationRequest(event) {
+
+    event.preventDefault();
+    showLoadingView();
+
+    var positions = [];
+    var numberOfPositions = getNumberOfPositions();
+
+    for(var i = 1; i &lt;= numberOfPositions; i++) {
+        var longitude = Number($('#longitude' + i).val());
+        var latitude = Number($('#latitude' + i).val());
+        var time = $('#time' + i).val();
+
+        positions[i-1] = { longitude: longitude, latitude: latitude, time: time };
+    }
+
+    sendRequest("/api/v5.1/calculateSpeed", { positions: positions }, renderSpeedCalculationResult);
+}
+
+/**
+ * Collects all surroundings-form-values and sends these in the required form (TAGGING_SCHEMA in jsonSchemas.js).
+ * @param {object} event - event-object of button-click
+ */
+function sendSurroundingsRequest(event) {
+
+    event.preventDefault();
+    showLoadingView();
+
+    var positions = [];
+    var numberOfPositions = getNumberOfPositions();
+
+    for(var i = 1; i &lt;= numberOfPositions; i++) {
+        var longitude = Number($('#longitude' + i).val());
+        var latitude = Number($('#latitude' + i).val());
+        var horizontalAccuracy = Number($('#horizontalAccuracy' + i).val());
+        var time = $('#time' + i).val();
+
+        positions[i-1] = {
+            longitude: longitude,
+            latitude: latitude,
+            horizontalAccuracy: horizontalAccuracy,
+            time: time };
+    }
+
+    sendRequest("/api/v5.1/findSurroundings", { positions: positions }, renderSurroundingsResult);
+}
+
+/**
+ * Displays a white layer and a loading-spinner in the foreground.
+ */
+function showLoadingView() {
+    $('#loading-icon').css('display', 'inline');
+    $('#loading-layer').css('display', 'inherit');
+}
+
+/**
+ * Sends the collected form-data to the specified url.
+ * @param {string} url - URL to send the data to
+ * @param {object} sendData - POST-data to send
+ * @param {function} successCallback - function which will be called with the result of type object
+ */
+function sendRequest(url, sendData, successCallback) {
+
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(sendData),
+        url: url,
+        success: function(data){
+
+            console.log(data);
+
+            //hide loading-spinner
+            $('#loading-icon').css('display', 'none');
+
+            successCallback(data);
+        },
+        error: function (request) {
+
+            var response = JSON.parse(request.responseText);
+
+            console.error(response.error);
+
+            $('#loading-icon').css('display', 'none');
+            renderError(request.status, request.statusText, response.error);
+        }
+    });
+}
+
+
+
+/**
+ * Displays the tagging-result received by the server.
+ * @param {object} data - tagging-result
+ */
+function renderTaggingResult(data) {
+
+    var header = $('&lt;li class="collection-header">&lt;h4>Tagging-Resultat:&lt;/h4>&lt;/li>');
+
+    var location = $('&lt;li class="collection-item">&lt;div>Lokation: ' + data.location.name + '&lt;br />' +
+        'Gewichtung: ' + data.location.weight + '&lt;/div>&lt;/li>');
+
+    var geographicalSurroundings = $('&lt;li class="collection-item">&lt;div>Geografische Umgebung: ' +
+        data.surroundings.download.geographicalSurroundings.osmKey + ':' +
+        data.surroundings.download.geographicalSurroundings.osmValue + '&lt;/div>&lt;/li>');
+
+    var populationDensity = $('&lt;li class="collection-item">&lt;div>Bevölkerungsdichte: ' +
+        data.surroundings.download.populationDensity.number + ' Personen pro Hektar (Durchschnitt über 300m Radius)&lt;/div>&lt;/li>');
+
+    var communityName = $('&lt;li class="collection-item">&lt;div>Gemeinde: ' +
+        data.surroundings.download.communityType.communityName + '&lt;/div>&lt;/li>');
+
+    var communityType = $('&lt;li class="collection-item">&lt;div>Gemeinde-Typ: ' +
+        data.surroundings.download.communityType.type + '&lt;/div>&lt;/li>');
+
+    var typeOfMotion = $('&lt;li class="collection-item">&lt;div>Fortbewegungs-Typ: ' +
+        data.typeOfMotion.name + '&lt;/div>&lt;/li>');
+
+    var velocity = $('&lt;li class="collection-item">&lt;div>Geschwindigkeit: ' +
+        data.velocity.velocityKilometersPerHour + ' km/h&lt;/div>&lt;/li>');
+
+    renderResult([header, location, geographicalSurroundings, populationDensity, communityName, communityType,
+        typeOfMotion, velocity]);
+}
+
+/**
+ * Displays the speedCalculation-result received by the server.
+ * @param {object} data - speedCalculation-result
+ */
+function renderSpeedCalculationResult(data) {
+
+    var header = $('&lt;li class="collection-header">&lt;h4>Geschwindigkeits-Resultat:&lt;/h4>&lt;/li>');
+
+    var distanceMeters =
+        $('&lt;li class="collection-item">&lt;div>Distanz: ' + data.distanceMeters + ' m&lt;/div>&lt;/li>');
+    var timeSeconds =
+        $('&lt;li class="collection-item">&lt;div>Zeit: ' + data.timeSeconds + ' s&lt;/div>&lt;/li>');
+    var velocityMeterPerSecond =
+        $('&lt;li class="collection-item">&lt;div>Geschwindigkeit: ' + data.velocityMeterPerSecond + ' m/s&lt;/div>&lt;/li>');
+    var velocityKilometersPerHour =
+        $('&lt;li class="collection-item">&lt;div>Geschwindigkeit: ' + data.velocityKilometersPerHour + ' km/h&lt;/div>&lt;/li>');
+
+    renderResult([header, distanceMeters, timeSeconds, velocityMeterPerSecond, velocityKilometersPerHour]);
+}
+
+/**
+ * Displays the surroundings-result received by the server.
+ * @param {object} data - surroundings-result
+ */
+function renderSurroundingsResult(data) {
+
+    var header = $('&lt;li class="collection-header">&lt;h4>Surroundings-Resultat:&lt;/h4>&lt;/li>');
+
+    var downloadGeographic = $('&lt;li class="collection-item">&lt;div>Download - Geografische Umgebung: ' +
+        data.surroundings.download.geographicalSurroundings.osmKey + ':' +
+        data.surroundings.download.geographicalSurroundings.osmValue + '&lt;/div>&lt;/li>');
+
+    var downloadPopulation = $('&lt;li class="collection-item">&lt;div>Download - Bevölkerungsdichte: ' +
+        data.surroundings.download.populationDensity.number + ' Personen pro Hektar (Durchschnitt über 300m Radius)&lt;/div>&lt;/li>');
+
+    var downloadCommunityName = $('&lt;li class="collection-item">&lt;div>Download - Gemeinde: ' +
+        data.surroundings.download.communityType.communityName + '&lt;/div>&lt;/li>');
+
+    var downloadCommunityType = $('&lt;li class="collection-item">&lt;div>Download - Gemeindetyp: ' +
+        data.surroundings.download.communityType.type + '&lt;/div>&lt;/li>');
+
+    var uploadGeographic = $('&lt;li class="collection-item">&lt;div>Upload - Geografische Umgebung: ' +
+        data.surroundings.upload.geographicalSurroundings.osmKey + ':' +
+        data.surroundings.upload.geographicalSurroundings.osmValue + '&lt;/div>&lt;/li>');
+
+    var uploadPopulation = $('&lt;li class="collection-item">&lt;div>Upload - Bevölkerungsdichte: ' +
+        data.surroundings.upload.populationDensity.number + ' Personen pro Hektar (Durchschnitt über 300m Radius)&lt;/div>&lt;/li>');
+
+    var uploadCommunityName = $('&lt;li class="collection-item">&lt;div>Upload - Gemeinde: ' +
+        data.surroundings.upload.communityType.communityName + '&lt;/div>&lt;/li>');
+
+    var uploadCommunityType = $('&lt;li class="collection-item">&lt;div>Upload - Gemeindetyp: ' +
+        data.surroundings.upload.communityType.type + '&lt;/div>&lt;/li>');
+
+    renderResult([header, downloadGeographic, downloadPopulation, downloadCommunityName, downloadCommunityType,
+        uploadGeographic, uploadPopulation, uploadCommunityName, uploadCommunityType]);
+}
+
+/**
+ * Displays the server-error which happend during sendRequest.
+ * @param {number} statusCode - status-code received by the server
+ * @param {string} statusText - status-text received by the server
+ * @param {string} responseText - response-text received by the server
+ */
+function renderError(statusCode, statusText, responseText) {
+
+    console.log(typeof statusCode + ', ' + typeof statusText + ', ' + typeof responseText);
+
+    var header = $('&lt;li class="collection-header error">&lt;h4>Error:&lt;/h4>&lt;/li>');
+
+    var error = $('&lt;li class="collection-item error">&lt;div>Statuscode: ' + statusCode + ' - ' + statusText + '&lt;br />'
+        + responseText + '&lt;/div>&lt;/li>');
+
+    renderResult([header, error]);
+}
+
+/**
+ * Displays all jQuery-elements in the argument to the result-view.
+ * @param {Array} appendArray - array containing all jQuery-elements to display
+ */
+function renderResult(appendArray) {
+
+    var resultView = $('#result-view').html('&lt;div>&lt;/div>');
+    var resultList = $('&lt;ul class="collection with-header">&lt;/ul>');
+
+    appendArray.forEach(function (element) {
+        resultList
+            .append(element);
+    });
+
+    resultView.css('visibility', 'visible').html(resultList);
+}
+
+
+/**
+ * Closes the result-view on click outside.
+ */
+function addResultViewListener() {
+
+    //Close result-view on click outside
+    $(document).mouseup(function(e) {
+        var container = $('#result-view');
+        var map = $('#map');
+
+        //if the target of the click isn't the container nor a descendant of the container
+        if (!container.is(e.target) &amp;&amp; container.has(e.target).length === 0
+        &amp;&amp; !map.is(e.target) &amp;&amp; map.has(e.target).length === 0) {
+            container.css('visibility', 'hidden');
+            $('#loading-layer').css('display', 'none');
+        }
+    });
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-business_logic_dbQueries.html">business_logic/dbQueries</a></li><li><a href="module-business_logic_errorLogger.html">business_logic/errorLogger</a></li><li><a href="module-business_logic_geographicalSurroundings.html">business_logic/geographicalSurroundings</a></li><li><a href="module-business_logic_jsonHelper.html">business_logic/jsonHelper</a></li><li><a href="module-business_logic_location.html">business_logic/location</a></li><li><a href="module-business_logic_positionsHelper.html">business_logic/positionsHelper</a></li><li><a href="module-public_javascripts_apiSchemas.html">public/javascripts/apiSchemas</a></li><li><a href="module-public_javascripts_initForm.html">public/javascripts/initForm</a></li><li><a href="module-public_javascripts_initMap.html">public/javascripts/initMap</a></li><li><a href="module-public_javascripts_materialDesign.html">public/javascripts/materialDesign</a></li><li><a href="module-public_javascripts_sendRequest.html">public/javascripts/sendRequest</a></li><li><a href="module-public_javascripts_setInputAsMarker.html">public/javascripts/setInputAsMarker</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Jun 15 2017 18:37:16 GMT+0200 (Mitteleuropäische Sommerzeit)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -246,8 +246,8 @@ const INSIDE_SWITZERLAND = 'SELECT osm_id FROM planet_osm_polygon ' +
 /**
  * Returns an array of positions in the required format for parametrized queries, in this case 'POINT(longitude latitude)'
  *
- * @param {array} positions - positions which should be changed into format 'POINT(longitude latitude)'
- * @returns {array} array with correct formatted strings
+ * @param {Array} positions - positions which should be changed into format 'POINT(longitude latitude)'
+ * @returns {Array} array with correct formatted strings
  */
 function makePoints(positions) {
 
@@ -268,9 +268,9 @@ function makePoints(positions) {
  * Returns an array of positions in the required format for parametrized queries, in this case
  * 'MULTIPOINT(longitude1 latitude1, longitude2 latitude2)'
  *
- * @param {array} positions - positions which should be changed into format 'MULTIPOINT(longitude1 latitude1, longitude2 latitude2)',
+ * @param {Array} positions - positions which should be changed into format 'MULTIPOINT(longitude1 latitude1, longitude2 latitude2)',
  * array must contain at least two positions
- * @returns {array} array with correct formatted strings
+ * @returns {Array} array with correct formatted strings
  */
 function makeMultipoints(positions) {
 
