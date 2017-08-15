@@ -9,13 +9,13 @@
 # Description:       Enable tagging service provided by daemon. (run "sudo update-rc.d tagging-server defaults 95" to activate script)
 ### END INIT INFO
 
-dir="/home/cnlab/taggingServer/tagging-server"
+dir="~/tagging-server"
 cmd="node ./bin/www"
 
 name=`basename $0`
 pid_file="/var/run/$name.pid"
-stdout_log="/home/cnlab/taggingServer/tagging-server/log/$name.log"
-stderr_log="/home/cnlab/taggingServer/tagging-server/log/$name.err"
+stdout_log="~/tagging-server/log/$name.log"
+stderr_log="~/tagging-server/log/$name.err"
 
 get_pid() {
     cat "$pid_file"
