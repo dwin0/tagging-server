@@ -1,0 +1,11 @@
+[Unit]
+Description= Tagging Server running as daemon
+
+[Service]
+Type=forking
+Environment=statedir=/home/USER/taggingServer/tagging-server/bin/www
+ExecStart=/usr/local/bin/node ${statedir} >> /home/cnlab/taggingServer/tagging-server/log/tagging-server.log 2>> /home/cnlab/taggingServer/tagging-server/log/tagging-server.err
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
