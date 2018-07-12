@@ -70,7 +70,7 @@ const UNKNOWN = {
 
 const GEOADMIN_URL_POPULATION_DENSITY = 'https://api3.geo.admin.ch/rest/services/all/MapServer/' +
     'identify?geometry={y},{x}&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1' +
-    '&lang=de&layers=all:ch.are.bevoelkerungsdichte&mapExtent=0,0,1,1&returnGeometry=false&tolerance=300';
+    '&lang=de&layers=all:ch.bfs.volkszaehlung-bevoelkerungsstatistik_einwohner&mapExtent=0,0,1,1&returnGeometry=false&tolerance=300';
 
 const GEOADMIN_URL_COMMUNITY_TYPE = 'https://api3.geo.admin.ch/rest/services/all/MapServer/' +
     'identify?geometry={y},{x}&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1,1,1' +
@@ -176,6 +176,7 @@ function getGeoAdminRequests(urls) {
 
     for(var i = 0; i < urls.length; i++) {
 
+       //console.error('URL: ' + urls[i]);
         requestFunctions[i] = (function (i) {
             return function(callback) {
                 request.get(
@@ -210,7 +211,9 @@ function getPopulationDensity(geoAdminResult) {
     var total = 0;
 
     geoAdminResult.results.forEach(function (res) {
-        total += res.properties.popt_ha;
+       if (res.properties.i_year === 2016) {
+               total += res.properties.number;
+       }
     });
 
     if(geoAdminResult.results.length) {
